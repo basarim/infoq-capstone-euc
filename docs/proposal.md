@@ -114,6 +114,8 @@ This project proposes **Executable Use Cases (EUCs)**: first-class, machine-read
 
 **Business Intent → EUC → Execution + Evaluation**
 
+![EUC lifecycle overview: business intent formalizes into an Executable Use Case, which drives both a runtime execution pipeline and an evaluation harness, producing traceable results with a feedback loop back to intent, and the same EUC is consumed across every SDLC stage from requirements through regression](images/euc-lifecycle-overview.svg)
+
 The approach will be validated through a [Grant Fit Assessment](#6-case-study-grant-fit-assessment) case study: an AI-native application where the same EUC governs both runtime behavior and evaluation. As the underlying prompt or model changes, the case study tests whether the application can still be evaluated against a stable, unchanged definition of business intent.
 
 ---
