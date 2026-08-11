@@ -195,14 +195,12 @@ That last row is what the case study is designed to test: when a prompt or model
 
 ## 4. Falsifiable Claims
 
-**Primary claim (`claim-1-primary`):** when the underlying prompt or model changes, evaluation against a fixed EUC will detect meaningful drift from business intent, without the EUC itself needing to change. This can fail two ways:
+**Primary claim** (`claim-1-primary`): when the underlying prompt or model changes, evaluation against a fixed EUC will detect meaningful drift from business intent, without the EUC itself needing to change. This claim fails in two directions:
 
-| Failure mode | What it would mean |
-|---|---|
-| **False negative** *(the risk that matters most)* — behavior changes (e.g., reasoning shifts from evidence-grounded to speculative) but evaluation still reports a pass | EUC-driven evaluation offers no real advantage over the status quo |
-| **False positive** — evaluation flags drift when behavior hasn't actually diverged | Evaluation criteria are too brittle or too tightly coupled to a specific implementation to serve as a stable definition of correctness |
+- **False negative** *(the risk that matters most)* — behavior changes (e.g., reasoning shifts from evidence-grounded to speculative, or alignment judgments become inconsistent) but evaluation still reports a pass. This would mean EUC-driven evaluation offers no real advantage over the status quo it's meant to replace.
+- **False positive** — evaluation flags drift when behavior hasn't actually diverged. This would mean the evaluation criteria are too brittle or too tightly coupled to a specific implementation to serve as a stable definition of correctness.
 
-**Secondary claim (`claim-2-secondary`):** the deterministic and LLM-reasoned portions of the EUC should behave differently under these changes. [Section 5](#5-case-study-grant-fit-assessment) establishes that only the LLM-reasoning layer (alignment, evidence interpretation, explanation) is exposed to prompt or model drift, while deterministic rules (eligibility, geography) should stay stable regardless of model changes. If deterministic results shift too, that indicates a flaw in the EUC's separation of concerns, not a success of the approach.
+**Secondary claim** (`claim-2-secondary`): the deterministic and LLM-reasoned portions of the EUC should behave differently under these changes. [Section 5](#5-case-study-grant-fit-assessment) establishes that only the LLM-reasoning layer (alignment, evidence interpretation, explanation) is exposed to prompt or model drift, while deterministic rules (eligibility, geography) should stay stable regardless of model changes. If deterministic results shift too, that indicates a flaw in the EUC's separation of concerns, not a success of the approach.
 
 Both claims are deliberately falsifiable: a negative result — failing to catch known, deliberately introduced drift — is a legitimate, informative outcome, not just a validation exercise.
 
