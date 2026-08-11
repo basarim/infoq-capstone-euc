@@ -32,7 +32,8 @@ version: "0.2"
   },
   "artifact": {
     "name": "Executable Use Case (EUC)",
-    "fields": ["id", "actor", "goal", "rules", "policies", "expectedOutcomes", "evaluation"],
+    "fields": ["id", "actor", "goal", "executionPipeline", "policies", "expectedOutcomes", "evaluationPipeline"],
+    "designPattern": "Pipe-and-Filter",
     "ruleTypes": ["deterministic", "reasoned"]
   },
   "caseStudy": {
@@ -112,16 +113,27 @@ Existing practice treats this as a documentation problem — requirements docs, 
 
 An Executable Use Case (EUC) represents the business intent and expected behavior of a use case in a form consumable by both people and software — a single definition an application is built against and evaluated against, rather than two definitions maintained in parallel.
 
+The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each execution stage names a `filter` — a lookup key into a filter registry — so a pipeline can be assembled mechanically from the EUC rather than hand-wired per use case. A pipeline built this way has a different number and mix of filters depending on what each EUC's contract requires, without any orchestration code changing.
+
 ```json
 {
   "id": "grant-fit-assessment",
   "actor": "Nonprofit Program Manager",
   "goal": "Determine whether the organization should pursue a grant",
-  "rules": [
+  "executionPipeline": [
     {
       "id": "ELIGIBILITY-001",
+      "filter": "eligibility",
       "type": "deterministic",
-      "description": "Applicant must satisfy mandatory eligibility requirements"
+      "description": "Applicant must satisfy mandatory eligibility requirements",
+      "onFailure": "halt"
+    },
+    {
+      "id": "ALIGNMENT-001",
+      "filter": "alignmentReasoning",
+      "type": "reasoned",
+      "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities",
+      "onFailure": "continue"
     }
   ],
   "policies": [
@@ -133,22 +145,35 @@ An Executable Use Case (EUC) represents the business intent and expected behavio
     "POSSIBLE_FIT",
     "POOR_FIT"
   ],
-  "evaluation": [
-    "eligibilityCorrectness",
-    "programAlignment",
-    "evidenceGrounding"
+  "evaluationPipeline": [
+    {
+      "id": "eligibilityCorrectness",
+      "filter": "eligibilityCorrectness",
+      "evaluates": ["ELIGIBILITY-001"]
+    },
+    {
+      "id": "programAlignment",
+      "filter": "programAlignment",
+      "evaluates": ["ALIGNMENT-001"]
+    }
   ]
 }
 ```
 
+*(Abbreviated for readability — the full EUC has four execution stages and three evaluation stages; see `src/main/resources/euc/grant-fit-assessment.json` in the repo.)*
+
 | Field | Purpose |
 |---|---|
-| `rules` | Typed constraints — `deterministic` (hard pass/fail checks) or `reasoned` (require an LLM to weigh evidence and judgment) |
-| `policies` | Behavioral constraints that don't map to a single rule (e.g., "do not invent missing information") but must still be enforced at runtime and checked during evaluation |
+| `executionPipeline` | An **ordered** list of filter stages. Order matters — deterministic stages run before reasoned ones, so a cheap check can short-circuit an expensive model call |
+| `executionPipeline[].filter` | A lookup key into a filter registry; a `PipelineBuilder` assembles the runtime chain from this list mechanically, without per-use-case orchestration code |
+| `executionPipeline[].type` | `deterministic` (hard pass/fail check) or `reasoned` (requires an LLM to weigh evidence and judgment) |
+| `executionPipeline[].onFailure` | `halt` or `continue` — makes short-circuit behavior an explicit schema contract. In Grant Fit Assessment, a failed eligibility stage halts the pipeline: strong alignment cannot rescue a failed mandatory requirement (Section 5) |
+| `policies` | Behavioral constraints that don't map to a single stage (e.g., "do not invent missing information") but must still be enforced at runtime and checked during evaluation |
 | `expectedOutcomes` | The closed set of valid classifications the use case can resolve to |
-| `evaluation` | Criteria bound to the same goal and outcomes the execution path uses — not a separately authored test suite |
+| `evaluationPipeline` | A **structurally parallel** list of evaluation stages — same shape as `executionPipeline`, so the same pattern drives both |
+| `evaluationPipeline[].evaluates` | The execution stage `id`s this evaluation stage checks — makes the link between what ran and what got scored traceable rather than implicit |
 
-The contribution is not the JSON format — a schema is an implementation detail. The contribution is that the use case exists once, as a first-class SDLC artifact, rather than being translated separately into application logic and evaluation criteria by different people at different times — the divergence [Section 2](#2-gap-in-current-practice) describes. An EUC removes that translation step by making the definition itself the thing both execution and evaluation consume.
+The contribution is not the JSON format — a schema is an implementation detail. The contribution is that the use case exists once, as a first-class SDLC artifact, rather than being translated separately into application logic and evaluation criteria by different people at different times — the divergence [Section 2](#2-gap-in-current-practice) describes. Structuring that artifact as an ordered, filter-keyed pipeline is what makes the translation mechanical: given the schema above, both the execution chain and the evaluation chain can be *generated* from the EUC rather than hand-authored per use case, so the EUC's benefit extends beyond evaluation into scaffolding the application's own code shape.
 
 ### EUC Across the Lifecycle
 

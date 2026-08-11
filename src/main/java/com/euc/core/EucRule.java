@@ -1,10 +1,15 @@
 package com.euc.core;
 
 /**
- * A single rule within an Executable Use Case.
+ * A single stage in the EUC's execution pipeline.
  *
- * type "deterministic" rules are hard checks (pass/fail, no model involved).
- * type "reasoned" rules require an LLM to weigh evidence and judgment.
+ * Deliberately shaped around the Pipe-and-Filter pattern: each stage names
+ * a `filter` (a lookup key into a filter registry, so a PipelineBuilder can
+ * assemble the execution chain mechanically from the EUC rather than a
+ * human hand-wiring it per use case), a `type` (deterministic = hard
+ * pass/fail check, reasoned = requires an LLM to weigh evidence), and an
+ * `onFailure` policy that makes short-circuit behavior an explicit schema
+ * contract instead of an assumption buried in application code.
  */
 public class EucRule {
 
@@ -13,9 +18,16 @@ public class EucRule {
         REASONED
     }
 
+    public enum OnFailure {
+        HALT,
+        CONTINUE
+    }
+
     private String id;
+    private String filter;
     private Type type;
     private String description;
+    private OnFailure onFailure = OnFailure.CONTINUE;
 
     public EucRule() {
         // default constructor for Jackson deserialization
@@ -27,6 +39,14 @@ public class EucRule {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
     public Type getType() {
@@ -45,8 +65,17 @@ public class EucRule {
         this.description = description;
     }
 
+    public OnFailure getOnFailure() {
+        return onFailure;
+    }
+
+    public void setOnFailure(OnFailure onFailure) {
+        this.onFailure = onFailure;
+    }
+
     @Override
     public String toString() {
-        return "EucRule{id='" + id + "', type=" + type + ", description='" + description + "'}";
+        return "EucRule{id='" + id + "', filter='" + filter + "', type=" + type
+                + ", onFailure=" + onFailure + ", description='" + description + "'}";
     }
 }

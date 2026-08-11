@@ -19,14 +19,38 @@ class EucLoaderTest {
         assertEquals("grant-fit-assessment", euc.getId());
         assertEquals(3, euc.getExpectedOutcomes().size());
         assertTrue(euc.getExpectedOutcomes().contains("STRONG_FIT"));
-        assertTrue(euc.getEvaluation().contains("eligibilityCorrectness"));
+        assertTrue(euc.getEvaluationPipeline().stream()
+                .anyMatch(stage -> stage.getId().equals("eligibilityCorrectness")));
     }
 
     @Test
-    void separatesDeterministicAndReasonedRules() {
+    void separatesDeterministicAndReasonedStages() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
-        assertTrue(euc.deterministicRules().size() >= 3, "expected multiple deterministic rules");
-        assertEquals(1, euc.reasonedRules().size(), "expected exactly one reasoned rule (ALIGNMENT-001)");
+        assertTrue(euc.deterministicStages().size() >= 3, "expected multiple deterministic stages");
+        assertEquals(1, euc.reasonedStages().size(), "expected exactly one reasoned stage (ALIGNMENT-001)");
+    }
+
+    @Test
+    void deterministicStagesHaltOnFailure() {
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+
+        for (EucRule stage : euc.deterministicStages()) {
+            assertEquals(EucRule.OnFailure.HALT, stage.getOnFailure(),
+                    stage.getId() + " should halt the pipeline on failure");
+        }
+    }
+
+    @Test
+    void evaluationStagesReferenceValidExecutionStageIds() {
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+
+        for (EvaluationStage stage : euc.getEvaluationPipeline()) {
+            for (String executionStageId : stage.getEvaluates()) {
+                // findStage throws if the id doesn't exist — asserting no exception
+                // confirms every evaluation stage points at a real execution stage.
+                euc.findStage(executionStageId);
+            }
+        }
     }
 }

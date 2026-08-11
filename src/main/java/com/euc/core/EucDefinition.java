@@ -6,18 +6,22 @@ import java.util.List;
  * An Executable Use Case (EUC): the single, machine-readable definition of
  * business intent that drives both application execution and evaluation.
  *
- * See docs/proposal.md, Section 3 ("Proposed Approach: Executable Use Cases")
- * for the design rationale behind this structure.
+ * The structure is aligned with the Pipe-and-Filter pattern: executionPipeline
+ * is an ordered list of filter stages (see EucRule) that a PipelineBuilder
+ * can assemble mechanically, and evaluationPipeline is a structurally
+ * parallel list of evaluation stages (see EvaluationStage) that reference
+ * which execution stages they check. See docs/proposal.md, Section 3, for
+ * the design rationale.
  */
 public class EucDefinition {
 
     private String id;
     private String actor;
     private String goal;
-    private List<EucRule> rules;
+    private List<EucRule> executionPipeline;
     private List<String> policies;
     private List<String> expectedOutcomes;
-    private List<String> evaluation;
+    private List<EvaluationStage> evaluationPipeline;
 
     public EucDefinition() {
         // default constructor for Jackson deserialization
@@ -47,12 +51,12 @@ public class EucDefinition {
         this.goal = goal;
     }
 
-    public List<EucRule> getRules() {
-        return rules;
+    public List<EucRule> getExecutionPipeline() {
+        return executionPipeline;
     }
 
-    public void setRules(List<EucRule> rules) {
-        this.rules = rules;
+    public void setExecutionPipeline(List<EucRule> executionPipeline) {
+        this.executionPipeline = executionPipeline;
     }
 
     public List<String> getPolicies() {
@@ -71,25 +75,33 @@ public class EucDefinition {
         this.expectedOutcomes = expectedOutcomes;
     }
 
-    public List<String> getEvaluation() {
-        return evaluation;
+    public List<EvaluationStage> getEvaluationPipeline() {
+        return evaluationPipeline;
     }
 
-    public void setEvaluation(List<String> evaluation) {
-        this.evaluation = evaluation;
+    public void setEvaluationPipeline(List<EvaluationStage> evaluationPipeline) {
+        this.evaluationPipeline = evaluationPipeline;
     }
 
-    /** Convenience accessor: deterministic-only rules. */
-    public List<EucRule> deterministicRules() {
-        return rules.stream()
+    /** Convenience accessor: deterministic-only execution stages. */
+    public List<EucRule> deterministicStages() {
+        return executionPipeline.stream()
                 .filter(r -> r.getType() == EucRule.Type.DETERMINISTIC)
                 .toList();
     }
 
-    /** Convenience accessor: reasoned (LLM-judged) rules. */
-    public List<EucRule> reasonedRules() {
-        return rules.stream()
+    /** Convenience accessor: reasoned (LLM-judged) execution stages. */
+    public List<EucRule> reasonedStages() {
+        return executionPipeline.stream()
                 .filter(r -> r.getType() == EucRule.Type.REASONED)
                 .toList();
+    }
+
+    /** Looks up a single execution stage by its id (e.g. "ELIGIBILITY-001"). */
+    public EucRule findStage(String stageId) {
+        return executionPipeline.stream()
+                .filter(r -> r.getId().equals(stageId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No execution stage with id " + stageId));
     }
 }

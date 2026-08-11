@@ -2,26 +2,34 @@
   "id": "grant-fit-assessment",
   "actor": "Nonprofit Program Manager",
   "goal": "Determine whether the organization should pursue a grant",
-  "rules": [
+  "executionPipeline": [
     {
       "id": "ELIGIBILITY-001",
+      "filter": "eligibility",
       "type": "deterministic",
-      "description": "Applicant must satisfy mandatory eligibility requirements"
+      "description": "Applicant must satisfy mandatory eligibility requirements",
+      "onFailure": "halt"
     },
     {
       "id": "GEOGRAPHY-001",
+      "filter": "geography",
       "type": "deterministic",
-      "description": "Applicant must operate within the grant's specified geographic scope"
+      "description": "Applicant must operate within the grant's specified geographic scope",
+      "onFailure": "halt"
     },
     {
       "id": "INFO-001",
+      "filter": "requiredInfo",
       "type": "deterministic",
-      "description": "All required application information must be present before assessment proceeds"
+      "description": "All required application information must be present before assessment proceeds",
+      "onFailure": "halt"
     },
     {
       "id": "ALIGNMENT-001",
+      "filter": "alignmentReasoning",
       "type": "reasoned",
-      "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities"
+      "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities",
+      "onFailure": "continue"
     }
   ],
   "policies": [
@@ -34,9 +42,21 @@
     "POSSIBLE_FIT",
     "POOR_FIT"
   ],
-  "evaluation": [
-    "eligibilityCorrectness",
-    "programAlignment",
-    "evidenceGrounding"
+  "evaluationPipeline": [
+    {
+      "id": "eligibilityCorrectness",
+      "filter": "eligibilityCorrectness",
+      "evaluates": ["ELIGIBILITY-001", "GEOGRAPHY-001", "INFO-001"]
+    },
+    {
+      "id": "programAlignment",
+      "filter": "programAlignment",
+      "evaluates": ["ALIGNMENT-001"]
+    },
+    {
+      "id": "evidenceGrounding",
+      "filter": "evidenceGrounding",
+      "evaluates": ["ALIGNMENT-001"]
+    }
   ]
 }
