@@ -81,7 +81,8 @@ version: "0.3"
     {"num": 6, "id": "case-study-grant-fit-assessment", "title": "Case Study: Grant Fit Assessment"},
     {"num": 7, "id": "evaluation-methodology", "title": "Evaluation Methodology"},
     {"num": 8, "id": "expected-outcomes-contribution", "title": "Expected Outcomes / Contribution"},
-    {"num": 9, "id": "limitations-future-work", "title": "Limitations & Future Work"}
+    {"num": 9, "id": "limitations-future-work", "title": "Limitations & Future Work"},
+    {"num": 10, "id": "references", "title": "References"}
   ]
 }
 ```
@@ -99,6 +100,7 @@ version: "0.3"
 | 7 | [Evaluation Methodology](#7-evaluation-methodology) | Experimental design and metrics |
 | 8 | [Expected Outcomes / Contribution](#8-expected-outcomes--contribution) | What this delivers if it works |
 | 9 | [Limitations & Future Work](#9-limitations--future-work) | Scope boundaries and open questions |
+| 10 | [References](#10-references) | Cited sources |
 
 ---
 
@@ -152,7 +154,7 @@ But SDD and EUCs target different failure modes, and the distinction matters for
 
 The sharpest distinction: SDD is fundamentally about **generation** — spec in, code out, largely a one-time (or requirements-triggered) translation. EUCs are fundamentally about **evaluation under drift** — the spec doesn't change; the thing running underneath it does (a new model version, a tweaked prompt); the question is whether the same fixed definition can still tell you if behavior stayed correct. SDD has no real story for "the code didn't change but the model's judgment did," because that failure mode is specific to LLM-reasoned components rather than generated code — exactly the gap Section 2 identifies.
 
-This is not a claim that the two are unrelated. Some SDD framings — IBM's "spec-anchored" tier, and proposals like Constitutional Spec-Driven Development — already treat the spec as a living artifact that governs behavior post-generation, not just at build time, which is closer to what EUCs do. And the relationship runs the other way too: because the EUC schema is pattern-driven and opinionated (Section 4), it has an obvious secondary use as a code-generation scaffold — the same `executionPipeline`/`evaluationPipeline` structure that anchors evaluation could drive a `PipelineBuilder` that assembles application code mechanically. That secondary use isn't a claim this project tests (Section 5), but it means EUCs and SDD are better understood as overlapping with different centers of gravity than as competing alternatives.
+This is not a claim that the two are unrelated. The field's own maturity taxonomy — spec-first, spec-anchored, spec-as-source [4] — has a middle tier, spec-anchored, where the specification evolves alongside the software rather than being discarded after an initial generation pass; IBM's own framing of SDD uses this same tier [5]. That's closer to what EUCs do than either endpoint: spec-first is closer to a traditional use case (Section 4) — a one-time kickoff document — and spec-as-source is closer to the codegen implication noted below. Proposals like Constitutional Spec-Driven Development [6] push further in the same direction, embedding constraints into the spec layer so generated code inherits them by construction. And the relationship runs the other way too: because the EUC schema is pattern-driven and opinionated (Section 4), it has an obvious secondary use as a code-generation scaffold — the same `executionPipeline`/`evaluationPipeline` structure that anchors evaluation could drive a `PipelineBuilder` that assembles application code mechanically. That secondary use isn't a claim this project tests (Section 5), but it means EUCs and SDD are better understood as overlapping with different centers of gravity than as competing alternatives.
 
 ---
 
@@ -162,7 +164,9 @@ An Executable Use Case (EUC) represents the business intent and expected behavio
 
 ### Origins: Use-Case-Driven Development
 
-The term "use case" is a deliberate borrowing, not a coincidence of naming. Use-case-driven development was originated by **Ivar Jacobson**, first from his work at Ericsson in the 1980s and formalized in his 1992 book *Object-Oriented Software Engineering: A Use Case Driven Approach* (with Magnus Christerson, Patrik Jonsson, and Gunnar Övergaard). Jacobson later co-created the Rational Unified Process (RUP) and was one of the three principal contributors to UML, where the use case diagram remains a standard notation.
+The term "use case" is a deliberate borrowing, not a coincidence of naming. Use-case-driven development was originated by **Ivar Jacobson**, first from his work at Ericsson in the 1980s and formalized in his 1992 book *Object-Oriented Software Engineering: A Use Case Driven Approach* [1]. Jacobson later co-authored *The Unified Software Development Process* [2] with Grady Booch and James Rumbaugh — the book behind the Rational Unified Process (RUP) — and was one of the three principal contributors to UML, where the use case diagram remains a standard notation.
+
+Jacobson later extended the same idea into *Aspect-Oriented Software Development with Use Cases* [3], addressing concerns that cut across multiple use cases — security, logging, and similar cross-cutting behavior — rather than living inside any single one. That lineage is worth noting here: an EUC's `policies` field (Section 4 above) plays a structurally similar role to an aspect. "Do not invent missing information" isn't scoped to one stage — it's a constraint every reasoned stage must respect, cutting across the pipeline rather than belonging to it.
 
 A traditional use case describes an interaction between an **actor** (a user or external system) and a system, in pursuit of a goal: it names the actor, a main flow of steps toward that goal, alternate flows, and pre/postconditions. It is deliberately a *human-readable requirements artifact* — meant to be reviewed, discussed, and used to drive design, not executed. That's the precise point where an EUC diverges: it keeps the actor/goal framing but replaces the prose flow with a machine-readable, ordered pipeline of typed stages (Section 4 above) that can actually run and actually be evaluated against — "executable" is doing real work in the name, not just branding.
 
@@ -412,3 +416,16 @@ This is a single case study on a single application domain, and its results shou
 | **Context-convergence observation, not a claim** | Section 4 notes a structural parallel between a Pipe-and-Filter's shared context and an LLM's context window — the hypothesis that `reads` declarations could double as a prompt-context specification. This project does not build or test that; it's recorded as an observation worth investigating, not something Section 5's falsifiable claims cover. |
 
 Future work: applying EUCs across multiple domains to test schema generality, involving a separate implementation team to test EUCs as a handoff artifact, studying gradual/compounding drift rather than only discrete, deliberate changes, testing the codegen implication directly by building a `PipelineBuilder` that assembles application code from the EUC schema, and investigating whether a stage's declared `reads` can generate the actual prompt context assembled for a reasoned filter — the context-convergence observation above.
+
+---
+
+## 10. References
+
+1. Jacobson, I., Christerson, M., Jonsson, P., & Övergaard, G. (1992). *Object-Oriented Software Engineering: A Use Case Driven Approach*. Addison-Wesley / ACM Press.
+2. Jacobson, I., Booch, G., & Rumbaugh, J. (1999). *The Unified Software Development Process*. Addison-Wesley.
+3. Jacobson, I., & Ng, P.-W. (2004). *Aspect-Oriented Software Development with Use Cases*. Addison-Wesley Professional.
+4. Böckeler, B. (2025, October). "Understanding Spec-Driven-Development: Kiro, spec-kit, and Tessl." *martinfowler.com*. https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html
+5. IBM. "What is Spec-Driven Development?" *IBM Think*. https://www.ibm.com/think/topics/spec-driven-development
+6. Marri, S. R. (2026, January). "Constitutional Spec-Driven Development: Enforcing Security by Construction in AI-Assisted Code Generation." *arXiv*. https://arxiv.org/pdf/2602.02584
+7. GitHub Blog. "Spec-driven development with AI: Get started with a new open source toolkit." https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/
+8. Wikipedia contributors. "Spec-driven development." *Wikipedia*. https://en.wikipedia.org/wiki/Spec-driven_development
