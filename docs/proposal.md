@@ -1,6 +1,76 @@
+---
+title: "Executable Use Cases: Preserving Business Intent Across the AI Application Lifecycle"
+program: "InfoQ AI Engineering Certification"
+track: "System-Building Project"
+theme: "Engineering on Shifting Ground: Building Dependable Systems on Undependable Components"
+doc_type: "capstone-proposal"
+status: "draft"
+version: "0.2"
+---
+
 # Executable Use Cases: Preserving Business Intent Across the AI Application Lifecycle
 
-*InfoQ AI Engineering Certification — Capstone Project Proposal*
+*InfoQ AI Engineering Certification — System-Building Project*
+
+<details>
+<summary><strong>Machine-readable summary</strong> (structured recap of this document — click to expand)</summary>
+
+```json
+{
+  "id": "euc-capstone-proposal",
+  "centralClaim": {
+    "id": "claim-1-primary",
+    "statement": "When the underlying prompt or model changes, evaluation against a fixed EUC will detect meaningful drift from business intent, without the EUC itself needing to change.",
+    "failureModes": [
+      {"id": "false-negative", "risk": "high", "description": "Behavior drifts but evaluation still passes"},
+      {"id": "false-positive", "risk": "medium", "description": "Evaluation flags drift when behavior has not diverged"}
+    ]
+  },
+  "secondaryClaim": {
+    "id": "claim-2-secondary",
+    "statement": "Deterministic and LLM-reasoned portions of the EUC behave differently under prompt/model changes; deterministic results should remain stable."
+  },
+  "artifact": {
+    "name": "Executable Use Case (EUC)",
+    "fields": ["id", "actor", "goal", "rules", "policies", "expectedOutcomes", "evaluation"],
+    "ruleTypes": ["deterministic", "reasoned"]
+  },
+  "caseStudy": {
+    "name": "Grant Fit Assessment",
+    "expectedOutcomes": ["STRONG_FIT", "POSSIBLE_FIT", "POOR_FIT"],
+    "evaluationCriteria": ["eligibilityCorrectness", "programAlignment", "evidenceGrounding"]
+  },
+  "metrics": [
+    {"id": "drift-detection-rate", "name": "Drift detection rate"},
+    {"id": "false-flag-rate", "name": "False-flag rate"},
+    {"id": "deterministic-rule-stability", "name": "Deterministic-rule stability"},
+    {"id": "evidence-grounding-consistency", "name": "Evidence-grounding consistency"}
+  ],
+  "sections": [
+    {"num": 1, "id": "problem-statement", "title": "Problem Statement"},
+    {"num": 2, "id": "gap-in-current-practice", "title": "Gap in Current Practice"},
+    {"num": 3, "id": "proposed-approach", "title": "Proposed Approach: Executable Use Cases"},
+    {"num": 4, "id": "falsifiable-claims", "title": "Falsifiable Claims"},
+    {"num": 5, "id": "case-study-grant-fit-assessment", "title": "Case Study: Grant Fit Assessment"},
+    {"num": 6, "id": "evaluation-methodology", "title": "Evaluation Methodology"},
+    {"num": 7, "id": "expected-outcomes-contribution", "title": "Expected Outcomes / Contribution"},
+    {"num": 8, "id": "limitations-future-work", "title": "Limitations & Future Work"}
+  ]
+}
+```
+
+</details>
+
+| # | Section | Purpose |
+|---|---|---|
+| 1 | [Problem Statement](#1-problem-statement) | Why AI-native evaluation drifts from business intent |
+| 2 | [Gap in Current Practice](#2-gap-in-current-practice) | Why existing artifacts don't solve this |
+| 3 | [Proposed Approach: Executable Use Cases](#3-proposed-approach-executable-use-cases) | The EUC schema and lifecycle |
+| 4 | [Falsifiable Claims](#4-falsifiable-claims) | What would prove or disprove the approach |
+| 5 | [Case Study: Grant Fit Assessment](#5-case-study-grant-fit-assessment) | The test application and why it fits |
+| 6 | [Evaluation Methodology](#6-evaluation-methodology) | Experimental design and metrics |
+| 7 | [Expected Outcomes / Contribution](#7-expected-outcomes--contribution) | What this delivers if it works |
+| 8 | [Limitations & Future Work](#8-limitations--future-work) | Scope boundaries and open questions |
 
 ---
 
@@ -10,7 +80,7 @@ As organizations move AI-native applications from prototype to production, they'
 
 This is compounded by a second problem: business intent itself becomes fragmented — partly in a requirements doc, partly in a prompt, partly in application logic, partly in ad hoc eval scripts — with no single artifact anyone can point to as the source of truth. When a model changes, teams often can't say with confidence whether they're still building the same thing they set out to build.
 
-This project proposes Executable Use Cases (EUCs): first-class, machine-readable SDLC artifacts that encode a use case's goals, rules, constraints, expected outcomes, and evaluation criteria in a single definition that drives both execution and evaluation.
+This project proposes **Executable Use Cases (EUCs)**: first-class, machine-readable SDLC artifacts that encode a use case's goals, rules, constraints, expected outcomes, and evaluation criteria in a single definition that drives both execution and evaluation.
 
 **Business Intent → EUC → Execution + Evaluation**
 
@@ -71,9 +141,14 @@ An Executable Use Case (EUC) represents the business intent and expected behavio
 }
 ```
 
-Rules are typed (`deterministic` vs. reasoned) because not every constraint behaves the same way — some are hard checks, others require a model to weigh evidence. Policies capture behavioral constraints that don't map to a single rule (e.g., "do not invent missing information") but still need enforcing and checking. The evaluation criteria reference the same goal and outcomes the execution path uses, rather than being a separately authored test suite.
+| Field | Purpose |
+|---|---|
+| `rules` | Typed constraints — `deterministic` (hard pass/fail checks) or `reasoned` (require an LLM to weigh evidence and judgment) |
+| `policies` | Behavioral constraints that don't map to a single rule (e.g., "do not invent missing information") but must still be enforced at runtime and checked during evaluation |
+| `expectedOutcomes` | The closed set of valid classifications the use case can resolve to |
+| `evaluation` | Criteria bound to the same goal and outcomes the execution path uses — not a separately authored test suite |
 
-The contribution is not the JSON format — a schema is an implementation detail. The contribution is that the use case exists once, as a first-class SDLC artifact, rather than being translated separately into application logic and evaluation criteria by different people at different times — the divergence Section 2 describes. An EUC removes that translation step by making the definition itself the thing both execution and evaluation consume.
+The contribution is not the JSON format — a schema is an implementation detail. The contribution is that the use case exists once, as a first-class SDLC artifact, rather than being translated separately into application logic and evaluation criteria by different people at different times — the divergence [Section 2](#2-gap-in-current-practice) describes. An EUC removes that translation step by making the definition itself the thing both execution and evaluation consume.
 
 ### EUC Across the Lifecycle
 
@@ -107,20 +182,27 @@ sequenceDiagram
     Note over PM,EUC: If prompt or model changes, EUC is unchanged —<br/>only Execution and Evaluation are re-run against it
 ```
 
-During design, the business owner authors the EUC directly, at a level a non-engineer can review — not buried in a prompt. During implementation, both the application and its evaluators are built by reading the same artifact, rather than the evaluator being derived secondhand from the application's behavior. During execution, the application produces a reasoned result — an outcome plus rationale. During evaluation, that result is scored against the same criteria the engineer implemented against, not a parallel test suite written independently.
+| Phase | Who | Reads from the EUC |
+|---|---|---|
+| Design | Business owner | Authors goal, rules, policies, expected outcomes directly — reviewable without engineering context |
+| Implementation | AI engineer | Builds both application logic and evaluators from the same artifact, not a secondhand derivation |
+| Execution | Application | Consults rules and policies at runtime; produces an outcome plus rationale |
+| Evaluation | Evaluator | Scores the result against the same criteria the engineer implemented against |
 
-That last point is what the case study is designed to test: when a prompt or model changes, only Execution and Evaluation re-run — the EUC, and therefore the definition of correctness, stays fixed.
+That last row is what the case study is designed to test: when a prompt or model changes, only Execution and Evaluation re-run — the EUC, and therefore the definition of correctness, stays fixed.
 
 ---
 
 ## 4. Falsifiable Claims
 
-The central claim is narrow and testable: **when the underlying prompt or model changes, evaluation against a fixed EUC will detect meaningful drift from business intent, without the EUC itself needing to change.** This can fail two ways:
+**Primary claim (`claim-1-primary`):** when the underlying prompt or model changes, evaluation against a fixed EUC will detect meaningful drift from business intent, without the EUC itself needing to change. This can fail two ways:
 
-- **False negative (the risk that matters most):** behavior changes — e.g., reasoning shifts from evidence-grounded to speculative, or alignment judgments become inconsistent — but evaluation still reports a pass. This would mean EUC-driven evaluation offers no real advantage over the status quo.
-- **False positive:** evaluation flags drift when behavior hasn't actually diverged. This would mean the evaluation criteria are too brittle or too tightly coupled to a specific implementation to serve as a stable definition of correctness.
+| Failure mode | What it would mean |
+|---|---|
+| **False negative** *(the risk that matters most)* — behavior changes (e.g., reasoning shifts from evidence-grounded to speculative) but evaluation still reports a pass | EUC-driven evaluation offers no real advantage over the status quo |
+| **False positive** — evaluation flags drift when behavior hasn't actually diverged | Evaluation criteria are too brittle or too tightly coupled to a specific implementation to serve as a stable definition of correctness |
 
-A secondary claim: the deterministic and LLM-reasoned portions of the EUC should behave differently under these changes. Section 5 establishes that only the LLM-reasoning layer (alignment, evidence interpretation, explanation) is exposed to prompt or model drift, while deterministic rules (eligibility, geography) should stay stable regardless of model changes. If deterministic results shift too, that indicates a flaw in the EUC's separation of concerns, not a success of the approach.
+**Secondary claim (`claim-2-secondary`):** the deterministic and LLM-reasoned portions of the EUC should behave differently under these changes. [Section 5](#5-case-study-grant-fit-assessment) establishes that only the LLM-reasoning layer (alignment, evidence interpretation, explanation) is exposed to prompt or model drift, while deterministic rules (eligibility, geography) should stay stable regardless of model changes. If deterministic results shift too, that indicates a flaw in the EUC's separation of concerns, not a success of the approach.
 
 Both claims are deliberately falsifiable: a negative result — failing to catch known, deliberately introduced drift — is a legitimate, informative outcome, not just a validation exercise.
 
@@ -141,34 +223,37 @@ This combination makes Grant Fit Assessment a useful testbed, since it splits in
 | Required information present | Evidence interpretation |
 | Mandatory constraints | Explanation generation |
 
-Eligibility is deterministic — it either passes or fails, and a rule change is a code change. Fit assessment requires the LLM to weigh mission/program alignment against the funder's stated priorities using supporting evidence. This split isolates where EUC-driven evaluation earns its value: deterministic rules can be checked conventionally, but LLM reasoning is exactly the layer where prompt or model changes are most likely to silently drift from business intent — the failure mode Section 2 identifies.
+Eligibility is deterministic — it either passes or fails, and a rule change is a code change. Fit assessment requires the LLM to weigh mission/program alignment against the funder's stated priorities using supporting evidence. This split isolates where EUC-driven evaluation earns its value: deterministic rules can be checked conventionally, but LLM reasoning is exactly the layer where prompt or model changes are most likely to silently drift from business intent — the failure mode [Section 2](#2-gap-in-current-practice) identifies.
 
-**Inputs:** organization profile and programs, grant opportunity and funding priorities, eligibility requirements, and relevant supporting information.
-
-**Outputs:** eligibility status, a `STRONG_FIT` / `POSSIBLE_FIT` / `POOR_FIT` classification, supporting evidence, explanation, and identified uncertainty.
+| | Description |
+|---|---|
+| **Inputs** | Organization profile and programs, grant opportunity and funding priorities, eligibility requirements, relevant supporting information |
+| **Outputs** | Eligibility status, `STRONG_FIT` / `POSSIBLE_FIT` / `POOR_FIT` classification, supporting evidence, explanation, identified uncertainty |
 
 ---
 
 ## 6. Evaluation Methodology
 
-To test the claims in Section 4, the case study holds the EUC fixed and introduces controlled changes to the execution layer, then measures whether evaluation against the unchanged EUC still tracks the resulting behavior.
+To test the claims in [Section 4](#4-falsifiable-claims), the case study holds the EUC fixed and introduces controlled changes to the execution layer, then measures whether evaluation against the unchanged EUC still tracks the resulting behavior.
 
 **Experimental design:**
 
-1. **Baseline.** Implement Grant Fit Assessment against a single EUC, with a fixed prompt and model. Run against a curated set of test cases spanning `STRONG_FIT`, `POSSIBLE_FIT`, and `POOR_FIT`, plus edge cases (eligible but poorly aligned; ineligible but well-aligned).
-2. **Establish ground truth** independently of the application, reviewed against the EUC's rules and policies.
-3. **Introduce controlled changes** to the execution layer only — swap the model, edit the prompt's alignment instructions, alter how evidence is presented — without modifying the EUC.
-4. **Re-run the same evaluators** (bound to `eligibilityCorrectness`, `programAlignment`, `evidenceGrounding`) against the new outputs, using the same ground truth.
-5. **Classify each change as detected or undetected drift**, and compare against whether the change was known to alter behavior.
+| Step | Action |
+|---|---|
+| 1. Baseline | Implement Grant Fit Assessment against a single EUC, with a fixed prompt and model. Run against a curated set of test cases spanning `STRONG_FIT`, `POSSIBLE_FIT`, and `POOR_FIT`, plus edge cases (eligible but poorly aligned; ineligible but well-aligned) |
+| 2. Establish ground truth | Independently of the application, reviewed against the EUC's rules and policies |
+| 3. Introduce controlled changes | To the execution layer only — swap the model, edit the prompt's alignment instructions, alter how evidence is presented — without modifying the EUC |
+| 4. Re-run the same evaluators | Bound to `eligibilityCorrectness`, `programAlignment`, `evidenceGrounding` — against the new outputs, using the same ground truth |
+| 5. Classify each change | As detected or undetected drift, compared against whether the change was known to alter behavior |
 
 **Metrics:**
 
 | Metric | What it measures |
 |---|---|
-| Drift detection rate | % of deliberately behavior-altering changes correctly flagged by evaluation |
-| False-flag rate | % of behavior-neutral changes incorrectly flagged as drift |
-| Deterministic-rule stability | Whether `eligibilityCorrectness` results remain unchanged across all execution-layer changes |
-| Evidence-grounding consistency | Whether `evidenceGrounding` scores correlate with independently-reviewed presence/absence of supporting evidence |
+| `drift-detection-rate` | % of deliberately behavior-altering changes correctly flagged by evaluation |
+| `false-flag-rate` | % of behavior-neutral changes incorrectly flagged as drift |
+| `deterministic-rule-stability` | Whether `eligibilityCorrectness` results remain unchanged across all execution-layer changes |
+| `evidence-grounding-consistency` | Whether `evidenceGrounding` scores correlate with independently-reviewed presence/absence of supporting evidence |
 
 **Pass/fail criteria:** the approach is supported if the drift detection rate is high, the false-flag rate is low, and deterministic-rule results stay stable while only the reasoning layer changes. A high false-flag rate or a failure to detect known drift falsifies the central claim.
 
@@ -176,13 +261,13 @@ To test the claims in Section 4, the case study holds the EUC fixed and introduc
 
 ## 7. Expected Outcomes / Contribution
 
-If the case study supports Section 4's claims, the contribution isn't the Grant Fit application itself but a validated, domain-independent pattern: business intent persisted as a single machine-readable artifact drives both execution and evaluation, making drift detectable rather than assumed away.
+If the case study supports [Section 4](#4-falsifiable-claims)'s claims, the contribution isn't the Grant Fit application itself but a validated, domain-independent pattern: business intent persisted as a single machine-readable artifact drives both execution and evaluation, making drift detectable rather than assumed away.
 
 Concretely, this project should produce:
 
-- A working EUC schema and worked example, reusable as a starting template for other use cases.
-- Empirical results on whether EUC-anchored evaluation actually catches drift introduced by prompt and model changes — a question most teams currently answer by intuition rather than measurement.
-- A documented failure-mode analysis if certain drift goes undetected, or the deterministic/LLM separation breaks down under some changes.
+- A working EUC schema and worked example, reusable as a starting template for other use cases
+- Empirical results on whether EUC-anchored evaluation actually catches drift introduced by prompt and model changes — a question most teams currently answer by intuition rather than measurement
+- A documented failure-mode analysis if certain drift goes undetected, or the deterministic/LLM separation breaks down under some changes
 
 The broader case: evaluation infrastructure for AI-native applications needs a stable reference point that survives prompt and model iteration — authored once, by the people who own the business intent.
 
@@ -192,9 +277,11 @@ The broader case: evaluation infrastructure for AI-native applications needs a s
 
 This is a single case study on a single application domain, and its results should be read with that scope in mind.
 
-- **Domain scope.** Grant Fit Assessment cleanly separates deterministic and LLM-reasoned logic; that separation may be harder to draw in domains with more interdependent rules, or where "correctness" is more subjective. Untested here.
-- **Single application, single team.** The EUC and the application are authored by the same project, limiting what this says about how an EUC written by a business owner holds up when implemented by a separate engineering team.
-- **Scale of drift tested.** The changes in Section 6 are deliberate and isolated. Real-world drift is often incremental and compounding — prompt tweaks accumulating across sprints, gradual model deprecation. Whether EUC-driven evaluation catches that as reliably as a single deliberate change is an open question.
-- **Evaluation criteria authorship.** Evaluators still require someone to translate EUC criteria into implemented checks; this project doesn't test whether that translation step is itself a source of drift.
+| Limitation | Detail |
+|---|---|
+| **Domain scope** | Grant Fit Assessment cleanly separates deterministic and LLM-reasoned logic; that separation may be harder to draw in domains with more interdependent rules, or where "correctness" is more subjective. Untested here. |
+| **Single application, single team** | The EUC and the application are authored by the same project, limiting what this says about how an EUC written by a business owner holds up when implemented by a separate engineering team. |
+| **Scale of drift tested** | The changes in Section 6 are deliberate and isolated. Real-world drift is often incremental and compounding — prompt tweaks accumulating across sprints, gradual model deprecation. Whether EUC-driven evaluation catches that as reliably as a single deliberate change is an open question. |
+| **Evaluation criteria authorship** | Evaluators still require someone to translate EUC criteria into implemented checks; this project doesn't test whether that translation step is itself a source of drift. |
 
 Future work: applying EUCs across multiple domains to test schema generality, involving a separate implementation team to test EUCs as a handoff artifact, and studying gradual/compounding drift rather than only discrete, deliberate changes.
