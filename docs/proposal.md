@@ -361,6 +361,49 @@ Eligibility is deterministic — it either passes or fails, and a rule change is
 | **Inputs** | Organization profile and programs, grant opportunity and funding priorities, eligibility requirements, relevant supporting information |
 | **Outputs** | Eligibility status, `STRONG_FIT` / `POSSIBLE_FIT` / `POOR_FIT` classification, supporting evidence, explanation, identified uncertainty |
 
+### EUC in Action: Runtime Sequence Across System Boundaries
+
+The diagram below shows a single Grant Fit Assessment request crossing the actual system boundaries involved — Program Manager, an Assessment Orchestrator, the EUC Contract Store, the Deterministic Rules engine, the LLM Runtime, and the Evaluation Harness — each a separate system a real deployment would draw a boundary around. The `alt`/`else` branch is the `onFailure: halt` contract from `ELIGIBILITY-001` (Section 4) made concrete: a failed mandatory rule short-circuits straight to `POOR_FIT` without ever invoking the LLM Runtime. The Evaluation Harness step at the bottom shows the same idea from Section 4's "Shared Execution Context": it loads criteria from the *same* EUC Contract Store the orchestrator read from, then splits scoring between the Deterministic Rules engine (for `eligibilityCorrectness`) and the LLM Runtime acting as judge (for `evidenceGrounding` and explanation quality) — evaluation reading the actual context execution produced, not a separately maintained copy.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant PM as Program Manager
+    participant Orch as Assessment Orchestrator
+    participant EUC as EUC Contract Store
+    participant Rules as Deterministic Rules
+    participant LLM as LLM Runtime
+    participant Harness as Evaluation Harness
+
+    PM->>Orch: Request grant fit assessment
+    activate Orch
+    Orch->>EUC: Retrieve grant-fit-assessment contract
+    EUC-->>Orch: Actor, goal, rules, policies, outcomes, criteria
+
+    Orch->>Rules: Evaluate mandatory eligibility rules
+    Rules-->>Orch: Eligibility status and failed requirement IDs
+
+    alt mandatory eligibility failed
+        Orch-->>PM: POOR_FIT with cited failed requirement
+    else eligible or indeterminate
+        Orch->>LLM: Goal, policies, allowed outcomes, retrieved evidence
+        LLM-->>Orch: Classification, evidence, explanation, uncertainty
+        Orch-->>PM: Result constrained to EUC outcomes
+    end
+
+    Orch->>Harness: Emit assessment result and EUC reference
+    deactivate Orch
+    activate Harness
+    Harness->>EUC: Load evaluation criteria and expected outcomes
+    EUC-->>Harness: Eligibility correctness, alignment, evidence grounding
+    Harness->>Rules: Score eligibility correctness and classification match
+    Rules-->>Harness: Deterministic scores
+    Harness->>LLM: Judge evidence grounding and explanation quality
+    LLM-->>Harness: Judged scores
+    Harness-->>PM: Evaluation result traceable to business intent
+    deactivate Harness
+```
+
 ---
 
 ## 7. Evaluation Methodology
