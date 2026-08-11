@@ -1,5 +1,7 @@
 package com.euc.core;
 
+import java.util.List;
+
 /**
  * A single stage in the EUC's execution pipeline.
  *
@@ -29,6 +31,8 @@ public class EucRule {
     private String description;
     private OnFailure onFailure = OnFailure.CONTINUE;
     private Integer group;
+    private List<String> reads;
+    private List<String> writes;
 
     public EucRule() {
         // default constructor for Jackson deserialization
@@ -92,9 +96,34 @@ public class EucRule {
         this.group = group;
     }
 
+    /**
+     * Context fields this stage reads before running. In a well-formed
+     * pipeline, every field here should already be present in the shared
+     * context by this stage's group — either from EucContext.seedFields
+     * or from a `writes` list on a stage in an earlier group. Not yet
+     * enforced by EucDefinition.validate(); see docs/proposal.md Section 4.
+     */
+    public List<String> getReads() {
+        return reads;
+    }
+
+    public void setReads(List<String> reads) {
+        this.reads = reads;
+    }
+
+    /** Context fields this stage adds to (or updates in) the shared context. */
+    public List<String> getWrites() {
+        return writes;
+    }
+
+    public void setWrites(List<String> writes) {
+        this.writes = writes;
+    }
+
     @Override
     public String toString() {
         return "EucRule{id='" + id + "', filter='" + filter + "', type=" + type
-                + ", onFailure=" + onFailure + ", group=" + group + ", description='" + description + "'}";
+                + ", onFailure=" + onFailure + ", group=" + group
+                + ", reads=" + reads + ", writes=" + writes + ", description='" + description + "'}";
     }
 }

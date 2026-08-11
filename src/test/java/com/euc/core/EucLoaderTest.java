@@ -94,6 +94,49 @@ class EucLoaderTest {
     }
 
     @Test
+    void contextIsDeclaredWithSeedFields() {
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+
+        assertTrue(euc.getContext() != null, "expected a declared shared-context spec");
+        assertTrue(euc.getContext().getSeedFields().containsAll(List.of("organization", "grant")));
+    }
+
+    @Test
+    void laterStageReadsWhatAnEarlierStageWrites() {
+        // ALIGNMENT-001 (group 4) reads "eligible" — confirms a stage in an
+        // earlier group actually writes it, so the data dependency the
+        // `group` ordering is supposed to satisfy is real, not just declared.
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+        EucRule alignment = euc.findStage("ALIGNMENT-001");
+
+        assertTrue(alignment.getReads().contains("eligible"));
+
+        boolean someEarlierStageWritesEligible = euc.getExecutionPipeline().stream()
+                .filter(stage -> stage.getGroup() < alignment.getGroup())
+                .anyMatch(stage -> stage.getWrites().contains("eligible"));
+        assertTrue(someEarlierStageWritesEligible,
+                "expected a stage in an earlier group than ALIGNMENT-001 to write 'eligible'");
+    }
+
+    @Test
+    void evaluationStageReadsFieldsExecutionWrote() {
+        // Evaluation reads the same context execution wrote into, not a
+        // separate copy — this checks that link is real for each evaluation
+        // stage, not just declared in isolation.
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+
+        for (EvaluationStage evalStage : euc.getEvaluationPipeline()) {
+            for (String readField : evalStage.getReads()) {
+                boolean someExecutionStageWritesIt = euc.getExecutionPipeline().stream()
+                        .anyMatch(execStage -> execStage.getWrites().contains(readField));
+                assertTrue(someExecutionStageWritesIt,
+                        evalStage.getId() + " reads '" + readField
+                                + "' but no execution stage writes it");
+            }
+        }
+    }
+
+    @Test
     void emptyExecutionPipelineFailsValidation() {
         EucDefinition euc = new EucDefinition();
         euc.setId("empty-execution-euc");

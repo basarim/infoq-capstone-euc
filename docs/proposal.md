@@ -32,7 +32,7 @@ version: "0.3"
   },
   "artifact": {
     "name": "Executable Use Case (EUC)",
-    "fields": ["id", "actor", "goal", "executionPipeline", "policies", "expectedOutcomes", "evaluationPipeline"],
+    "fields": ["id", "actor", "goal", "context", "executionPipeline", "policies", "expectedOutcomes", "evaluationPipeline"],
     "designPattern": "Pipe-and-Filter",
     "ruleTypes": ["deterministic", "reasoned"],
     "constraints": {
@@ -44,8 +44,19 @@ version: "0.3"
       "field": "group",
       "currentBehavior": "every stage has a unique group number; execution is fully serialized in array order",
       "futureBehavior": "stages sharing a group number may execute concurrently once a parallel-aware PipelineBuilder exists"
+    },
+    "sharedContext": {
+      "declaredVia": "context.seedFields (initial) plus per-stage reads/writes",
+      "purpose": "filters exchange state through a shared context object rather than isolated arguments; evaluation reads the same context execution wrote into"
     }
   },
+  "insights": [
+    {
+      "id": "context-convergence",
+      "status": "observation, not tested",
+      "statement": "A Pipe-and-Filter's shared context and an LLM's context window may be the same underlying idea at different layers; an EUC's per-stage `reads` could plausibly generate a reasoned stage's prompt context in the future."
+    }
+  ],
   "relatedWork": {
     "comparedTo": "Spec-Driven Development (SDD)",
     "keyDistinction": "SDD anchors code generation from a spec authored mainly at build time; EUCs anchor runtime reasoning behavior and evaluation continuously, targeting drift in a probabilistic component rather than code/spec divergence."
@@ -156,6 +167,10 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
   "id": "grant-fit-assessment",
   "actor": "Nonprofit Program Manager",
   "goal": "Determine whether the organization should pursue a grant",
+  "context": {
+    "description": "Shared object passed through the pipeline. Each filter reads from and writes to this context rather than exchanging isolated arguments.",
+    "seedFields": ["organization", "grant"]
+  },
   "executionPipeline": [
     {
       "id": "ELIGIBILITY-001",
@@ -163,7 +178,9 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
       "type": "deterministic",
       "description": "Applicant must satisfy mandatory eligibility requirements",
       "onFailure": "halt",
-      "group": 1
+      "group": 1,
+      "reads": ["organization", "grant"],
+      "writes": ["eligible", "failedEligibilityRules"]
     },
     {
       "id": "ALIGNMENT-001",
@@ -171,7 +188,9 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
       "type": "reasoned",
       "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities",
       "onFailure": "continue",
-      "group": 4
+      "group": 4,
+      "reads": ["organization", "grant", "eligible"],
+      "writes": ["fitClassification", "explanation", "supportingEvidence", "identifiedUncertainty"]
     }
   ],
   "policies": [
@@ -187,12 +206,16 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
     {
       "id": "eligibilityCorrectness",
       "filter": "eligibilityCorrectness",
-      "evaluates": ["ELIGIBILITY-001"]
+      "evaluates": ["ELIGIBILITY-001"],
+      "group": 1,
+      "reads": ["eligible", "failedEligibilityRules"]
     },
     {
       "id": "programAlignment",
       "filter": "programAlignment",
-      "evaluates": ["ALIGNMENT-001"]
+      "evaluates": ["ALIGNMENT-001"],
+      "group": 2,
+      "reads": ["fitClassification"]
     }
   ]
 }
@@ -202,19 +225,30 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
 
 | Field | Purpose |
 |---|---|
+| `context` | Declares the shared object that flows through the pipeline — `seedFields` names what's present before any filter runs |
 | `executionPipeline` | An **ordered, non-empty** list of filter stages (one or more) — an EUC with no stages defines no behavior, so an empty pipeline is invalid. Order matters — deterministic stages run before reasoned ones, so a cheap check can short-circuit an expensive model call |
 | `executionPipeline[].filter` | A lookup key into a filter registry; a `PipelineBuilder` assembles the runtime chain from this list mechanically, without per-use-case orchestration code |
 | `executionPipeline[].type` | `deterministic` (hard pass/fail check) or `reasoned` (requires an LLM to weigh evidence and judgment) |
 | `executionPipeline[].onFailure` | `halt` or `continue` — makes short-circuit behavior an explicit schema contract. In Grant Fit Assessment, a failed eligibility stage halts the pipeline: strong alignment cannot rescue a failed mandatory requirement (Section 6) |
 | `executionPipeline[].group` | An integer ordering stages into execution groups. Stages execute in ascending `group` order; stages *sharing* a group number are candidates for concurrent execution by a future engine |
+| `executionPipeline[].reads` / `.writes` | The shared context fields this stage consumes and produces — see "Shared Execution Context" below |
 | `policies` | Behavioral constraints that don't map to a single stage (e.g., "do not invent missing information") but must still be enforced at runtime and checked during evaluation |
 | `expectedOutcomes` | The closed set of valid classifications the use case can resolve to |
 | `evaluationPipeline` | A **structurally parallel, non-empty** list of evaluation stages (one or more) — same shape as `executionPipeline`, so the same pattern drives both |
 | `evaluationPipeline[].evaluates` | The execution stage `id`s this evaluation stage checks — makes the link between what ran and what got scored traceable rather than implicit |
+| `evaluationPipeline[].reads` | The shared context fields this evaluation stage reads — typically fields an execution stage wrote |
 
 **On serialization:** this version executes strictly in array order — every stage in the Grant Fit Assessment EUC is given its own unique `group` number (1 through 4), so behavior is fully serialized, matching the current `onFailure: halt` short-circuit logic that depends on eligibility running before alignment reasoning. Nothing today reads `group` to parallelize execution. It's included now because retrofitting an ordering concept into the schema after a `PipelineBuilder` exists and downstream code assumes strict array order would be a breaking change; adding it up front costs nothing and keeps the door open. A future engine could execute same-group stages concurrently — for Grant Fit Assessment, `GEOGRAPHY-001` and `INFO-001` are plausible candidates, since neither depends on the other's result — without any change to this schema.
 
 The contribution is not the JSON format — a schema is an implementation detail. The contribution is that the use case exists once, as a first-class SDLC artifact, rather than being translated separately into application logic and evaluation criteria by different people at different times — the divergence [Section 2](#2-gap-in-current-practice) describes. Structuring that artifact as an ordered, filter-keyed pipeline is what makes the translation mechanical: given the schema above, both the execution chain and the evaluation chain can be *generated* from the EUC rather than hand-authored per use case, so the EUC's benefit extends beyond evaluation into scaffolding the application's own code shape — the overlap with SDD noted in Section 3.
+
+### Shared Execution Context
+
+In the Pipe-and-Filter pattern, filters don't exchange isolated arguments — they read from and write to a **shared context** that accumulates state as it moves through the pipeline. The EUC schema makes this explicit rather than leaving it as an unstated assumption of the runtime: `context.seedFields` declares what's present before any filter runs, and each stage's `reads`/`writes` declares how it consumes and grows that context. `ALIGNMENT-001` reads `eligible`, which `ELIGIBILITY-001`, `GEOGRAPHY-001`, and `INFO-001` all write — a concrete data dependency that the `group` ordering (groups 1–3 before group 4) exists specifically to satisfy. Declaring both together means a stage's data dependencies are checkable against the group order meant to provide them, rather than left implicit in code.
+
+The same shared-context principle carries into evaluation, deliberately: evaluation stages read the *same* context execution stages wrote into, not a separate copy. `eligibilityCorrectness` reads `eligible` and `failedEligibilityRules` directly — the fields `ELIGIBILITY-001`/`GEOGRAPHY-001`/`INFO-001` wrote. This is what makes the same-artifact-drives-both-execution-and-evaluation claim (Section 1) concrete at the data level, not just at the schema level: evaluation isn't re-deriving its own view of what happened, it's reading the actual context execution produced.
+
+This is worth noting as a broader observation, distinct from anything this project's falsifiable claims test (Section 5): AI-native applications already work this way at the model layer. A conversation's accumulated history, retrieved documents, and prior reasoning steps are themselves a shared, mutable context passed from one reasoning step to the next — generated by one step, consumed by the next, exactly like a Pipe-and-Filter context. A pipeline's shared context and an LLM's context window may be the same underlying idea applied at different layers of the same system: one governs what data flows between a use case's deterministic and reasoned stages, the other governs what a model can see at a given turn. It's a reasonable hypothesis — untested here — that an EUC's `reads` declarations could eventually double as a specification for what belongs in a reasoned stage's prompt context, rather than being maintained separately. See Section 9 for how this is scoped as an observation rather than a claim.
 
 ### EUC Across the Lifecycle
 
@@ -348,5 +382,6 @@ This is a single case study on a single application domain, and its results shou
 | **Scale of drift tested** | The changes in Section 7 are deliberate and isolated. Real-world drift is often incremental and compounding — prompt tweaks accumulating across sprints, gradual model deprecation. Whether EUC-driven evaluation catches that as reliably as a single deliberate change is an open question. |
 | **Evaluation criteria authorship** | Evaluators still require someone to translate EUC criteria into implemented checks; this project doesn't test whether that translation step is itself a source of drift. |
 | **Codegen claim untested** | Section 3 and Section 4 note that the EUC schema could scaffold application code, not just drive evaluation — but this project does not measure that benefit (generated code quality, boilerplate saved, or whether generated code passes the eval suite). It's a noted implication, not a tested claim. |
+| **Context-convergence observation, not a claim** | Section 4 notes a structural parallel between a Pipe-and-Filter's shared context and an LLM's context window — the hypothesis that `reads` declarations could double as a prompt-context specification. This project does not build or test that; it's recorded as an observation worth investigating, not something Section 5's falsifiable claims cover. |
 
-Future work: applying EUCs across multiple domains to test schema generality, involving a separate implementation team to test EUCs as a handoff artifact, studying gradual/compounding drift rather than only discrete, deliberate changes, and testing the codegen implication directly by building a `PipelineBuilder` that assembles application code from the EUC schema.
+Future work: applying EUCs across multiple domains to test schema generality, involving a separate implementation team to test EUCs as a handoff artifact, studying gradual/compounding drift rather than only discrete, deliberate changes, testing the codegen implication directly by building a `PipelineBuilder` that assembles application code from the EUC schema, and investigating whether a stage's declared `reads` can generate the actual prompt context assembled for a reasoned filter — the context-convergence observation above.

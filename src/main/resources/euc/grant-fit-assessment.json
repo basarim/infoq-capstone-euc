@@ -2,6 +2,10 @@
   "id": "grant-fit-assessment",
   "actor": "Nonprofit Program Manager",
   "goal": "Determine whether the organization should pursue a grant",
+  "context": {
+    "description": "Shared object passed through the pipeline. Each filter reads from and writes to this context rather than exchanging isolated arguments; evaluation stages read the same context the execution stages wrote into, rather than a copy.",
+    "seedFields": ["organization", "grant"]
+  },
   "executionPipeline": [
     {
       "id": "ELIGIBILITY-001",
@@ -9,7 +13,9 @@
       "type": "deterministic",
       "description": "Applicant must satisfy mandatory eligibility requirements",
       "onFailure": "halt",
-      "group": 1
+      "group": 1,
+      "reads": ["organization", "grant"],
+      "writes": ["eligible", "failedEligibilityRules"]
     },
     {
       "id": "GEOGRAPHY-001",
@@ -17,7 +23,9 @@
       "type": "deterministic",
       "description": "Applicant must operate within the grant's specified geographic scope",
       "onFailure": "halt",
-      "group": 2
+      "group": 2,
+      "reads": ["organization", "grant"],
+      "writes": ["eligible", "failedEligibilityRules"]
     },
     {
       "id": "INFO-001",
@@ -25,7 +33,9 @@
       "type": "deterministic",
       "description": "All required application information must be present before assessment proceeds",
       "onFailure": "halt",
-      "group": 3
+      "group": 3,
+      "reads": ["organization"],
+      "writes": ["eligible", "failedEligibilityRules"]
     },
     {
       "id": "ALIGNMENT-001",
@@ -33,7 +43,9 @@
       "type": "reasoned",
       "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities",
       "onFailure": "continue",
-      "group": 4
+      "group": 4,
+      "reads": ["organization", "grant", "eligible"],
+      "writes": ["fitClassification", "explanation", "supportingEvidence", "identifiedUncertainty"]
     }
   ],
   "policies": [
@@ -51,19 +63,22 @@
       "id": "eligibilityCorrectness",
       "filter": "eligibilityCorrectness",
       "evaluates": ["ELIGIBILITY-001", "GEOGRAPHY-001", "INFO-001"],
-      "group": 1
+      "group": 1,
+      "reads": ["eligible", "failedEligibilityRules"]
     },
     {
       "id": "programAlignment",
       "filter": "programAlignment",
       "evaluates": ["ALIGNMENT-001"],
-      "group": 2
+      "group": 2,
+      "reads": ["fitClassification"]
     },
     {
       "id": "evidenceGrounding",
       "filter": "evidenceGrounding",
       "evaluates": ["ALIGNMENT-001"],
-      "group": 3
+      "group": 3,
+      "reads": ["supportingEvidence"]
     }
   ]
 }

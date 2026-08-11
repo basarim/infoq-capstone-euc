@@ -18,6 +18,7 @@ public class EvaluationStage {
     private String filter;
     private List<String> evaluates;
     private Integer group;
+    private List<String> reads;
 
     public EvaluationStage() {
         // default constructor for Jackson deserialization
@@ -60,9 +61,23 @@ public class EvaluationStage {
         this.group = group;
     }
 
+    /**
+     * Context fields this evaluation stage reads — typically fields the
+     * execution pipeline wrote (see EucRule.getWrites()). Evaluation reads
+     * the same context execution wrote into, not a separate copy — see
+     * EucContext.
+     */
+    public List<String> getReads() {
+        return reads;
+    }
+
+    public void setReads(List<String> reads) {
+        this.reads = reads;
+    }
+
     @Override
     public String toString() {
         return "EvaluationStage{id='" + id + "', filter='" + filter + "', evaluates=" + evaluates
-                + ", group=" + group + "}";
+                + ", group=" + group + ", reads=" + reads + "}";
     }
 }

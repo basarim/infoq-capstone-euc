@@ -18,6 +18,7 @@ public class EucDefinition {
     private String id;
     private String actor;
     private String goal;
+    private EucContext context;
     private List<EucRule> executionPipeline;
     private List<String> policies;
     private List<String> expectedOutcomes;
@@ -49,6 +50,14 @@ public class EucDefinition {
 
     public void setGoal(String goal) {
         this.goal = goal;
+    }
+
+    public EucContext getContext() {
+        return context;
+    }
+
+    public void setContext(EucContext context) {
+        this.context = context;
     }
 
     public List<EucRule> getExecutionPipeline() {
