@@ -1,0 +1,42 @@
+{
+  "id": "grant-fit-assessment",
+  "actor": "Nonprofit Program Manager",
+  "goal": "Determine whether the organization should pursue a grant",
+  "rules": [
+    {
+      "id": "ELIGIBILITY-001",
+      "type": "deterministic",
+      "description": "Applicant must satisfy mandatory eligibility requirements"
+    },
+    {
+      "id": "GEOGRAPHY-001",
+      "type": "deterministic",
+      "description": "Applicant must operate within the grant's specified geographic scope"
+    },
+    {
+      "id": "INFO-001",
+      "type": "deterministic",
+      "description": "All required application information must be present before assessment proceeds"
+    },
+    {
+      "id": "ALIGNMENT-001",
+      "type": "reasoned",
+      "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities"
+    }
+  ],
+  "policies": [
+    "Do not invent missing information",
+    "Support conclusions with evidence",
+    "Flag uncertainty rather than defaulting to a confident conclusion"
+  ],
+  "expectedOutcomes": [
+    "STRONG_FIT",
+    "POSSIBLE_FIT",
+    "POOR_FIT"
+  ],
+  "evaluation": [
+    "eligibilityCorrectness",
+    "programAlignment",
+    "evidenceGrounding"
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "description": "Ground-truth eval dataset for Grant Fit Assessment, per docs/proposal.md Section 6 step 2. Ground truth was established independently of the application by reading each organization/grant pair against the EUC's rules and policies.",
+  "testCases": [
+    {
+      "caseId": "strong-fit-01",
+      "organization": {
+        "name": "Riverside Youth Coalition",
+        "missionStatement": "Providing after-school STEM programs to underserved youth.",
+        "programs": ["STEM tutoring", "College readiness workshops"],
+        "operatingRegion": "Pacific Northwest",
+        "isRegisteredNonprofit": true
+      },
+      "grant": {
+        "funderName": "Evergreen Community Foundation",
+        "grantName": "Youth Education Grant",
+        "fundingPriorities": ["STEM education", "Underserved communities"],
+        "eligibilityRequirements": ["Registered 501(c)(3)", "Operating in Pacific Northwest"],
+        "allowedRegions": ["Pacific Northwest"],
+        "requiresRegisteredNonprofit": true
+      },
+      "expectedEligible": true,
+      "expectedFitClassification": "STRONG_FIT",
+      "groundTruthRationale": "Eligible on all deterministic rules; mission and programs directly match the funder's stated priorities (STEM, underserved communities).",
+      "expectedEvidenceKeywords": ["STEM", "underserved"]
+    },
+    {
+      "caseId": "possible-fit-01",
+      "organization": {
+        "name": "Bright Path Family Services",
+        "missionStatement": "Supporting family stability through housing assistance and counseling.",
+        "programs": ["Emergency housing assistance", "Family counseling"],
+        "operatingRegion": "Pacific Northwest",
+        "isRegisteredNonprofit": true
+      },
+      "grant": {
+        "funderName": "Evergreen Community Foundation",
+        "grantName": "Youth Education Grant",
+        "fundingPriorities": ["STEM education", "Underserved communities"],
+        "eligibilityRequirements": ["Registered 501(c)(3)", "Operating in Pacific Northwest"],
+        "allowedRegions": ["Pacific Northwest"],
+        "requiresRegisteredNonprofit": true
+      },
+      "expectedEligible": true,
+      "expectedFitClassification": "POSSIBLE_FIT",
+      "groundTruthRationale": "Eligible, and serves underserved populations, but has no STEM or education programming — partial alignment only.",
+      "expectedEvidenceKeywords": ["underserved"]
+    },
+    {
+      "caseId": "poor-fit-eligible-01",
+      "organization": {
+        "name": "Metro Arts Guild",
+        "missionStatement": "Promoting fine arts appreciation among adult patrons.",
+        "programs": ["Gallery exhibitions", "Adult painting workshops"],
+        "operatingRegion": "Pacific Northwest",
+        "isRegisteredNonprofit": true
+      },
+      "grant": {
+        "funderName": "Evergreen Community Foundation",
+        "grantName": "Youth Education Grant",
+        "fundingPriorities": ["STEM education", "Underserved communities"],
+        "eligibilityRequirements": ["Registered 501(c)(3)", "Operating in Pacific Northwest"],
+        "allowedRegions": ["Pacific Northwest"],
+        "requiresRegisteredNonprofit": true
+      },
+      "expectedEligible": true,
+      "expectedFitClassification": "POOR_FIT",
+      "groundTruthRationale": "Eligible under all deterministic rules, but mission/programs (adult fine arts) have no meaningful overlap with youth STEM education priorities. Edge case: eligible but poorly aligned (docs/proposal.md Section 5).",
+      "expectedEvidenceKeywords": []
+    },
+    {
+      "caseId": "ineligible-aligned-01",
+      "organization": {
+        "name": "Coastal STEM Academy Trust",
+        "missionStatement": "Delivering STEM education to underserved youth on the East Coast.",
+        "programs": ["STEM tutoring", "Robotics club"],
+        "operatingRegion": "Northeast",
+        "isRegisteredNonprofit": true
+      },
+      "grant": {
+        "funderName": "Evergreen Community Foundation",
+        "grantName": "Youth Education Grant",
+        "fundingPriorities": ["STEM education", "Underserved communities"],
+        "eligibilityRequirements": ["Registered 501(c)(3)", "Operating in Pacific Northwest"],
+        "allowedRegions": ["Pacific Northwest"],
+        "requiresRegisteredNonprofit": true
+      },
+      "expectedEligible": false,
+      "expectedFitClassification": "POOR_FIT",
+      "groundTruthRationale": "Strong mission/program alignment with funding priorities, but fails GEOGRAPHY-001 (operates in Northeast, grant requires Pacific Northwest). Edge case: ineligible but well-aligned (docs/proposal.md Section 5) — eligibility failure must override alignment.",
+      "expectedEvidenceKeywords": []
+    },
+    {
+      "caseId": "ineligible-not-nonprofit-01",
+      "organization": {
+        "name": "NextGen Learning Co.",
+        "missionStatement": "For-profit tutoring services for STEM subjects.",
+        "programs": ["Paid STEM tutoring"],
+        "operatingRegion": "Pacific Northwest",
+        "isRegisteredNonprofit": false
+      },
+      "grant": {
+        "funderName": "Evergreen Community Foundation",
+        "grantName": "Youth Education Grant",
+        "fundingPriorities": ["STEM education", "Underserved communities"],
+        "eligibilityRequirements": ["Registered 501(c)(3)", "Operating in Pacific Northwest"],
+        "allowedRegions": ["Pacific Northwest"],
+        "requiresRegisteredNonprofit": true
+      },
+      "expectedEligible": false,
+      "expectedFitClassification": "POOR_FIT",
+      "groundTruthRationale": "Fails ELIGIBILITY-001: not a registered nonprofit.",
+      "expectedEvidenceKeywords": []
+    },
+    {
+      "caseId": "missing-info-01",
+      "organization": {
+        "name": "Unnamed Org",
+        "missionStatement": "",
+        "programs": [],
+        "operatingRegion": "Pacific Northwest",
+        "isRegisteredNonprofit": true
+      },
+      "grant": {
+        "funderName": "Evergreen Community Foundation",
+        "grantName": "Youth Education Grant",
+        "fundingPriorities": ["STEM education", "Underserved communities"],
+        "eligibilityRequirements": ["Registered 501(c)(3)", "Operating in Pacific Northwest"],
+        "allowedRegions": ["Pacific Northwest"],
+        "requiresRegisteredNonprofit": true
+      },
+      "expectedEligible": false,
+      "expectedFitClassification": "POOR_FIT",
+      "groundTruthRationale": "Fails INFO-001: missing mission statement and programs.",
+      "expectedEvidenceKeywords": []
+    }
+  ]
+}
