@@ -6,13 +6,17 @@
 
 ## 1. Problem Statement
 
-Effective evaluation requires clear, traceable criteria grounded in the application's intended business behavior. As AI-native applications evolve, however, that intent can become fragmented across requirements, prompts, application logic, context, and evaluation artifacts, making it increasingly difficult to maintain that traceability.
+As organizations move AI-native applications from prototype to production, they're running into a problem traditional software evaluation wasn't built for: the criteria for "correct" behavior are inherently fuzzier, and they drift. A prompt tweak, a model upgrade, or a context-window change can silently shift what an application actually does — while the tests, dashboards, and stakeholders still assume the original intent holds. Unlike deterministic systems, where a passing test suite is a reliable proxy for correctness, LLM-based applications can degrade or drift in ways that pass superficial checks while failing the underlying business goal.
 
-This project proposes Executable Use Cases (EUCs) as first-class, machine-readable SDLC artifacts that persist business intent across the application lifecycle. An EUC captures the goals, rules, constraints, expected outcomes, and evaluation criteria of a use case so that the same business definition can inform both execution and evaluation.
+This is compounded by a second, quieter problem: business intent itself becomes fragmented. It lives partly in a requirements doc, partly in a prompt, partly in application logic, partly in ad hoc eval scripts written after the fact — with no single artifact anyone can point to as the source of truth. When a model changes, teams often can't say with confidence whether they're still building the same thing they set out to build, because "the thing" was never captured in one traceable place.
+
+This project proposes Executable Use Cases (EUCs): first-class, machine-readable SDLC artifacts that encode a use case's goals, rules, constraints, expected outcomes, and evaluation criteria in a single definition — one that drives both runtime execution and evaluation, rather than treating them as separately maintained concerns.
 
 **Business Intent → EUC → Execution + Evaluation**
 
-The project will test this approach through a [Grant Fit Assessment](#5-case-study-grant-fit-assessment) AI-native application. The same EUC will guide runtime behavior and evaluation, while changes to a prompt or model will test whether the application can continue to be evaluated against a stable definition of business intent.
+The goal is to make business intent a durable, versioned artifact that survives the churn of prompt iteration and model upgrades — so that "did we break this?" has a concrete, testable answer instead of a subjective one.
+
+The approach will be validated through a [Grant Fit Assessment](#5-case-study-grant-fit-assessment) case study: an AI-native application where the same EUC governs both runtime behavior and evaluation. As the underlying prompt or model is changed, the case study will test whether the application can still be evaluated against a stable, unchanged definition of business intent — the central claim EUCs are meant to support.
 
 ---
 
