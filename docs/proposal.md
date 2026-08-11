@@ -114,8 +114,6 @@ This project proposes **Executable Use Cases (EUCs)**: first-class, machine-read
 
 **Business Intent → EUC → Execution + Evaluation**
 
-![EUC lifecycle overview: business intent formalizes into an Executable Use Case, which drives both a runtime execution pipeline and an evaluation harness, producing traceable results with a feedback loop back to intent, and the same EUC is consumed across every SDLC stage from requirements through regression](images/euc-lifecycle-overview.svg)
-
 The approach will be validated through a [Grant Fit Assessment](#6-case-study-grant-fit-assessment) case study: an AI-native application where the same EUC governs both runtime behavior and evaluation. As the underlying prompt or model changes, the case study tests whether the application can still be evaluated against a stable, unchanged definition of business intent.
 
 ---
@@ -174,9 +172,7 @@ A traditional use case describes an interaction between an **actor** (a user or 
 
 A canonical example makes the traditional form concrete before turning to this project's own case study. Consider a login page. `Log In` is the primary use case; `Validate Credentials` is `«include»`d — it always runs as part of logging in, so the arrow points *from* `Log In` *to* `Validate Credentials`. `Reset Password` and `Lock Account` are `«extend»`s — optional, conditionally-inserted behavior (forgot password; too many failed attempts), so their arrows point the other way, *from* the extension *into* the base use case they extend.
 
-![UML use case diagram for a login page, showing the User actor, the Log In primary use case including Validate Credentials, and two extension use cases: Reset Password and Lock Account](images/login-use-case-diagram.svg)
-
-The diagram is only half of a traditional use case — the other half is the textual scenario it summarizes:
+That structure is only half of a traditional use case — the other half is the textual scenario it summarizes:
 
 | | |
 |---|---|
@@ -187,11 +183,7 @@ The diagram is only half of a traditional use case — the other half is the tex
 | **Extension — forgot password** | 1a. User selects "Forgot password." 1b. System invokes Reset Password. |
 | **Extension — account lockout** | 2a. After N consecutive failed attempts, system invokes Lock Account and denies further attempts. |
 
-This is exactly the artifact category an EUC departs from: the table above is prose, reviewed by people, and implemented by hand into whatever the login system's code and tests happen to be — there's no path from this table to something a machine executes or evaluates directly. The next example shows the same actor/goal/include/extend structure, but where the diagram's ovals are backed by real, typed JSON instead.
-
-The example below shows this side by side: a conventional UML use case diagram for Grant Fit Assessment, using the same actor and structure as the `grant-fit-assessment` EUC. `Assess Grant Fit` is the primary use case; `Check Eligibility` and `Assess Mission Alignment` are `«include»`d sub-use-cases — mapping directly onto the deterministic and reasoned stage groups in `executionPipeline` — and `Evaluate Assessment` maps onto `evaluationPipeline`. Where a traditional use case diagram stops at this picture (a design artifact for humans to discuss), the EUC continues: each oval above corresponds to real, typed JSON in `src/main/resources/euc/grant-fit-assessment.json` that a `PipelineBuilder` can read and actually execute.
-
-![UML use case diagram for Grant Fit Assessment, showing the Nonprofit Program Manager actor and the Assess Grant Fit primary use case including Check Eligibility, Assess Mission Alignment, and Evaluate Assessment](images/use-case-diagram.svg)
+This is exactly the artifact category an EUC departs from: the table above is prose, reviewed by people, and implemented by hand into whatever the login system's code and tests happen to be — there's no path from this table to something a machine executes or evaluates directly. Applying the same actor/goal/include/extend structure to this project's own case study makes that departure concrete: `Assess Grant Fit` is the primary use case for the `grant-fit-assessment` EUC; `Check Eligibility` and `Assess Mission Alignment` are `«include»`d sub-use-cases — mapping directly onto the deterministic and reasoned stage groups in `executionPipeline` — and `Evaluate Assessment` maps onto `evaluationPipeline`. Where a traditional use case diagram stops at that picture (a design artifact for humans to discuss), the EUC continues: each of those use cases corresponds to real, typed JSON in `src/main/resources/euc/grant-fit-assessment.json` that a `PipelineBuilder` can read and actually execute.
 
 The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each execution stage names a `filter` — a lookup key into a filter registry — so a pipeline can be assembled mechanically from the EUC rather than hand-wired per use case. A pipeline is comprised of one or more filters; the exact number and mix depends on what each EUC's contract requires, without any orchestration code changing. A use case with a single deterministic check is a valid one-filter pipeline; Grant Fit Assessment's four-stage pipeline is just a larger instance of the same contract, not a structurally different case.
 
