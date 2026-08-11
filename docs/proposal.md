@@ -160,6 +160,16 @@ This is not a claim that the two are unrelated. Some SDD framings — IBM's "spe
 
 An Executable Use Case (EUC) represents the business intent and expected behavior of a use case in a form consumable by both people and software — a single definition an application is built against and evaluated against, rather than two definitions maintained in parallel.
 
+### Origins: Use-Case-Driven Development
+
+The term "use case" is a deliberate borrowing, not a coincidence of naming. Use-case-driven development was originated by **Ivar Jacobson**, first from his work at Ericsson in the 1980s and formalized in his 1992 book *Object-Oriented Software Engineering: A Use Case Driven Approach* (with Magnus Christerson, Patrik Jonsson, and Gunnar Övergaard). Jacobson later co-created the Rational Unified Process (RUP) and was one of the three principal contributors to UML, where the use case diagram remains a standard notation.
+
+A traditional use case describes an interaction between an **actor** (a user or external system) and a system, in pursuit of a goal: it names the actor, a main flow of steps toward that goal, alternate flows, and pre/postconditions. It is deliberately a *human-readable requirements artifact* — meant to be reviewed, discussed, and used to drive design, not executed. That's the precise point where an EUC diverges: it keeps the actor/goal framing but replaces the prose flow with a machine-readable, ordered pipeline of typed stages (Section 4 above) that can actually run and actually be evaluated against — "executable" is doing real work in the name, not just branding.
+
+The example below shows this side by side: a conventional UML use case diagram for Grant Fit Assessment, using the same actor and structure as the `grant-fit-assessment` EUC. `Assess Grant Fit` is the primary use case; `Check Eligibility` and `Assess Mission Alignment` are `«include»`d sub-use-cases — mapping directly onto the deterministic and reasoned stage groups in `executionPipeline` — and `Evaluate Assessment` maps onto `evaluationPipeline`. Where a traditional use case diagram stops at this picture (a design artifact for humans to discuss), the EUC continues: each oval above corresponds to real, typed JSON in `src/main/resources/euc/grant-fit-assessment.json` that a `PipelineBuilder` can read and actually execute.
+
+![UML use case diagram for Grant Fit Assessment, showing the Nonprofit Program Manager actor and the Assess Grant Fit primary use case including Check Eligibility, Assess Mission Alignment, and Evaluate Assessment](images/use-case-diagram.svg)
+
 The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each execution stage names a `filter` — a lookup key into a filter registry — so a pipeline can be assembled mechanically from the EUC rather than hand-wired per use case. A pipeline is comprised of one or more filters; the exact number and mix depends on what each EUC's contract requires, without any orchestration code changing. A use case with a single deterministic check is a valid one-filter pipeline; Grant Fit Assessment's four-stage pipeline is just a larger instance of the same contract, not a structurally different case.
 
 ```json
