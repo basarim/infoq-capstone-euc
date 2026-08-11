@@ -17,6 +17,7 @@ public class EvaluationStage {
     private String id;
     private String filter;
     private List<String> evaluates;
+    private Integer group;
 
     public EvaluationStage() {
         // default constructor for Jackson deserialization
@@ -46,8 +47,22 @@ public class EvaluationStage {
         this.evaluates = evaluates;
     }
 
+    /**
+     * Execution group, mirroring EucRule.getGroup() — see that javadoc.
+     * Evaluation stages checking independent criteria are natural
+     * candidates for future concurrent evaluation.
+     */
+    public Integer getGroup() {
+        return group;
+    }
+
+    public void setGroup(Integer group) {
+        this.group = group;
+    }
+
     @Override
     public String toString() {
-        return "EvaluationStage{id='" + id + "', filter='" + filter + "', evaluates=" + evaluates + "}";
+        return "EvaluationStage{id='" + id + "', filter='" + filter + "', evaluates=" + evaluates
+                + ", group=" + group + "}";
     }
 }

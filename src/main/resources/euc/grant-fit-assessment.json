@@ -8,28 +8,32 @@
       "filter": "eligibility",
       "type": "deterministic",
       "description": "Applicant must satisfy mandatory eligibility requirements",
-      "onFailure": "halt"
+      "onFailure": "halt",
+      "group": 1
     },
     {
       "id": "GEOGRAPHY-001",
       "filter": "geography",
       "type": "deterministic",
       "description": "Applicant must operate within the grant's specified geographic scope",
-      "onFailure": "halt"
+      "onFailure": "halt",
+      "group": 2
     },
     {
       "id": "INFO-001",
       "filter": "requiredInfo",
       "type": "deterministic",
       "description": "All required application information must be present before assessment proceeds",
-      "onFailure": "halt"
+      "onFailure": "halt",
+      "group": 3
     },
     {
       "id": "ALIGNMENT-001",
       "filter": "alignmentReasoning",
       "type": "reasoned",
       "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities",
-      "onFailure": "continue"
+      "onFailure": "continue",
+      "group": 4
     }
   ],
   "policies": [
@@ -46,17 +50,20 @@
     {
       "id": "eligibilityCorrectness",
       "filter": "eligibilityCorrectness",
-      "evaluates": ["ELIGIBILITY-001", "GEOGRAPHY-001", "INFO-001"]
+      "evaluates": ["ELIGIBILITY-001", "GEOGRAPHY-001", "INFO-001"],
+      "group": 1
     },
     {
       "id": "programAlignment",
       "filter": "programAlignment",
-      "evaluates": ["ALIGNMENT-001"]
+      "evaluates": ["ALIGNMENT-001"],
+      "group": 2
     },
     {
       "id": "evidenceGrounding",
       "filter": "evidenceGrounding",
-      "evaluates": ["ALIGNMENT-001"]
+      "evaluates": ["ALIGNMENT-001"],
+      "group": 3
     }
   ]
 }

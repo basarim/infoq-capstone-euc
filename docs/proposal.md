@@ -39,6 +39,11 @@ version: "0.3"
       "executionPipeline": "non-empty; one or more filter stages",
       "evaluationPipeline": "non-empty; one or more filter stages",
       "enforcedBy": "EucDefinition.validate(), called by EucLoader at load time"
+    },
+    "roadmap": {
+      "field": "group",
+      "currentBehavior": "every stage has a unique group number; execution is fully serialized in array order",
+      "futureBehavior": "stages sharing a group number may execute concurrently once a parallel-aware PipelineBuilder exists"
     }
   },
   "relatedWork": {
@@ -157,14 +162,16 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
       "filter": "eligibility",
       "type": "deterministic",
       "description": "Applicant must satisfy mandatory eligibility requirements",
-      "onFailure": "halt"
+      "onFailure": "halt",
+      "group": 1
     },
     {
       "id": "ALIGNMENT-001",
       "filter": "alignmentReasoning",
       "type": "reasoned",
       "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities",
-      "onFailure": "continue"
+      "onFailure": "continue",
+      "group": 4
     }
   ],
   "policies": [
@@ -199,10 +206,13 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
 | `executionPipeline[].filter` | A lookup key into a filter registry; a `PipelineBuilder` assembles the runtime chain from this list mechanically, without per-use-case orchestration code |
 | `executionPipeline[].type` | `deterministic` (hard pass/fail check) or `reasoned` (requires an LLM to weigh evidence and judgment) |
 | `executionPipeline[].onFailure` | `halt` or `continue` — makes short-circuit behavior an explicit schema contract. In Grant Fit Assessment, a failed eligibility stage halts the pipeline: strong alignment cannot rescue a failed mandatory requirement (Section 6) |
+| `executionPipeline[].group` | An integer ordering stages into execution groups. Stages execute in ascending `group` order; stages *sharing* a group number are candidates for concurrent execution by a future engine |
 | `policies` | Behavioral constraints that don't map to a single stage (e.g., "do not invent missing information") but must still be enforced at runtime and checked during evaluation |
 | `expectedOutcomes` | The closed set of valid classifications the use case can resolve to |
 | `evaluationPipeline` | A **structurally parallel, non-empty** list of evaluation stages (one or more) — same shape as `executionPipeline`, so the same pattern drives both |
 | `evaluationPipeline[].evaluates` | The execution stage `id`s this evaluation stage checks — makes the link between what ran and what got scored traceable rather than implicit |
+
+**On serialization:** this version executes strictly in array order — every stage in the Grant Fit Assessment EUC is given its own unique `group` number (1 through 4), so behavior is fully serialized, matching the current `onFailure: halt` short-circuit logic that depends on eligibility running before alignment reasoning. Nothing today reads `group` to parallelize execution. It's included now because retrofitting an ordering concept into the schema after a `PipelineBuilder` exists and downstream code assumes strict array order would be a breaking change; adding it up front costs nothing and keeps the door open. A future engine could execute same-group stages concurrently — for Grant Fit Assessment, `GEOGRAPHY-001` and `INFO-001` are plausible candidates, since neither depends on the other's result — without any change to this schema.
 
 The contribution is not the JSON format — a schema is an implementation detail. The contribution is that the use case exists once, as a first-class SDLC artifact, rather than being translated separately into application logic and evaluation criteria by different people at different times — the divergence [Section 2](#2-gap-in-current-practice) describes. Structuring that artifact as an ordered, filter-keyed pipeline is what makes the translation mechanical: given the schema above, both the execution chain and the evaluation chain can be *generated* from the EUC rather than hand-authored per use case, so the EUC's benefit extends beyond evaluation into scaffolding the application's own code shape — the overlap with SDD noted in Section 3.
 

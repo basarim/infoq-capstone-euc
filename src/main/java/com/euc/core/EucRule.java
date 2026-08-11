@@ -28,6 +28,7 @@ public class EucRule {
     private Type type;
     private String description;
     private OnFailure onFailure = OnFailure.CONTINUE;
+    private Integer group;
 
     public EucRule() {
         // default constructor for Jackson deserialization
@@ -73,9 +74,27 @@ public class EucRule {
         this.onFailure = onFailure;
     }
 
+    /**
+     * Execution group. Stages execute in ascending group order; stages
+     * sharing the same group number are candidates for concurrent
+     * execution by a future engine. This version's PipelineBuilder (not
+     * yet implemented) is expected to execute strictly in array order
+     * regardless of group — every stage in the current EUC has a unique
+     * group number, so behavior stays fully serialized. The field exists
+     * so a future concurrent execution model doesn't require a schema
+     * migration.
+     */
+    public Integer getGroup() {
+        return group;
+    }
+
+    public void setGroup(Integer group) {
+        this.group = group;
+    }
+
     @Override
     public String toString() {
         return "EucRule{id='" + id + "', filter='" + filter + "', type=" + type
-                + ", onFailure=" + onFailure + ", description='" + description + "'}";
+                + ", onFailure=" + onFailure + ", group=" + group + ", description='" + description + "'}";
     }
 }

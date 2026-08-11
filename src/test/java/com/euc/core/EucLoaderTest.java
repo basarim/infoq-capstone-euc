@@ -69,6 +69,31 @@ class EucLoaderTest {
     }
 
     @Test
+    void currentVersionExecutesFullySerialized() {
+        // This version's PipelineBuilder (not yet implemented) is expected to
+        // execute strictly in array order regardless of `group` — locking in
+        // that every stage currently has a unique group number documents the
+        // "fully serial for now" guarantee. If a future change intentionally
+        // introduces real parallel groups, this test should be updated
+        // deliberately rather than broken by accident.
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+
+        long distinctExecutionGroups = euc.getExecutionPipeline().stream()
+                .map(EucRule::getGroup)
+                .distinct()
+                .count();
+        assertEquals(euc.getExecutionPipeline().size(), distinctExecutionGroups,
+                "expected every execution stage to have a unique group (fully serial) in this version");
+
+        long distinctEvaluationGroups = euc.getEvaluationPipeline().stream()
+                .map(EvaluationStage::getGroup)
+                .distinct()
+                .count();
+        assertEquals(euc.getEvaluationPipeline().size(), distinctEvaluationGroups,
+                "expected every evaluation stage to have a unique group (fully serial) in this version");
+    }
+
+    @Test
     void emptyExecutionPipelineFailsValidation() {
         EucDefinition euc = new EucDefinition();
         euc.setId("empty-execution-euc");
