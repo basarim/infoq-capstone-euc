@@ -104,4 +104,35 @@ public class EucDefinition {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No execution stage with id " + stageId));
     }
+
+    /**
+     * Validates the EUC's structural contract: a pipeline (execution or
+     * evaluation) is comprised of one or more filters — an empty pipeline
+     * is not a valid use case, since it defines no behavior to run and
+     * nothing to evaluate. Called by EucLoader immediately after parsing
+     * so a malformed EUC fails loudly at load time rather than silently
+     * producing an application that does nothing.
+     */
+    public void validate() {
+        if (executionPipeline == null || executionPipeline.isEmpty()) {
+            throw new IllegalStateException(
+                    "EUC '" + id + "' is invalid: executionPipeline must contain one or more filters");
+        }
+        if (evaluationPipeline == null || evaluationPipeline.isEmpty()) {
+            throw new IllegalStateException(
+                    "EUC '" + id + "' is invalid: evaluationPipeline must contain one or more filters");
+        }
+        for (EucRule stage : executionPipeline) {
+            if (stage.getFilter() == null || stage.getFilter().isBlank()) {
+                throw new IllegalStateException(
+                        "EUC '" + id + "' is invalid: execution stage '" + stage.getId() + "' has no filter key");
+            }
+        }
+        for (EvaluationStage stage : evaluationPipeline) {
+            if (stage.getFilter() == null || stage.getFilter().isBlank()) {
+                throw new IllegalStateException(
+                        "EUC '" + id + "' is invalid: evaluation stage '" + stage.getId() + "' has no filter key");
+            }
+        }
+    }
 }

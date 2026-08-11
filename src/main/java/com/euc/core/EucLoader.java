@@ -12,7 +12,7 @@ import java.io.InputStream;
  * This is intentionally the only place that reads the EUC file — both the
  * application (execution) and the evaluator (evaluation) call through this
  * loader, so they are guaranteed to be reading the same definition. See
- * docs/proposal.md Section 3: "the use case exists once, as a first-class
+ * docs/proposal.md Section 4: "the use case exists once, as a first-class
  * SDLC artifact."
  */
 public class EucLoader {
@@ -29,7 +29,9 @@ public class EucLoader {
             if (in == null) {
                 throw new IllegalArgumentException("EUC resource not found: " + classpathResource);
             }
-            return mapper.readValue(in, EucDefinition.class);
+            EucDefinition euc = mapper.readValue(in, EucDefinition.class);
+            euc.validate();
+            return euc;
         } catch (IOException e) {
             throw new RuntimeException("Failed to load EUC from " + classpathResource, e);
         }

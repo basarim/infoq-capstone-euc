@@ -55,7 +55,7 @@ rationale, falsifiable claims, and evaluation methodology.
 
 | Component | Responsibility | Location |
 |---|---|---|
-| `com.euc.core` | EUC model + loader — parses the EUC JSON (an ordered, filter-keyed execution + evaluation pipeline; see [`docs/proposal.md`](docs/proposal.md) Section 3) into typed Java objects | `src/main/java/com/euc/core` |
+| `com.euc.core` | EUC model + loader — parses the EUC JSON (an ordered, filter-keyed execution + evaluation pipeline; see [`docs/proposal.md`](docs/proposal.md) Section 4) into typed Java objects | `src/main/java/com/euc/core` |
 | `com.euc.grantfit` | Grant Fit domain logic — deterministic eligibility checks + LLM-reasoned fit assessment. Not yet driven by a `PipelineBuilder` reading `executionPipeline` directly — currently hand-wired; see Status below | `src/main/java/com/euc/grantfit` |
 | `euc/grant-fit-assessment.json` | The EUC itself (goal, rules, policies, expected outcomes, evaluation criteria) | `src/main/resources/euc` |
 | Eval dataset | Test organizations with independently-established ground truth | `eval/dataset` |
@@ -70,9 +70,10 @@ rationale, falsifiable claims, and evaluation methodology.
 - [x] Evaluator bound to EUC evaluation criteria (`GrantFitEvaluator`, unit tested)
 - [x] Eval dataset with ground truth — 6 cases in `eval/dataset/test-cases.json`, including both edge cases from the case study (eligible-but-misaligned, ineligible-but-aligned)
 - [x] Dataset loader (`TestCaseDataset`) wired into `EvaluationRunner`
-- [ ] `PipelineBuilder` that assembles the execution/evaluation chain from `executionPipeline`/`evaluationPipeline` (schema now supports this — see `docs/proposal.md` Section 3; implementation not yet wired)
+- [x] `EucDefinition.validate()` enforces the pipeline contract — one or more filters per pipeline, every stage has a filter key (called automatically by `EucLoader`)
+- [ ] `PipelineBuilder` that assembles the execution/evaluation chain from `executionPipeline`/`evaluationPipeline` (schema now supports this — see `docs/proposal.md` Section 4; implementation not yet wired)
 - [ ] First live eval pass run against a real model, and gaps documented in "Lessons Learned" below
-- [ ] Drift-detection experiment across model/prompt variants (Section 6 of `docs/proposal.md`) — planned for Week 5
+- [ ] Drift-detection experiment across model/prompt variants (Section 7 of `docs/proposal.md`) — planned for Week 5
 
 **Not yet done, by design:** the reasoning layer has not been run against
 a live model in this environment (no API key configured here). Running it

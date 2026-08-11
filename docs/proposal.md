@@ -34,7 +34,12 @@ version: "0.3"
     "name": "Executable Use Case (EUC)",
     "fields": ["id", "actor", "goal", "executionPipeline", "policies", "expectedOutcomes", "evaluationPipeline"],
     "designPattern": "Pipe-and-Filter",
-    "ruleTypes": ["deterministic", "reasoned"]
+    "ruleTypes": ["deterministic", "reasoned"],
+    "constraints": {
+      "executionPipeline": "non-empty; one or more filter stages",
+      "evaluationPipeline": "non-empty; one or more filter stages",
+      "enforcedBy": "EucDefinition.validate(), called by EucLoader at load time"
+    }
   },
   "relatedWork": {
     "comparedTo": "Spec-Driven Development (SDD)",
@@ -139,7 +144,7 @@ This is not a claim that the two are unrelated. Some SDD framings — IBM's "spe
 
 An Executable Use Case (EUC) represents the business intent and expected behavior of a use case in a form consumable by both people and software — a single definition an application is built against and evaluated against, rather than two definitions maintained in parallel.
 
-The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each execution stage names a `filter` — a lookup key into a filter registry — so a pipeline can be assembled mechanically from the EUC rather than hand-wired per use case. A pipeline built this way has a different number and mix of filters depending on what each EUC's contract requires, without any orchestration code changing.
+The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each execution stage names a `filter` — a lookup key into a filter registry — so a pipeline can be assembled mechanically from the EUC rather than hand-wired per use case. A pipeline is comprised of one or more filters; the exact number and mix depends on what each EUC's contract requires, without any orchestration code changing. A use case with a single deterministic check is a valid one-filter pipeline; Grant Fit Assessment's four-stage pipeline is just a larger instance of the same contract, not a structurally different case.
 
 ```json
 {
@@ -190,13 +195,13 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
 
 | Field | Purpose |
 |---|---|
-| `executionPipeline` | An **ordered** list of filter stages. Order matters — deterministic stages run before reasoned ones, so a cheap check can short-circuit an expensive model call |
+| `executionPipeline` | An **ordered, non-empty** list of filter stages (one or more) — an EUC with no stages defines no behavior, so an empty pipeline is invalid. Order matters — deterministic stages run before reasoned ones, so a cheap check can short-circuit an expensive model call |
 | `executionPipeline[].filter` | A lookup key into a filter registry; a `PipelineBuilder` assembles the runtime chain from this list mechanically, without per-use-case orchestration code |
 | `executionPipeline[].type` | `deterministic` (hard pass/fail check) or `reasoned` (requires an LLM to weigh evidence and judgment) |
 | `executionPipeline[].onFailure` | `halt` or `continue` — makes short-circuit behavior an explicit schema contract. In Grant Fit Assessment, a failed eligibility stage halts the pipeline: strong alignment cannot rescue a failed mandatory requirement (Section 6) |
 | `policies` | Behavioral constraints that don't map to a single stage (e.g., "do not invent missing information") but must still be enforced at runtime and checked during evaluation |
 | `expectedOutcomes` | The closed set of valid classifications the use case can resolve to |
-| `evaluationPipeline` | A **structurally parallel** list of evaluation stages — same shape as `executionPipeline`, so the same pattern drives both |
+| `evaluationPipeline` | A **structurally parallel, non-empty** list of evaluation stages (one or more) — same shape as `executionPipeline`, so the same pattern drives both |
 | `evaluationPipeline[].evaluates` | The execution stage `id`s this evaluation stage checks — makes the link between what ran and what got scored traceable rather than implicit |
 
 The contribution is not the JSON format — a schema is an implementation detail. The contribution is that the use case exists once, as a first-class SDLC artifact, rather than being translated separately into application logic and evaluation criteria by different people at different times — the divergence [Section 2](#2-gap-in-current-practice) describes. Structuring that artifact as an ordered, filter-keyed pipeline is what makes the translation mechanical: given the schema above, both the execution chain and the evaluation chain can be *generated* from the EUC rather than hand-authored per use case, so the EUC's benefit extends beyond evaluation into scaffolding the application's own code shape — the overlap with SDD noted in Section 3.
