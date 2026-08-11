@@ -166,6 +166,23 @@ The term "use case" is a deliberate borrowing, not a coincidence of naming. Use-
 
 A traditional use case describes an interaction between an **actor** (a user or external system) and a system, in pursuit of a goal: it names the actor, a main flow of steps toward that goal, alternate flows, and pre/postconditions. It is deliberately a *human-readable requirements artifact* — meant to be reviewed, discussed, and used to drive design, not executed. That's the precise point where an EUC diverges: it keeps the actor/goal framing but replaces the prose flow with a machine-readable, ordered pipeline of typed stages (Section 4 above) that can actually run and actually be evaluated against — "executable" is doing real work in the name, not just branding.
 
+A canonical example makes the traditional form concrete before turning to this project's own case study. Consider a login page. `Log In` is the primary use case; `Validate Credentials` is `«include»`d — it always runs as part of logging in, so the arrow points *from* `Log In` *to* `Validate Credentials`. `Reset Password` and `Lock Account` are `«extend»`s — optional, conditionally-inserted behavior (forgot password; too many failed attempts), so their arrows point the other way, *from* the extension *into* the base use case they extend.
+
+![UML use case diagram for a login page, showing the User actor, the Log In primary use case including Validate Credentials, and two extension use cases: Reset Password and Lock Account](images/login-use-case-diagram.svg)
+
+The diagram is only half of a traditional use case — the other half is the textual scenario it summarizes:
+
+| | |
+|---|---|
+| **Actor** | User |
+| **Goal** | Gain access to the system |
+| **Main success scenario** | 1. User enters username and password. 2. System validates credentials (`«include»` Validate Credentials). 3. System grants access and displays the home screen. |
+| **Alternate flow — invalid credentials** | 2a. Credentials don't match records. 2b. System displays an error and returns to step 1. |
+| **Extension — forgot password** | 1a. User selects "Forgot password." 1b. System invokes Reset Password. |
+| **Extension — account lockout** | 2a. After N consecutive failed attempts, system invokes Lock Account and denies further attempts. |
+
+This is exactly the artifact category an EUC departs from: the table above is prose, reviewed by people, and implemented by hand into whatever the login system's code and tests happen to be — there's no path from this table to something a machine executes or evaluates directly. The next example shows the same actor/goal/include/extend structure, but where the diagram's ovals are backed by real, typed JSON instead.
+
 The example below shows this side by side: a conventional UML use case diagram for Grant Fit Assessment, using the same actor and structure as the `grant-fit-assessment` EUC. `Assess Grant Fit` is the primary use case; `Check Eligibility` and `Assess Mission Alignment` are `«include»`d sub-use-cases — mapping directly onto the deterministic and reasoned stage groups in `executionPipeline` — and `Evaluate Assessment` maps onto `evaluationPipeline`. Where a traditional use case diagram stops at this picture (a design artifact for humans to discuss), the EUC continues: each oval above corresponds to real, typed JSON in `src/main/resources/euc/grant-fit-assessment.json` that a `PipelineBuilder` can read and actually execute.
 
 ![UML use case diagram for Grant Fit Assessment, showing the Nonprofit Program Manager actor and the Assess Grant Fit primary use case including Check Eligibility, Assess Mission Alignment, and Evaluate Assessment](images/use-case-diagram.svg)
