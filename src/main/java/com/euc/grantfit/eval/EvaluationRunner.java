@@ -3,7 +3,6 @@ package com.euc.grantfit.eval;
 import com.euc.core.EucDefinition;
 import com.euc.core.EucLoader;
 import com.euc.grantfit.AssessmentResult;
-import com.euc.grantfit.EligibilityChecker;
 import com.euc.grantfit.FitReasoner;
 import com.euc.grantfit.GrantFitApplication;
 import com.euc.grantfit.LlmFitReasoner;
@@ -33,7 +32,7 @@ public class EvaluationRunner {
 
         String modelName = System.getenv().getOrDefault("LLM_MODEL", "claude-sonnet-4-6");
         FitReasoner reasoner = new LlmFitReasoner(modelName);
-        GrantFitApplication app = new GrantFitApplication(euc, new EligibilityChecker(), reasoner);
+        GrantFitApplication app = new GrantFitApplication(euc, reasoner);
         GrantFitEvaluator evaluator = new GrantFitEvaluator();
 
         List<TestCase> testCases = new TestCaseDataset().loadFromFile(new File(DATASET_PATH));

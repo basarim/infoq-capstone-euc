@@ -2,6 +2,14 @@ package com.euc.grantfit;
 
 import com.euc.core.EucDefinition;
 import com.euc.core.EucLoader;
+import com.euc.core.ExecutionFilterRegistry;
+import com.euc.core.PipelineBuilder;
+import com.euc.core.PipelineContext;
+import com.euc.grantfit.pipeline.AlignmentReasoningFilter;
+import com.euc.grantfit.pipeline.EligibilityRuleFilter;
+import com.euc.grantfit.pipeline.GeographyRuleFilter;
+import com.euc.grantfit.pipeline.GrantFitContextKeys;
+import com.euc.grantfit.pipeline.RequiredInfoRuleFilter;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,28 +17,44 @@ import java.util.List;
 /**
  * End-to-end Grant Fit Assessment application.
  *
- * Both this class and GrantFitEvaluator load the EUC through the same
- * EucLoader — see docs/proposal.md Section 3 for why that matters.
+ * Execution is driven mechanically by PipelineBuilder from the EUC's
+ * executionPipeline: each stage's `filter` key ("eligibility", "geography",
+ * "requiredInfo", "alignmentReasoning") is resolved through an
+ * ExecutionFilterRegistry built in the constructor below, rather than
+ * hand-wired per use case. Both this class and GrantFitEvaluator load the
+ * EUC through the same EucLoader — see docs/proposal.md Section 3 for why
+ * that matters.
  */
 public class GrantFitApplication {
 
-    private final EucDefinition euc;
-    private final EligibilityChecker eligibilityChecker;
-    private final FitReasoner fitReasoner;
+    private final PipelineBuilder pipelineBuilder;
 
-    public GrantFitApplication(EucDefinition euc, EligibilityChecker eligibilityChecker, FitReasoner fitReasoner) {
-        this.euc = euc;
-        this.eligibilityChecker = eligibilityChecker;
-        this.fitReasoner = fitReasoner;
+    public GrantFitApplication(EucDefinition euc, FitReasoner fitReasoner) {
+        ExecutionFilterRegistry registry = new ExecutionFilterRegistry()
+                .register("eligibility", new EligibilityRuleFilter())
+                .register("geography", new GeographyRuleFilter())
+                .register("requiredInfo", new RequiredInfoRuleFilter())
+                .register("alignmentReasoning", new AlignmentReasoningFilter(fitReasoner, euc));
+
+        this.pipelineBuilder = new PipelineBuilder(euc, registry);
     }
 
+    @SuppressWarnings("unchecked")
     public AssessmentResult assess(Organization org, GrantOpportunity grant) {
-        List<String> failedRules = eligibilityChecker.checkEligibility(org, grant);
+        PipelineContext context = new PipelineContext();
+        context.put(GrantFitContextKeys.ORGANIZATION, org);
+        context.put(GrantFitContextKeys.GRANT, grant);
 
-        if (!failedRules.isEmpty()) {
+        pipelineBuilder.run(context);
+
+        boolean eligible = context.get(GrantFitContextKeys.ELIGIBLE, Boolean.class);
+        if (!eligible) {
             // Per docs/proposal.md Section 5: a mandatory eligibility failure
             // short-circuits fit reasoning entirely — strong alignment cannot
-            // overcome it.
+            // overcome it. The pipeline halts before ALIGNMENT-001 runs (see
+            // its onFailure: "halt" in the EUC), so fit fields below are the
+            // short-circuit default rather than context reads.
+            List<String> failedRules = context.get(GrantFitContextKeys.FAILED_ELIGIBILITY_RULES, List.class);
             return new AssessmentResult(
                     false,
                     failedRules,
@@ -41,15 +65,13 @@ public class GrantFitApplication {
             );
         }
 
-        FitReasoner.FitReasoning reasoning = fitReasoner.assessFit(org, grant, euc);
-
         return new AssessmentResult(
                 true,
                 Collections.emptyList(),
-                reasoning.fitClassification(),
-                reasoning.explanation(),
-                reasoning.supportingEvidence(),
-                reasoning.identifiedUncertainty()
+                context.get(GrantFitContextKeys.FIT_CLASSIFICATION, String.class),
+                context.get(GrantFitContextKeys.EXPLANATION, String.class),
+                context.get(GrantFitContextKeys.SUPPORTING_EVIDENCE, List.class),
+                context.get(GrantFitContextKeys.IDENTIFIED_UNCERTAINTY, List.class)
         );
     }
 
@@ -57,11 +79,8 @@ public class GrantFitApplication {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
         System.out.println("Loaded EUC: " + euc.getId() + " — goal: " + euc.getGoal());
 
-        GrantFitApplication app = new GrantFitApplication(
-                euc,
-                new EligibilityChecker(),
-                new LlmFitReasoner("configure-model-here")
-        );
+        String modelName = System.getenv().getOrDefault("LLM_MODEL", "claude-sonnet-4-6");
+        GrantFitApplication app = new GrantFitApplication(euc, new LlmFitReasoner(modelName));
 
         // Sample run — replace with real input or wire to eval/dataset for batch runs.
         Organization org = new Organization(

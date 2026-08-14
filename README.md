@@ -56,7 +56,7 @@ rationale, falsifiable claims, and evaluation methodology.
 | Component | Responsibility | Location |
 |---|---|---|
 | `com.euc.core` | EUC model + loader — parses the EUC JSON (an ordered, filter-keyed execution + evaluation pipeline; see [`docs/proposal.md`](docs/proposal.md) Section 4) into typed Java objects | `src/main/java/com/euc/core` |
-| `com.euc.grantfit` | Grant Fit domain logic — deterministic eligibility checks + LLM-reasoned fit assessment. Not yet driven by a `PipelineBuilder` reading `executionPipeline` directly — currently hand-wired; see Status below | `src/main/java/com/euc/grantfit` |
+| `com.euc.grantfit` | Grant Fit domain logic — deterministic eligibility checks + LLM-reasoned fit assessment, executed via `PipelineBuilder` reading `executionPipeline` directly (filters in `com.euc.grantfit.pipeline`); see Status below | `src/main/java/com/euc/grantfit` |
 | `euc/grant-fit-assessment.json` | The EUC itself (goal, rules, policies, expected outcomes, evaluation criteria) | `src/main/resources/euc` |
 | Eval dataset | Test organizations with independently-established ground truth | `eval/dataset` |
 | Eval results | Output of evaluation runs (drift detection, false-flag rate, etc.) | `eval/results` |
@@ -71,9 +71,11 @@ rationale, falsifiable claims, and evaluation methodology.
 - [x] Eval dataset with ground truth — 6 cases in `eval/dataset/test-cases.json`, including both edge cases from the case study (eligible-but-misaligned, ineligible-but-aligned)
 - [x] Dataset loader (`TestCaseDataset`) wired into `EvaluationRunner`
 - [x] `EucDefinition.validate()` enforces the pipeline contract — one or more filters per pipeline, every stage has a filter key (called automatically by `EucLoader`)
-- [ ] `PipelineBuilder` that assembles the execution/evaluation chain from `executionPipeline`/`evaluationPipeline` (schema now supports this — see `docs/proposal.md` Section 4; implementation not yet wired)
-- [ ] First live eval pass run against a real model, and gaps documented in "Lessons Learned" below
+- [x] `PipelineBuilder` assembles the execution chain from `executionPipeline`: each stage's `filter` key ("eligibility", "geography", "requiredInfo", "alignmentReasoning") resolves through an `ExecutionFilterRegistry` to a filter class in `com.euc.grantfit.pipeline`; `GrantFitApplication` builds the registry and runs the pipeline instead of hand-wiring the checks. `onFailure: halt` stops the pipeline before `ALIGNMENT-001` runs — verified offline in `GrantFitApplicationTest` using a fake `FitReasoner` that asserts if it's ever invoked after a halt.
+- [x] Fixed a bug found while wiring the above: `EucLoader`'s `ObjectMapper` didn't enable case-insensitive enum matching, so the EUC JSON (`"type": "deterministic"`, `"onFailure": "halt"`) never actually deserialized against the uppercase Java enums — every `EucLoader.loadGrantFitAssessment()` call was failing before this fix, including in the existing test suite.
+- [ ] First live eval pass run against a real model (`LLM_API_KEY` not available in this environment — pipeline wiring is verified offline via `GrantFitApplicationTest`; only the network call to Anthropic itself remains unverified), and gaps documented in "Lessons Learned" below
 - [ ] Drift-detection experiment across model/prompt variants (Section 7 of `docs/proposal.md`) — planned for Week 5
+- [ ] `PipelineBuilder` for the **evaluation** pipeline (`evaluationPipeline`) — `GrantFitEvaluator` still hand-scores the three criteria rather than resolving them through an `EvaluationFilterRegistry`; the execution side is now schema-driven, the evaluation side isn't yet
 
 **Not yet done, by design:** the reasoning layer has not been run against
 a live model in this environment (no API key configured here). Running it
@@ -106,9 +108,17 @@ export LLM_API_KEY=your-anthropic-api-key
 export LLM_MODEL=claude-sonnet-4-6
 ```
 
+Never commit a real key or paste it into a chat session — see `.env.example`
+for the two variables this project reads, and set them via your shell
+(session export or shell profile) rather than a tracked file.
+
 ## Lessons Learned
 
-_To be completed after the first end-to-end eval pass — see Week 4/5 milestones._
+Pipeline wiring is now verified offline (`GrantFitApplicationTest`, no API
+key needed) — the remaining gap for a first live pass is purely the
+Anthropic network call and reading a real model's output through
+`LlmFitReasoner.parseResponse`. Full writeup pending after that first
+end-to-end run — see Week 4/5 milestones.
 
 ## Repository Structure
 
