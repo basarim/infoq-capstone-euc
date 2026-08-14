@@ -17,7 +17,7 @@ version: "0.3"
 
 ```json
 {
-  "id": "euc-capstone-proposal",
+  "id": "euc-proposal",
   "centralClaim": {
     "id": "claim-1-primary",
     "statement": "When the underlying prompt or model changes, evaluation against a fixed EUC will detect meaningful drift from business intent, without the EUC itself needing to change.",
