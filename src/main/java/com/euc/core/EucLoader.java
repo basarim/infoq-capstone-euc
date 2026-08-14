@@ -1,6 +1,7 @@
 package com.euc.core;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -22,6 +23,11 @@ public class EucLoader {
     public EucLoader() {
         this.mapper = new ObjectMapper();
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // EUC JSON authors write filter/onFailure values in lowercase
+        // ("deterministic", "halt"); the Java enums are uppercase by
+        // convention (DETERMINISTIC, HALT) — match case-insensitively
+        // rather than forcing the schema to mirror Java naming.
+        this.mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
     }
 
     public EucDefinition load(String classpathResource) {
