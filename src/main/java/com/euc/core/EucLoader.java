@@ -27,7 +27,7 @@ public class EucLoader {
         // ("deterministic", "halt"); the Java enums are uppercase by
         // convention (DETERMINISTIC, HALT) — match case-insensitively
         // rather than forcing the schema to mirror Java naming.
-        this.mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true);
+        this.mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
     }
 
     public EucDefinition load(String classpathResource) {
