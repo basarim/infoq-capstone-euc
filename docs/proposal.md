@@ -185,7 +185,7 @@ That structure is only half of a traditional use case — the other half is the 
 | **Extension — forgot password** | 1a. User selects "Forgot password." 1b. System invokes Reset Password. |
 | **Extension — account lockout** | 2a. After N consecutive failed attempts, system invokes Lock Account and denies further attempts. |
 
-This is exactly the artifact category an EUC departs from: the table above is prose, reviewed by people, and implemented by hand into whatever the login system's code and tests happen to be — there's no path from this table to something a machine executes or evaluates directly. Applying the same actor/goal/include/extend structure to this project's own case study makes that departure concrete: `Assess Grant Fit` is the primary use case for the `grant-fit-assessment` EUC; `Check Eligibility` and `Assess Mission Alignment` are `«include»`d sub-use-cases — mapping directly onto the deterministic and reasoned stage groups in `executionPipeline` — and `Evaluate Assessment` maps onto `evaluationPipeline`. Where a traditional use case diagram stops at that picture (a design artifact for humans to discuss), the EUC continues: each of those use cases corresponds to real, typed JSON in `src/main/resources/euc/grant-fit-assessment.json` that a `PipelineBuilder` can read and actually execute.
+This is exactly the artifact category an EUC departs from: the table above is prose, reviewed by people, and implemented by hand into whatever the login system's code and tests happen to be — there's no path from this table to something a machine executes or evaluates directly. Applying the same actor/goal/include/extend structure to this project's own case study makes that departure concrete: `Assess Grant Fit` is the primary use case for the `grant-fit-assessment` EUC; `Check Eligibility` and `Assess Mission Alignment` are `«include»`d sub-use-cases — mapping directly onto the deterministic and reasoned stage groups in `executionPipeline` — and `Evaluate Assessment` maps onto `evaluationPipeline`. Where a traditional use case diagram stops at that picture (a design artifact for humans to discuss), the EUC continues: each of those use cases corresponds to real, typed JSON in `src/main/resources/euc/grant-fit-assessment/grant-fit-assessment.json` that a `PipelineBuilder` can read and actually execute.
 
 The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each execution stage names a `filter` — a lookup key into a filter registry — so a pipeline can be assembled mechanically from the EUC rather than hand-wired per use case. A pipeline is comprised of one or more filters; the exact number and mix depends on what each EUC's contract requires, without any orchestration code changing. A use case with a single deterministic check is a valid one-filter pipeline; Grant Fit Assessment's four-stage pipeline is just a larger instance of the same contract, not a structurally different case.
 
@@ -248,7 +248,7 @@ The schema is deliberately shaped around the **Pipe-and-Filter** pattern: each e
 }
 ```
 
-*(Abbreviated for readability — the full EUC has four execution stages and three evaluation stages; see `src/main/resources/euc/grant-fit-assessment.json` in the repo.)*
+*(Abbreviated for readability — the full EUC has four execution stages and three evaluation stages; see `src/main/resources/euc/grant-fit-assessment/grant-fit-assessment.json` in the repo.)*
 
 | Field | Purpose |
 |---|---|

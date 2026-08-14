@@ -44,6 +44,6 @@ public class EucLoader {
     }
 
     public static EucDefinition loadGrantFitAssessment() {
-        return new EucLoader().load("euc/grant-fit-assessment.json");
+        return new EucLoader().load("euc/grant-fit-assessment/grant-fit-assessment.json");
     }
 }
