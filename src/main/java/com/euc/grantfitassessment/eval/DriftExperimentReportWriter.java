@@ -10,15 +10,30 @@ import java.util.Map;
 
 /**
  * Serializes a DriftExperimentReport to JSON (eval/grant-fit-assessment/results/,
- * per the README's repository layout). Writes data only, not FitReasoner instances
- * — variants are identified by their label, not by trying to serialize the
- * reasoner object behind them.
+ * per the README's repository layout, and the REST API's /api/drift-experiment
+ * response — see com.euc.grantfitassessment.web). Writes data only, not
+ * FitReasoner instances — variants are identified by their label, not by
+ * trying to serialize the reasoner object behind them.
  */
 public class DriftExperimentReportWriter {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static void writeJson(DriftExperimentReport report, File outputFile) {
+        ObjectNode root = toJson(report);
+
+        try {
+            File parent = outputFile.getParentFile();
+            if (parent != null) {
+                parent.mkdirs();
+            }
+            MAPPER.writerWithDefaultPrettyPrinter().writeValue(outputFile, root);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write drift experiment report to " + outputFile, e);
+        }
+    }
+
+    public static ObjectNode toJson(DriftExperimentReport report) {
         ObjectNode root = MAPPER.createObjectNode();
         root.put("baseline", report.baseline().label());
         root.put("driftDetectionRate", nanSafe(report.driftDetectionRate()));
@@ -54,15 +69,7 @@ public class DriftExperimentReportWriter {
             }
         }
 
-        try {
-            File parent = outputFile.getParentFile();
-            if (parent != null) {
-                parent.mkdirs();
-            }
-            MAPPER.writerWithDefaultPrettyPrinter().writeValue(outputFile, root);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to write drift experiment report to " + outputFile, e);
-        }
+        return root;
     }
 
     private static Double nanSafe(double value) {

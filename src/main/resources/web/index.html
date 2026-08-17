@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EUC — Grant Fit Assessment</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>Executable Use Case: Grant Fit Assessment</h1>
+    <p class="subtitle">
+      Experimentation UI over the EUC-driven pipeline — see
+      <a href="/api/euc" target="_blank" rel="noopener">/api/euc</a> for the raw definition.
+    </p>
+  </header>
+
+  <section id="euc-summary">
+    <h2>Loaded EUC</h2>
+    <div id="euc-summary-content">Loading…</div>
+  </section>
+
+  <section id="assess">
+    <h2>Try an Assessment</h2>
+
+    <div class="form-row">
+      <label for="sample-select">Load sample case
+        <select id="sample-select">
+          <option value="">— none —</option>
+        </select>
+      </label>
+    </div>
+
+    <form id="assess-form">
+      <fieldset>
+        <legend>Organization</legend>
+        <label>Name
+          <input name="org.name" required>
+        </label>
+        <label>Mission statement
+          <textarea name="org.missionStatement" rows="2" required></textarea>
+        </label>
+        <label>Programs (comma-separated)
+          <input name="org.programs">
+        </label>
+        <label>Operating region
+          <input name="org.operatingRegion" required>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" name="org.isRegisteredNonprofit">
+          Registered nonprofit
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Grant</legend>
+        <label>Funder name
+          <input name="grant.funderName" required>
+        </label>
+        <label>Grant name
+          <input name="grant.grantName" required>
+        </label>
+        <label>Funding priorities (comma-separated)
+          <input name="grant.fundingPriorities">
+        </label>
+        <label>Eligibility requirements (comma-separated)
+          <input name="grant.eligibilityRequirements">
+        </label>
+        <label>Allowed regions (comma-separated)
+          <input name="grant.allowedRegions">
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" name="grant.requiresRegisteredNonprofit">
+          Requires registered nonprofit
+        </label>
+      </fieldset>
+
+      <button type="submit">Run Assessment</button>
+    </form>
+
+    <div id="assess-result"></div>
+  </section>
+
+  <section id="evaluate">
+    <h2>Run Full Evaluation</h2>
+    <p>Scores the application against all test cases in the eval dataset, using the same criteria the EUC declares.</p>
+    <button id="evaluate-button">Run Evaluation</button>
+    <div id="evaluate-result"></div>
+  </section>
+
+  <section id="drift">
+    <h2>Run Drift Experiment (Week 5)</h2>
+    <p>
+      Baseline reasoner vs. a prompt-variant reasoner (and a model-swap
+      variant, if <code>LLM_MODEL_VARIANT</code> is set server-side).
+      Makes several live LLM calls — can take a while.
+    </p>
+    <button id="drift-button">Run Drift Experiment</button>
+    <div id="drift-result"></div>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>

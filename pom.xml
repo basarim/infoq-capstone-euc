@@ -12,6 +12,14 @@
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Default for `mvn exec:java`. A plain <mainClass> literal inside
+         exec-maven-plugin's <configuration> block would NOT be
+         overridable via -Dexec.mainClass=... on the command line, since
+         a POM-configured value wins over the CLI property for that
+         parameter. Defining it as a project property instead means the
+         property still supplies this default, but -Dexec.mainClass=...
+         takes precedence the normal way properties do. -->
+    <exec.mainClass>com.euc.grantfitassessment.GrantFitApplication</exec.mainClass>
   </properties>
 
   <dependencies>
@@ -37,9 +45,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.2.0</version>
-        <configuration>
-          <mainClass>com.euc.grantfitassessment.GrantFitApplication</mainClass>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

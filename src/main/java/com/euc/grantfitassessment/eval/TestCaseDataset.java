@@ -2,6 +2,7 @@ package com.euc.grantfitassessment.eval;
 
 import com.euc.grantfitassessment.GrantOpportunity;
 import com.euc.grantfitassessment.Organization;
+import com.euc.grantfitassessment.json.GrantFitJson;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,7 +17,8 @@ import java.util.List;
  * Reads via a JsonNode tree rather than direct record binding because
  * Organization/GrantOpportunity/TestCase are records with more fields
  * than any single JSON shape maps 1:1 — explicit field reads keep the
- * dataset format decoupled from Java record constructor order.
+ * dataset format decoupled from Java record constructor order. Organization/
+ * GrantOpportunity parsing itself is shared with the REST API via GrantFitJson.
  */
 public class TestCaseDataset {
 
@@ -50,8 +52,8 @@ public class TestCaseDataset {
     }
 
     private TestCase parseTestCase(JsonNode node) {
-        Organization org = parseOrganization(node.get("organization"));
-        GrantOpportunity grant = parseGrant(node.get("grant"));
+        Organization org = GrantFitJson.parseOrganization(node.get("organization"));
+        GrantOpportunity grant = GrantFitJson.parseGrant(node.get("grant"));
 
         return new TestCase(
                 node.get("caseId").asText(),
@@ -60,36 +62,7 @@ public class TestCaseDataset {
                 node.get("expectedEligible").asBoolean(),
                 node.get("expectedFitClassification").asText(),
                 node.get("groundTruthRationale").asText(),
-                toStringList(node.get("expectedEvidenceKeywords"))
+                GrantFitJson.toStringList(node.get("expectedEvidenceKeywords"))
         );
-    }
-
-    private Organization parseOrganization(JsonNode n) {
-        return new Organization(
-                n.get("name").asText(),
-                n.get("missionStatement").asText(),
-                toStringList(n.get("programs")),
-                n.get("operatingRegion").asText(),
-                n.get("isRegisteredNonprofit").asBoolean()
-        );
-    }
-
-    private GrantOpportunity parseGrant(JsonNode n) {
-        return new GrantOpportunity(
-                n.get("funderName").asText(),
-                n.get("grantName").asText(),
-                toStringList(n.get("fundingPriorities")),
-                toStringList(n.get("eligibilityRequirements")),
-                toStringList(n.get("allowedRegions")),
-                n.get("requiresRegisteredNonprofit").asBoolean()
-        );
-    }
-
-    private List<String> toStringList(JsonNode arrayNode) {
-        List<String> list = new ArrayList<>();
-        if (arrayNode != null) {
-            arrayNode.forEach(n -> list.add(n.asText()));
-        }
-        return list;
     }
 }

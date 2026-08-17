@@ -1,0 +1,115 @@
+:root {
+  color-scheme: light dark;
+  --border: #8888;
+  --muted: #888;
+  --danger: #d33;
+  --accent: #4a7;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  max-width: 860px;
+  margin: 2rem auto;
+  padding: 0 1rem 4rem;
+  line-height: 1.5;
+}
+
+header .subtitle {
+  color: var(--muted);
+}
+
+section {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+h2 {
+  margin-bottom: 0.5rem;
+}
+
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin: 0.6rem 0;
+}
+
+label.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+input:not([type="checkbox"]), textarea, select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem;
+  margin-top: 0.2rem;
+  font: inherit;
+}
+
+input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+button {
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.result-card {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.result-card.ineligible {
+  border-left-color: var(--danger);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border-radius: 4px;
+  background: #8883;
+  font-weight: 600;
+}
+
+.pending {
+  color: var(--muted);
+}
+
+.error {
+  color: var(--danger);
+}
+
+.form-row {
+  margin-bottom: 1rem;
+}
+
+code {
+  background: #8882;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
