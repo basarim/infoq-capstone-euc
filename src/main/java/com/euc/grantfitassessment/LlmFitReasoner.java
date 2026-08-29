@@ -1,6 +1,7 @@
 package com.euc.grantfitassessment;
 
 import com.euc.core.EucDefinition;
+import com.euc.core.Policy;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -58,8 +59,8 @@ public class LlmFitReasoner implements FitReasoner {
         StringBuilder sb = new StringBuilder();
         sb.append("Goal: ").append(euc.getGoal()).append("\n\n");
         sb.append("Policies:\n");
-        for (String policy : euc.getPolicies()) {
-            sb.append("- ").append(policy).append("\n");
+        for (Policy policy : euc.getPolicies()) {
+            sb.append("- ").append(policy.getDescription()).append("\n");
         }
         sb.append("\nExpected outcomes (choose exactly one): ")
                 .append(String.join(", ", euc.getExpectedOutcomes())).append("\n\n");

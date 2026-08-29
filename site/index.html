@@ -402,6 +402,9 @@ figure.figure figcaption code{font-size:.85em}
 .seqdiag .snum{font-family:"DM Mono",monospace;font-size:9px;fill:var(--brass)}
 .seqdiag .salt{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:1px;fill:var(--brass)}
 .seqdiag .sguard{font-family:"DM Mono",monospace;font-size:10px;fill:var(--ink-faint)}
+.seqdiag .snotet{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1.2px;fill:var(--brass)}
+.seqdiag .snote{font-family:"Karla",sans-serif;font-size:11px;fill:var(--ink-soft)}
+.figbody svg.seqdiag{min-width:940px}
 
 /* ── Callout ──────────────────────────────────────────────────────────── */
 .callout{
@@ -757,7 +760,7 @@ ol.steps li::before{
   ]
 }</pre>
         </div>
-        <p class="fignote">JSON is one option; YAML would do equally well. The idea matters more than the syntax — <code>executionRequirements</code> describe what the application must do, <code>evaluationCriteria</code> describe what must be checked, and <code>tracesTo</code> connects them. Nothing here says <em>how</em>.</p>
+        <p class="fignote">JSON is one option; YAML would do equally well. The idea matters more than the syntax — <code>executionRequirements</code> describe what the application must do, <code>evaluationCriteria</code> describe what must be checked, and <code>tracesTo</code> connects them. Nothing here says <em>how</em>. This is the shape the prototype actually loads: a <code>tracesTo</code> entry naming something the use case doesn't declare fails at load time, so one mistyped id breaks the build rather than quietly producing a result nobody can account for.</p>
       </details>
     </div>
   </div>
@@ -801,67 +804,112 @@ ol.steps li::before{
       </div>
 
       <figure class="figure">
-        <div class="figbody"><svg class="seqdiag" viewBox="0 0 980 478" role="img" aria-label="Interaction diagram for one grant fit assessment. The program manager requests an assessment from the application. The application reads the goal, rules, policies and criteria from the Executable Use Case. It runs the deterministic ELIGIBILITY-001 requirement against the rules engine, which returns eligible = false. An alternative block shows the halt contract: if eligibility failed, the application returns POOR_FIT without ever invoking the model; if eligibility passed, it invokes the model for ALIGNMENT-001 under the use case policies. Finally the application sends the result and criteria to evaluation, which asks the same Executable Use Case which requirement each criterion traces back to.">
-    <rect x="38" y="8" width="132" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-  <text x="104" y="28" text-anchor="middle" class="snm">Program</text>
-  <text x="104" y="44" text-anchor="middle" class="snm">Manager</text>
-  <line x1="104" y1="70" x2="104" y2="456" class="slife"/>
-  <rect x="200" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-  <text x="266" y="28" text-anchor="middle" class="snm">Application</text>
-  <line x1="266" y1="52" x2="266" y2="456" class="slife"/>
-  <rect x="364" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-  <text x="430" y="28" text-anchor="middle" class="snm">EUC</text>
-  <line x1="430" y1="52" x2="430" y2="456" class="slife"/>
-  <rect x="508" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-  <text x="574" y="28" text-anchor="middle" class="snm">Rules</text>
-  <line x1="574" y1="52" x2="574" y2="456" class="slife"/>
-  <rect x="658" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-  <text x="724" y="28" text-anchor="middle" class="snm">Model</text>
-  <line x1="724" y1="52" x2="724" y2="456" class="slife"/>
-  <rect x="822" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-  <text x="888" y="28" text-anchor="middle" class="snm">Evaluation</text>
-  <line x1="888" y1="52" x2="888" y2="456" class="slife"/>
-  <path d="M104 104 H260" class="smsg"/>
-  <path d="M266 104 l-7 -4 v8 z" class="smsghead"/>
-  <text x="185.0" y="96" text-anchor="middle" class="slbl">request assessment</text>
-  <circle cx="19.0" cy="100" r="8.5" class="snumbg"/><text x="19.0" y="103" text-anchor="middle" class="snum">1</text>
-  <path d="M266 148 H424" class="smsg"/>
-  <path d="M430 148 l-7 -4 v8 z" class="smsghead"/>
-  <text x="348.0" y="140" text-anchor="middle" class="slbl">read goal, rules, policies, criteria</text>
-  <circle cx="19.0" cy="144" r="8.5" class="snumbg"/><text x="19.0" y="147" text-anchor="middle" class="snum">2</text>
-  <path d="M430 180 H272" class="smsg dash"/>
-  <path d="M266 180 l7 -4 v8 z" class="smsghead"/>
-  <text x="348.0" y="172" text-anchor="middle" class="slbl">business reference</text>
-  <path d="M266 222 H568" class="smsg"/>
-  <path d="M574 222 l-7 -4 v8 z" class="smsghead"/>
-  <text x="420.0" y="214" text-anchor="middle" class="slbl">ELIGIBILITY-001</text>
-  <circle cx="19.0" cy="218" r="8.5" class="snumbg"/><text x="19.0" y="221" text-anchor="middle" class="snum">3</text>
-  <path d="M574 254 H272" class="smsg dash"/>
-  <path d="M266 254 l7 -4 v8 z" class="smsghead"/>
-  <text x="420.0" y="246" text-anchor="middle" class="slbl">eligible = false</text>
-  <rect x="42" y="274" width="922" height="134" rx="2" fill="none" stroke="var(--brass)" stroke-opacity=".5" stroke-dasharray="3 3"/>
-  <rect x="42" y="274" width="88" height="19" fill="var(--brass-wash)" stroke="var(--brass)" stroke-opacity=".5"/>
-  <text x="52" y="288" class="salt">alt · halt</text>
-  <text x="146" y="288" class="sguard">[eligibility failed]</text>
-  <path d="M266 320 H110" class="smsg"/>
-  <path d="M104 320 l7 -4 v8 z" class="smsghead"/>
-  <text x="185.0" y="312" text-anchor="middle" class="slbl">POOR_FIT — model never invoked</text>
-  <circle cx="19.0" cy="316" r="8.5" class="snumbg"/><text x="19.0" y="319" text-anchor="middle" class="snum">4</text>
-  <line x1="42" y1="340" x2="964" y2="340" stroke="var(--brass)" stroke-opacity=".4" stroke-dasharray="3 3"/>
-  <text x="52" y="356" class="sguard">[eligibility passed]</text>
-  <path d="M266 388 H718" class="smsg"/>
-  <path d="M724 388 l-7 -4 v8 z" class="smsghead"/>
-  <text x="495.0" y="380" text-anchor="middle" class="slbl">ALIGNMENT-001, under policies</text>
-  <circle cx="19.0" cy="384" r="8.5" class="snumbg"/><text x="19.0" y="387" text-anchor="middle" class="snum">5</text>
-  <path d="M266 436 H882" class="smsg"/>
-  <path d="M888 436 l-7 -4 v8 z" class="smsghead"/>
-  <text x="577.0" y="428" text-anchor="middle" class="slbl">result + criteria</text>
-  <circle cx="19.0" cy="432" r="8.5" class="snumbg"/><text x="19.0" y="435" text-anchor="middle" class="snum">6</text>
-  <path d="M888 462 H436" class="smsg dash"/>
-  <path d="M430 462 l7 -4 v8 z" class="smsghead"/>
-  <text x="659.0" y="454" text-anchor="middle" class="slbl">which requirement does this trace to?</text>
+        <div class="figbody"><svg class="seqdiag" viewBox="0 0 1200 972" role="img" aria-label="Interaction diagram with seven participants: client, intent routing agent, EUC registry, criteria evaluator, rules evaluator, LLM model, and evaluation. The client asks the intent routing agent to assess a grant opportunity. The agent resolves the grant-fit-assessment use case from the EUC registry, receiving its goal, rules, policies, requirements and criteria. An alternative block then routes by the requirement's declared type. On the deterministic path, the agent applies the mandatory rules through the rules evaluator, gets eligible = false, and returns POOR_FIT to the client; a note records that the criterion in play is EVAL-ELIGIBILITY, tracing to the eligibility, geography and required-information requirements, and that the LLM lane is never touched. On the reasoned path, the agent asks the criteria evaluator to assess alignment, which invokes the LLM model for semantic interpretation of mission against funder priorities, returning a fit classification with supporting evidence and an explanation; a note records that the criteria in play are EVAL-ALIGNMENT and EVAL-EVIDENCE, tracing to the alignment requirement and the evidence and missing-data policies. After either path, the agent sends the result and the context execution wrote to evaluation, which asks the same EUC registry which criteria apply and what they trace to, then returns verdicts to the client, each traced back to a business requirement.">
+    <rect x="42" y="8" width="148" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="116" y="38" text-anchor="middle" class="snm">Client</text>
+  <rect x="198" y="8" width="148" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="272" y="29" text-anchor="middle" class="snm">Intent Routing</text>
+  <text x="272" y="46" text-anchor="middle" class="snm">Agent</text>
+  <rect x="354" y="8" width="148" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="428" y="29" text-anchor="middle" class="snm">EUC</text>
+  <text x="428" y="46" text-anchor="middle" class="snm">Registry</text>
+  <rect x="510" y="8" width="148" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="584" y="29" text-anchor="middle" class="snm">Criteria</text>
+  <text x="584" y="46" text-anchor="middle" class="snm">Evaluator</text>
+  <rect x="666" y="8" width="148" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="740" y="29" text-anchor="middle" class="snm">Rules</text>
+  <text x="740" y="46" text-anchor="middle" class="snm">Evaluator</text>
+  <rect x="44" y="278" width="1140" height="512" rx="2" fill="none" stroke="var(--brass)" stroke-opacity=".5" stroke-dasharray="3 3"/>
+  <rect x="822" y="8" width="148" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="896" y="38" text-anchor="middle" class="snm">LLM Model</text>
+  <rect x="978" y="8" width="148" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="1052" y="38" text-anchor="middle" class="snm">Evaluation</text>
+  <line x1="116" y1="70" x2="116" y2="894" class="slife"/>
+  <line x1="272" y1="70" x2="272" y2="894" class="slife"/>
+  <line x1="428" y1="70" x2="428" y2="894" class="slife"/>
+  <line x1="584" y1="70" x2="584" y2="894" class="slife"/>
+  <line x1="740" y1="70" x2="740" y2="894" class="slife"/>
+  <line x1="896" y1="70" x2="896" y2="894" class="slife"/>
+  <line x1="1052" y1="70" x2="1052" y2="894" class="slife"/>
+  <path d="M116 110 H266" class="smsg"/>
+  <path d="M272 110 l-7 -4 v8 z" class="smsghead"/>
+  <text x="194.0" y="102" text-anchor="middle" class="slbl">assess this grant opportunity</text>
+  <circle cx="20.0" cy="106" r="8.5" class="snumbg"/><text x="20.0" y="109" text-anchor="middle" class="snum">1</text>
+  <path d="M272 148 H422" class="smsg"/>
+  <path d="M428 148 l-7 -4 v8 z" class="smsghead"/>
+  <text x="350.0" y="140" text-anchor="middle" class="slbl">resolve &quot;grant-fit-assessment&quot;</text>
+  <circle cx="20.0" cy="144" r="8.5" class="snumbg"/><text x="20.0" y="147" text-anchor="middle" class="snum">2</text>
+  <path d="M428 178 H278" class="smsg dash"/>
+  <path d="M272 178 l7 -4 v8 z" class="smsghead"/>
+  <text x="350.0" y="170" text-anchor="middle" class="slbl">goal · rules · policies · requirements · criteria</text>
+  <path d="M676 196 H1158 L1170 208 V250 H676 Z" fill="var(--brass-wash)" stroke="var(--brass)"/>
+  <path d="M1158 196 V208 H1170" fill="none" stroke="var(--brass)"/>
+  <text x="687" y="213" class="snotet">THE ROUTING AGENT NOW KNOWS</text>
+  <text x="687" y="230" class="snote">what must happen, and what each result will be judged against —</text>
+  <text x="687" y="245" class="snote">both from the same definition, neither one re-derived.</text>
+  <rect x="44" y="278" width="204" height="19" fill="var(--brass-wash)" stroke="var(--brass)" stroke-opacity=".5"/>
+  <text x="54" y="292" class="salt">alt · by requirement type</text>
+  <text x="264" y="292" class="sguard">[ type = deterministic — ELIGIBILITY-001, GEOGRAPHY-001, INFO-001 ]</text>
+  <path d="M272 330 H734" class="smsg"/>
+  <path d="M740 330 l-7 -4 v8 z" class="smsghead"/>
+  <text x="506.0" y="322" text-anchor="middle" class="slbl">apply the mandatory rules</text>
+  <circle cx="20.0" cy="326" r="8.5" class="snumbg"/><text x="20.0" y="329" text-anchor="middle" class="snum">3</text>
+  <path d="M740 360 H278" class="smsg dash"/>
+  <path d="M272 360 l7 -4 v8 z" class="smsghead"/>
+  <text x="506.0" y="352" text-anchor="middle" class="slbl">eligible = false · failedEligibilityRules</text>
+  <path d="M272 392 H122" class="smsg"/>
+  <path d="M116 392 l7 -4 v8 z" class="smsghead"/>
+  <text x="194.0" y="384" text-anchor="middle" class="slbl">POOR_FIT</text>
+  <circle cx="20.0" cy="388" r="8.5" class="snumbg"/><text x="20.0" y="391" text-anchor="middle" class="snum">4</text>
+  <path d="M560 412 H1158 L1170 424 V481 H560 Z" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
+  <path d="M1158 412 V424 H1170" fill="none" stroke="var(--verdigris)"/>
+  <text x="571" y="429" class="snotet">CRITERION IN PLAY — EVAL-ELIGIBILITY</text>
+  <text x="571" y="446" class="snote">“Eligibility follows the grant's mandatory requirements”</text>
+  <text x="571" y="461" class="snote">tracesTo: ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001 · RULE-ELIGIBILITY</text>
+  <text x="571" y="476" class="snote">Settled by rules alone — the LLM lane is never touched.</text>
+  <line x1="44" y1="503" x2="1184" y2="503" stroke="var(--brass)" stroke-opacity=".4" stroke-dasharray="3 3"/>
+  <text x="54" y="519" class="sguard">[ type = reasoned — ALIGNMENT-001, under the use case policies ]</text>
+  <path d="M272 561 H578" class="smsg"/>
+  <path d="M584 561 l-7 -4 v8 z" class="smsghead"/>
+  <text x="428.0" y="553" text-anchor="middle" class="slbl">assess alignment</text>
+  <circle cx="20.0" cy="557" r="8.5" class="snumbg"/><text x="20.0" y="560" text-anchor="middle" class="snum">5</text>
+  <path d="M584 591 H890" class="smsg"/>
+  <path d="M896 591 l-7 -4 v8 z" class="smsghead"/>
+  <text x="740.0" y="583" text-anchor="middle" class="slbl">semantic interpretation of mission vs. priorities</text>
+  <circle cx="20.0" cy="587" r="8.5" class="snumbg"/><text x="20.0" y="590" text-anchor="middle" class="snum">6</text>
+  <path d="M896 621 H590" class="smsg dash"/>
+  <path d="M584 621 l7 -4 v8 z" class="smsghead"/>
+  <text x="740.0" y="613" text-anchor="middle" class="slbl">fitClassification · supportingEvidence · explanation</text>
+  <path d="M584 651 H278" class="smsg dash"/>
+  <path d="M272 651 l7 -4 v8 z" class="smsghead"/>
+  <text x="428.0" y="643" text-anchor="middle" class="slbl">assessed result</text>
+  <path d="M272 683 H122" class="smsg"/>
+  <path d="M116 683 l7 -4 v8 z" class="smsghead"/>
+  <text x="194.0" y="675" text-anchor="middle" class="slbl">STRONG_FIT / POSSIBLE_FIT / POOR_FIT</text>
+  <circle cx="20.0" cy="679" r="8.5" class="snumbg"/><text x="20.0" y="682" text-anchor="middle" class="snum">7</text>
+  <path d="M560 703 H1158 L1170 715 V772 H560 Z" fill="var(--brass-wash)" stroke="var(--brass)"/>
+  <path d="M1158 703 V715 H1170" fill="none" stroke="var(--brass)"/>
+  <text x="571" y="720" class="snotet">CRITERIA IN PLAY — EVAL-ALIGNMENT, EVAL-EVIDENCE</text>
+  <text x="571" y="737" class="snote">“Fit classification reflects the funder's stated priorities”</text>
+  <text x="571" y="752" class="snote">“No unsupported information is introduced”</text>
+  <text x="571" y="767" class="snote">tracesTo: ALIGNMENT-001 · POLICY-EVIDENCE · POLICY-MISSING-DATA</text>
+  <path d="M272 842 H1046" class="smsg"/>
+  <path d="M1052 842 l-7 -4 v8 z" class="smsghead"/>
+  <text x="662.0" y="834" text-anchor="middle" class="slbl">result + the context execution wrote</text>
+  <circle cx="20.0" cy="838" r="8.5" class="snumbg"/><text x="20.0" y="841" text-anchor="middle" class="snum">8</text>
+  <path d="M1052 876 H434" class="smsg"/>
+  <path d="M428 876 l7 -4 v8 z" class="smsghead"/>
+  <text x="740.0" y="868" text-anchor="middle" class="slbl">which criteria apply, and what do they trace to?</text>
+  <circle cx="20.0" cy="872" r="8.5" class="snumbg"/><text x="20.0" y="875" text-anchor="middle" class="snum">9</text>
+  <path d="M428 906 H1046" class="smsg dash"/>
+  <path d="M1052 906 l-7 -4 v8 z" class="smsghead"/>
+  <text x="740.0" y="898" text-anchor="middle" class="slbl">EVAL-ELIGIBILITY · EVAL-ALIGNMENT · EVAL-EVIDENCE</text>
+  <path d="M1052 942 H122" class="smsg"/>
+  <path d="M116 942 l7 -4 v8 z" class="smsghead"/>
+  <text x="584.0" y="934" text-anchor="middle" class="slbl">verdicts, each traced back to a business requirement</text>
+  <circle cx="20.0" cy="938" r="8.5" class="snumbg"/><text x="20.0" y="941" text-anchor="middle" class="snum">10</text>
 </svg></div>
-        <figcaption>One assessment, end to end. The dashed frame is the <code>onFailure: halt</code> requirement made concrete. Note the last step — evaluation asks the <em>same</em> use case which requirement each criterion traces back to, rather than a separately maintained copy of what someone believed the intent to be.</figcaption>
+        <figcaption>One assessment, end to end. The routing agent reads the use case once, then routes each requirement by its declared <code>type</code>: the deterministic path is settled by rules alone and never reaches the model, while the reasoned path goes to semantic interpretation under the use case policies. The two notes name the criterion in play on each path, and what it traces back to. Note the last steps — evaluation asks the <em>same</em> registry which criteria apply, rather than a separately maintained copy of what someone believed the intent to be.</figcaption>
       </figure>
 
       <div class="prose">
@@ -1052,7 +1100,9 @@ ol.steps li::before{
         <div class="sitem done"><span class="st">Built</span><p>Deterministic eligibility rule engine and an evaluator bound to the EUC's criteria, both unit tested.</p></div>
         <div class="sitem done"><span class="st">Built</span><p>LLM-reasoned alignment assessment, and the <code>onFailure: halt</code> contract — verified offline with a reasoner that fails the test if it is ever invoked after a halt.</p></div>
         <div class="sitem done"><span class="st">Built</span><p>Controlled-change harness: baseline plus prompt and model variants, computing the result metrics against known inputs.</p></div>
-        <div class="sitem next"><span class="st">Next</span><p>Migrate the committed EUC from its pipeline shape to <code>executionRequirements</code> / <code>evaluationCriteria</code> / <code>tracesTo</code>, so the artifact carries traceability rather than an implementation choice.</p></div>
+        <div class="sitem done"><span class="st">Built</span><p>34 tests passing offline — the deterministic layer, the halt contract, the evaluators, the controlled-change metrics, and the traceability contract.</p></div>
+        <div class="sitem done"><span class="st">Built</span><p>The EUC carries traceability rather than an implementation choice: <code>rules</code>, <code>policies</code>, <code>executionRequirements</code> and <code>evaluationCriteria</code> joined by <code>tracesTo</code>. Implementations bind to requirement ids, so code names the requirement it satisfies and the use case never names a class.</p></div>
+        <div class="sitem done"><span class="st">Built</span><p><code>tracesTo</code> is enforced when the use case loads. A criterion pointing at something undeclared fails with a message naming the broken link, and anything no criterion checks is reported rather than hidden.</p></div>
         <div class="sitem next"><span class="st">Next</span><p>Map criteria into an existing evaluation framework — DeepEval or Ragas — rather than the current bespoke evaluator.</p></div>
         <div class="sitem next"><span class="st">Next</span><p>Expand the dataset from 6 to 10–15 scenarios, and record the change-effort indicators during controlled-change runs.</p></div>
         <div class="sitem open"><span class="st">Pending</span><p>First live evaluation pass against a real model. Every layer of wiring is verified offline; only the network call itself remains unexercised in this environment.</p></div>

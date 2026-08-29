@@ -1,20 +1,18 @@
 package com.euc.core;
 
 /**
- * Assembles and runs the EUC's executionPipeline mechanically: each stage's
- * `filter` key is resolved through an ExecutionFilterRegistry and executed
- * in the pipeline's declared array order.
+ * Runs the EUC's execution requirements in declared order, resolving each
+ * one to its implementation through an ExecutionFilterRegistry.
  *
- * This version executes strictly in array order regardless of `group` —
- * see EucRule.getGroup() javadoc. Every stage in the current EUC has a
- * unique group number, so array order and group order coincide and
- * behavior stays fully serial; a future concurrent engine could instead
- * run same-group stages together without a schema change.
+ * There is no orchestration logic specific to any use case here: the EUC
+ * says what must happen and in what order, the registry says what code
+ * carries each step out, and this class does nothing but walk the list.
  *
- * A stage whose outcome is FAILED and whose onFailure policy is HALT stops
- * the pipeline immediately — no later stage runs, matching the EUC's
- * explicit onFailure contract (docs/proposal.md Section 4) rather than an
- * assumption buried in application code.
+ * A requirement whose outcome is FAILED and whose onFailure policy is HALT
+ * stops the run immediately. That is the business contract being honoured —
+ * "strong alignment cannot overcome a failed mandatory requirement" is
+ * enforced here because the EUC says so, not because application code
+ * happens to be written that way.
  */
 public class PipelineBuilder {
 
@@ -26,12 +24,13 @@ public class PipelineBuilder {
         this.registry = registry;
     }
 
-    /** Runs every execution stage against the given context, in declared order. */
+    /** Carries out every execution requirement against the given context, in declared order. */
     public void run(PipelineContext context) {
-        for (EucRule stage : euc.getExecutionPipeline()) {
-            ExecutionFilter filter = registry.get(stage.getFilter());
-            ExecutionFilter.Outcome outcome = filter.execute(context, stage);
-            if (outcome == ExecutionFilter.Outcome.FAILED && stage.getOnFailure() == EucRule.OnFailure.HALT) {
+        for (ExecutionRequirement requirement : euc.getExecutionRequirements()) {
+            ExecutionFilter filter = registry.get(requirement.getId());
+            ExecutionFilter.Outcome outcome = filter.execute(context, requirement);
+            if (outcome == ExecutionFilter.Outcome.FAILED
+                    && requirement.getOnFailure() == ExecutionRequirement.OnFailure.HALT) {
                 break;
             }
         }

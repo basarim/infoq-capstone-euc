@@ -3,21 +3,17 @@ package com.euc.core;
 import java.util.List;
 
 /**
- * Declares the shared context that flows through the pipeline.
+ * The business information this use case depends on.
  *
- * In the Pipe-and-Filter pattern, filters don't exchange isolated
- * arguments — they read from and write to a shared context object that
- * accumulates state as it passes through the pipeline. `seedFields` names
- * what's present in that context before any filter runs (the pipeline's
- * initial inputs); each stage's `reads`/`writes` (see EucRule,
- * EvaluationStage) then declare how it consumes and grows that context.
+ * `seedFields` names what must already be present before any execution
+ * requirement runs — the decision's inputs. Each requirement then declares
+ * what it reads and what it writes, so the context grows as the use case
+ * proceeds.
  *
- * Evaluation stages read the same context execution stages wrote into,
- * rather than a separate copy — this is what makes the evaluation
- * pipeline's `reads` traceable to the execution pipeline's `writes`,
- * reinforcing the same-artifact-drives-both-execution-and-evaluation
- * claim (docs/proposal.md Section 1) at the data level, not just the
- * schema level.
+ * Evaluation reads the same context execution wrote into, rather than a
+ * separate copy. That is what makes an EvaluationCriterion's `reads`
+ * genuinely connected to an ExecutionRequirement's `writes`: the two halves
+ * are looking at the same data, not at two descriptions of it.
  */
 public class EucContext {
 
