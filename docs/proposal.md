@@ -35,23 +35,19 @@ date: "2026-08-29"
 
 ## 1. The question nobody can answer
 
-Picture a team six months into an AI-native application. It works. It shipped.
+Six months later, the team has rewritten the prompt, swapped the model, and
+re-chunked the retrieval layer. Every test still passes—but none can answer the most
+important question: Is the system still doing what the business intended?
 
-Since launch, someone has tightened a prompt, someone else swapped in a newer model
-because it was cheaper and faster, the retrieval layer was re-chunked, and a
-downstream service started returning an extra field that quietly changed what the
-model sees. Every one of those changes was reasonable. Every one was reviewed. The
-test suite is green.
+An Executable Use Case (EUC) provides a machine-readable definition of the intended
+business outcome, creating a common reference point for implementation, evaluation,
+and ongoing monitoring as the system evolves.
 
-Then a stakeholder asks a question that should be easy:
-
-> **Is the application still doing what the business intended?**
-
-And the room goes quiet — not because the team is careless, but because no one can
-point at the thing that would settle it. Business intent lives in a requirements doc
-someone wrote in month one, in a prompt that has been edited forty times since, in
-application code, in policy constraints, and in a set of evaluation cases written by
-whoever was closest to the model that week.
+The team cannot answer that question today, and not because anyone was careless.
+There is simply nothing to point at that would settle it: business intent lives in a
+requirements doc someone wrote in month one, in a prompt that has been edited forty
+times since, in application code, in policy constraints, and in a set of evaluation
+cases written by whoever was closest to the model that week.
 
 Each of those artifacts holds a piece of the intent. None of them is the intent.
 
