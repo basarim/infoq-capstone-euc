@@ -1,17 +1,20 @@
 package com.euc.core;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * An Executable Use Case (EUC): the single, machine-readable definition of
- * business intent that drives both application execution and evaluation.
+ * An Executable Use Case (EUC): a machine-readable statement of what the
+ * business requires, that both the implementation and the evaluation point
+ * back to.
  *
- * The structure is aligned with the Pipe-and-Filter pattern: executionPipeline
- * is an ordered list of filter stages (see EucRule) that a PipelineBuilder
- * can assemble mechanically, and evaluationPipeline is a structurally
- * parallel list of evaluation stages (see EvaluationStage) that reference
- * which execution stages they check. See docs/proposal.md, Section 3, for
- * the design rationale.
+ * It says nothing about prompts, models, retrieval strategy, frameworks or
+ * code — those are free to change, which is the point. What it does carry is
+ * the link between the two halves: every EvaluationCriterion declares, via
+ * `tracesTo`, which requirements, rules and policies it exists to validate.
+ * See docs/proposal.md Section 3.
  */
 public class EucDefinition {
 
@@ -19,10 +22,11 @@ public class EucDefinition {
     private String actor;
     private String goal;
     private EucContext context;
-    private List<EucRule> executionPipeline;
-    private List<String> policies;
+    private List<BusinessRule> rules;
+    private List<Policy> policies;
     private List<String> expectedOutcomes;
-    private List<EvaluationStage> evaluationPipeline;
+    private List<ExecutionRequirement> executionRequirements;
+    private List<EvaluationCriterion> evaluationCriteria;
 
     public EucDefinition() {
         // default constructor for Jackson deserialization
@@ -60,19 +64,19 @@ public class EucDefinition {
         this.context = context;
     }
 
-    public List<EucRule> getExecutionPipeline() {
-        return executionPipeline;
+    public List<BusinessRule> getRules() {
+        return rules;
     }
 
-    public void setExecutionPipeline(List<EucRule> executionPipeline) {
-        this.executionPipeline = executionPipeline;
+    public void setRules(List<BusinessRule> rules) {
+        this.rules = rules;
     }
 
-    public List<String> getPolicies() {
+    public List<Policy> getPolicies() {
         return policies;
     }
 
-    public void setPolicies(List<String> policies) {
+    public void setPolicies(List<Policy> policies) {
         this.policies = policies;
     }
 
@@ -84,63 +88,135 @@ public class EucDefinition {
         this.expectedOutcomes = expectedOutcomes;
     }
 
-    public List<EvaluationStage> getEvaluationPipeline() {
-        return evaluationPipeline;
+    public List<ExecutionRequirement> getExecutionRequirements() {
+        return executionRequirements;
     }
 
-    public void setEvaluationPipeline(List<EvaluationStage> evaluationPipeline) {
-        this.evaluationPipeline = evaluationPipeline;
+    public void setExecutionRequirements(List<ExecutionRequirement> executionRequirements) {
+        this.executionRequirements = executionRequirements;
     }
 
-    /** Convenience accessor: deterministic-only execution stages. */
-    public List<EucRule> deterministicStages() {
-        return executionPipeline.stream()
-                .filter(r -> r.getType() == EucRule.Type.DETERMINISTIC)
+    public List<EvaluationCriterion> getEvaluationCriteria() {
+        return evaluationCriteria;
+    }
+
+    public void setEvaluationCriteria(List<EvaluationCriterion> evaluationCriteria) {
+        this.evaluationCriteria = evaluationCriteria;
+    }
+
+    /** Requirements that are settled by an explicit check rather than model judgment. */
+    public List<ExecutionRequirement> deterministicRequirements() {
+        return executionRequirements.stream()
+                .filter(r -> r.getType() == ExecutionRequirement.Type.DETERMINISTIC)
                 .toList();
     }
 
-    /** Convenience accessor: reasoned (LLM-judged) execution stages. */
-    public List<EucRule> reasonedStages() {
-        return executionPipeline.stream()
-                .filter(r -> r.getType() == EucRule.Type.REASONED)
+    /** Requirements that need a model to weigh evidence and explain a judgment. */
+    public List<ExecutionRequirement> reasonedRequirements() {
+        return executionRequirements.stream()
+                .filter(r -> r.getType() == ExecutionRequirement.Type.REASONED)
                 .toList();
     }
 
-    /** Looks up a single execution stage by its id (e.g. "ELIGIBILITY-001"). */
-    public EucRule findStage(String stageId) {
-        return executionPipeline.stream()
-                .filter(r -> r.getId().equals(stageId))
+    /** Looks up a single execution requirement by its id (e.g. "ELIGIBILITY-001"). */
+    public ExecutionRequirement findRequirement(String requirementId) {
+        return executionRequirements.stream()
+                .filter(r -> r.getId().equals(requirementId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No execution stage with id " + stageId));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("No execution requirement with id " + requirementId));
     }
 
     /**
-     * Validates the EUC's structural contract: a pipeline (execution or
-     * evaluation) is comprised of one or more filters — an empty pipeline
-     * is not a valid use case, since it defines no behavior to run and
-     * nothing to evaluate. Called by EucLoader immediately after parsing
-     * so a malformed EUC fails loudly at load time rather than silently
-     * producing an application that does nothing.
+     * Every id a criterion is allowed to trace to: the execution
+     * requirements, business rules and policies this EUC declares.
      */
-    public void validate() {
-        if (executionPipeline == null || executionPipeline.isEmpty()) {
-            throw new IllegalStateException(
-                    "EUC '" + id + "' is invalid: executionPipeline must contain one or more filters");
+    public Set<String> traceableIds() {
+        Set<String> ids = new LinkedHashSet<>();
+        if (executionRequirements != null) {
+            executionRequirements.forEach(r -> ids.add(r.getId()));
         }
-        if (evaluationPipeline == null || evaluationPipeline.isEmpty()) {
-            throw new IllegalStateException(
-                    "EUC '" + id + "' is invalid: evaluationPipeline must contain one or more filters");
+        if (rules != null) {
+            rules.forEach(r -> ids.add(r.getId()));
         }
-        for (EucRule stage : executionPipeline) {
-            if (stage.getFilter() == null || stage.getFilter().isBlank()) {
-                throw new IllegalStateException(
-                        "EUC '" + id + "' is invalid: execution stage '" + stage.getId() + "' has no filter key");
+        if (policies != null) {
+            policies.forEach(p -> ids.add(p.getId()));
+        }
+        return ids;
+    }
+
+    /**
+     * Ids that no evaluation criterion traces to — the EUC's own account of
+     * where traceability is incomplete.
+     *
+     * The proposal treats a requirement nobody checks as a finding worth
+     * reporting rather than an error worth failing on (docs/proposal.md,
+     * "Visible mapping gaps"): some requirements may legitimately be
+     * unmeasurable, and hiding that would defeat the purpose. validate()
+     * therefore does not reject these; it is for callers to report them.
+     */
+    public List<String> untracedIds() {
+        Set<String> traced = new LinkedHashSet<>();
+        if (evaluationCriteria != null) {
+            for (EvaluationCriterion criterion : evaluationCriteria) {
+                if (criterion.getTracesTo() != null) {
+                    traced.addAll(criterion.getTracesTo());
+                }
             }
         }
-        for (EvaluationStage stage : evaluationPipeline) {
-            if (stage.getFilter() == null || stage.getFilter().isBlank()) {
+        List<String> gaps = new ArrayList<>(traceableIds());
+        gaps.removeAll(traced);
+        return gaps;
+    }
+
+    /**
+     * Validates the EUC's structural contract at load time, so a malformed
+     * definition fails loudly rather than silently producing an application
+     * that does nothing or an evaluation that measures nothing.
+     *
+     * The check that matters most is the last one. A `tracesTo` entry naming
+     * something the EUC does not declare is a broken link between evaluation
+     * and business intent — precisely the failure this artifact exists to
+     * prevent — so it is rejected here rather than discovered later as a
+     * result nobody can explain.
+     */
+    public void validate() {
+        if (executionRequirements == null || executionRequirements.isEmpty()) {
+            throw new IllegalStateException(
+                    "EUC '" + id + "' is invalid: executionRequirements must declare one or more responsibilities");
+        }
+        if (evaluationCriteria == null || evaluationCriteria.isEmpty()) {
+            throw new IllegalStateException(
+                    "EUC '" + id + "' is invalid: evaluationCriteria must declare one or more criteria");
+        }
+        for (ExecutionRequirement requirement : executionRequirements) {
+            if (requirement.getId() == null || requirement.getId().isBlank()) {
                 throw new IllegalStateException(
-                        "EUC '" + id + "' is invalid: evaluation stage '" + stage.getId() + "' has no filter key");
+                        "EUC '" + id + "' is invalid: an execution requirement has no id");
+            }
+            if (requirement.getType() == null) {
+                throw new IllegalStateException("EUC '" + id + "' is invalid: execution requirement '"
+                        + requirement.getId() + "' has no type");
+            }
+        }
+
+        Set<String> traceable = traceableIds();
+        for (EvaluationCriterion criterion : evaluationCriteria) {
+            if (criterion.getId() == null || criterion.getId().isBlank()) {
+                throw new IllegalStateException(
+                        "EUC '" + id + "' is invalid: an evaluation criterion has no id");
+            }
+            if (criterion.getTracesTo() == null || criterion.getTracesTo().isEmpty()) {
+                throw new IllegalStateException("EUC '" + id + "' is invalid: evaluation criterion '"
+                        + criterion.getId() + "' traces to nothing — a criterion that names no requirement"
+                        + " cannot connect its result back to business intent");
+            }
+            for (String target : criterion.getTracesTo()) {
+                if (!traceable.contains(target)) {
+                    throw new IllegalStateException("EUC '" + id + "' is invalid: evaluation criterion '"
+                            + criterion.getId() + "' traces to '" + target
+                            + "', which is not a declared execution requirement, rule or policy");
+                }
             }
         }
     }

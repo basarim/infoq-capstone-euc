@@ -17,13 +17,14 @@ import java.util.List;
 /**
  * End-to-end Grant Fit Assessment application.
  *
- * Execution is driven mechanically by PipelineBuilder from the EUC's
- * executionPipeline: each stage's `filter` key ("eligibility", "geography",
- * "requiredInfo", "alignmentReasoning") is resolved through an
- * ExecutionFilterRegistry built in the constructor below, rather than
- * hand-wired per use case. Both this class and GrantFitEvaluator load the
- * EUC through the same EucLoader — see docs/proposal.md Section 3 for why
- * that matters.
+ * The EUC says what must happen; the registry below says which class does
+ * each part. Every entry names an execution requirement id declared in
+ * grant-fit-assessment.json, so the code points at the business requirement
+ * it satisfies rather than the EUC pointing at code.
+ *
+ * This class and GrantFitEvaluator load the EUC through the same EucLoader,
+ * which is what makes them two consumers of one definition rather than two
+ * interpretations of it.
  */
 public class GrantFitApplication {
 
@@ -31,10 +32,10 @@ public class GrantFitApplication {
 
     public GrantFitApplication(EucDefinition euc, FitReasoner fitReasoner) {
         ExecutionFilterRegistry registry = new ExecutionFilterRegistry()
-                .register("eligibility", new EligibilityRuleFilter())
-                .register("geography", new GeographyRuleFilter())
-                .register("requiredInfo", new RequiredInfoRuleFilter())
-                .register("alignmentReasoning", new AlignmentReasoningFilter(fitReasoner, euc));
+                .register("ELIGIBILITY-001", new EligibilityRuleFilter())
+                .register("GEOGRAPHY-001", new GeographyRuleFilter())
+                .register("INFO-001", new RequiredInfoRuleFilter())
+                .register("ALIGNMENT-001", new AlignmentReasoningFilter(fitReasoner, euc));
 
         this.pipelineBuilder = new PipelineBuilder(euc, registry);
     }
@@ -49,11 +50,11 @@ public class GrantFitApplication {
 
         boolean eligible = context.get(GrantFitContextKeys.ELIGIBLE, Boolean.class);
         if (!eligible) {
-            // Per docs/proposal.md Section 5: a mandatory eligibility failure
-            // short-circuits fit reasoning entirely — strong alignment cannot
-            // overcome it. The pipeline halts before ALIGNMENT-001 runs (see
-            // its onFailure: "halt" in the EUC), so fit fields below are the
-            // short-circuit default rather than context reads.
+            // RULE-ELIGIBILITY-PRECEDES-FIT: strong alignment cannot overcome a
+            // failed mandatory requirement. The run halts before ALIGNMENT-001
+            // (its onFailure is "halt" in the EUC), so the fit fields below are
+            // the short-circuit default rather than context reads — the model
+            // was never asked.
             List<String> failedRules = context.get(GrantFitContextKeys.FAILED_ELIGIBILITY_RULES, List.class);
             return new AssessmentResult(
                     false,

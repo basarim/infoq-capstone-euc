@@ -301,12 +301,12 @@ details**. `executionRequirements` describe what the application must do.
 `evaluationCriteria` describe what must be checked. `tracesTo` connects the two.
 Nothing here says *how*.
 
-> **Note on the current prototype.** The committed EUC in
-> `src/main/resources/euc/grant-fit-assessment/` still uses an earlier shape —
-> `executionPipeline` and `evaluationPipeline`, with a `filter` key on each stage —
-> which mixes an implementation choice into the business artifact. Migrating it to
-> the `executionRequirements` / `evaluationCriteria` / `tracesTo` form above is
-> tracked as the next implementation step (see [Section 9](#9-where-this-stands)).
+> **This is what the prototype actually loads.** `EucLoader` parses exactly this
+> shape, and `EucDefinition.validate()` rejects a `tracesTo` entry that names
+> something the EUC does not declare — so a broken link between an evaluation
+> and the requirement it claims to validate fails at load time rather than
+> surfacing later as a result nobody can account for. A single mistyped id
+> fails the build.
 
 ---
 
@@ -347,47 +347,62 @@ implementation and evaluation techniques differ on either side of it.
 ### One request, end to end
 
 The interaction below shows a single assessment crossing the boundaries a real
-deployment would draw. The `alt` branch is the `onFailure: halt` requirement made
-concrete: a failed mandatory rule short-circuits to `POOR_FIT` without ever invoking
-the model — no tokens spent, and no chance for a persuasive explanation to paper
-over a hard failure.
+deployment would draw. The routing agent reads the use case once, then routes each
+requirement by its declared `type` — and the two branches behave completely
+differently.
 
-Note the last step. The evaluation harness loads criteria from the *same* EUC the
-orchestrator read from, and scores the context that execution actually produced —
-not a separately maintained copy of what someone believed the intent to be.
+On the **deterministic path**, a failed mandatory rule short-circuits to `POOR_FIT`
+without ever invoking the model: no tokens spent, and no chance for a persuasive
+explanation to paper over a hard failure. On the **reasoned path**, the question goes
+to semantic interpretation under the use case's policies, because no rule can settle
+whether a mission genuinely aligns with a funder's priorities.
+
+The notes on each branch name the criterion in play and what it traces back to. That
+is the property worth watching: whichever path a request takes, the verdict at the
+end resolves to a business requirement.
+
+Note the last steps. Evaluation asks the *same* registry the routing agent read from
+which criteria apply, and scores the context execution actually produced — not a
+separately maintained copy of what someone believed the intent to be.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant PM as Program Manager
-    participant Orch as Assessment Orchestrator
-    participant EUC as EUC (business reference)
-    participant Rules as Deterministic Rules
-    participant LLM as LLM Runtime
-    participant Eval as Evaluation Framework
+    participant CL as Client
+    participant RT as Intent Routing Agent
+    participant RG as EUC Registry
+    participant CE as Criteria Evaluator
+    participant RE as Rules Evaluator
+    participant LM as LLM Model
+    participant EV as Evaluation
 
-    PM->>Orch: Request grant fit assessment
-    activate Orch
-    Orch->>EUC: Read goal, rules, policies, requirements, criteria
-    EUC-->>Orch: Business reference
+    CL->>RT: assess this grant opportunity
+    activate RT
+    RT->>RG: resolve "grant-fit-assessment"
+    RG-->>RT: goal · rules · policies · requirements · criteria
+    Note over RT,RG: The routing agent now knows what must happen,<br/>and what each result will be judged against —<br/>both from the same definition, neither re-derived.
 
-    Orch->>Rules: ELIGIBILITY-001 — mandatory requirements
-    Rules-->>Orch: eligible = false
-
-    alt eligibility failed (onFailure: halt)
-        Orch-->>PM: POOR_FIT — model never invoked
-    else eligibility passed
-        Orch->>LLM: ALIGNMENT-001 — assess alignment, under policies
-        LLM-->>Orch: fitClassification, evidence, explanation
-        Orch-->>PM: STRONG_FIT / POSSIBLE_FIT / POOR_FIT
+    alt type = deterministic — ELIGIBILITY-001, GEOGRAPHY-001, INFO-001
+        RT->>RE: apply the mandatory rules
+        RE-->>RT: eligible = false · failedEligibilityRules
+        RT-->>CL: POOR_FIT
+        Note over RE,LM: Criterion in play — EVAL-ELIGIBILITY<br/>"Eligibility follows the grant's mandatory requirements"<br/>tracesTo: ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001 · RULE-ELIGIBILITY<br/>Settled by rules alone — the LLM lane is never touched.
+    else type = reasoned — ALIGNMENT-001, under the use case policies
+        RT->>CE: assess alignment
+        CE->>LM: semantic interpretation of mission vs. priorities
+        LM-->>CE: fitClassification · supportingEvidence · explanation
+        CE-->>RT: assessed result
+        RT-->>CL: STRONG_FIT / POSSIBLE_FIT / POOR_FIT
+        Note over CE,LM: Criteria in play — EVAL-ALIGNMENT, EVAL-EVIDENCE<br/>"Fit classification reflects the funder's stated priorities"<br/>"No unsupported information is introduced"<br/>tracesTo: ALIGNMENT-001 · POLICY-EVIDENCE · POLICY-MISSING-DATA
     end
-    deactivate Orch
+    deactivate RT
 
-    Orch->>Eval: Result + EUC criteria
-    activate Eval
-    Eval->>EUC: Which requirement does each criterion trace to?
-    Eval-->>PM: Scored against business intent, traced to requirements
-    deactivate Eval
+    RT->>EV: result + the context execution wrote
+    activate EV
+    EV->>RG: which criteria apply, and what do they trace to?
+    RG-->>EV: EVAL-ELIGIBILITY · EVAL-ALIGNMENT · EVAL-EVIDENCE
+    EV-->>CL: verdicts, each traced back to a business requirement
+    deactivate EV
 ```
 
 ---
@@ -678,7 +693,9 @@ An honest account of the prototype as of this revision.
 | ✅ Built | Eval dataset with independently-established ground truth, including both edge cases (eligible-but-misaligned, ineligible-but-aligned) |
 | ✅ Built | The `onFailure: halt` contract, verified offline with a reasoner that fails the test if it is ever invoked after a halt |
 | ✅ Built | Controlled-change harness: baseline plus prompt and model variants, computing the result metrics — verified against known inputs with fake reasoners |
-| ⏳ Next | **Migrate the committed EUC** from `executionPipeline`/`filter` to `executionRequirements` / `evaluationCriteria` / `tracesTo`, so the artifact carries traceability rather than an implementation choice ([Section 3](#3-what-an-euc-is-made-of)) |
+| ✅ Built | 34 tests passing offline, covering the deterministic layer, the halt contract, the evaluators, the controlled-change metrics, and the traceability contract above |
+| ✅ Built | **The EUC now carries traceability, not an implementation choice.** Migrated to `rules` / `policies` / `executionRequirements` / `evaluationCriteria` with `tracesTo`; the `filter` and `group` keys are gone from the artifact, and implementations bind to requirement ids instead ([Section 3](#3-what-an-euc-is-made-of)) |
+| ✅ Built | **`tracesTo` is enforced at load time.** A criterion tracing to an undeclared id fails validation with a message naming the broken link; `untracedIds()` reports anything no criterion checks, so mapping gaps are visible rather than silent |
 | ⏳ Next | **Map criteria into an existing evaluation framework** (DeepEval or Ragas) rather than the current bespoke evaluator ([Section 5](#5-where-the-euc-sits)) |
 | ⏳ Next | **Expand the dataset** from 6 to 10–15 scenarios, covering all six business expectations in [Section 6.1](#61-establish-a-stable-reference) |
 | ⏳ Next | **Record the effort indicators** in [Section 6.4](#64-record-what-the-change-cost) during controlled-change runs |
@@ -720,9 +737,14 @@ the EUC's execution responsibilities:
 
 **This is an implementation choice, not a requirement of the EUC concept.** An EUC
 describes business responsibilities; how they are orchestrated is up to the
-implementation. The current committed prototype has this backwards — its EUC JSON
-carries a `filter` key per stage, leaking the orchestration choice into the business
-artifact. [Section 9](#9-where-this-stands) tracks correcting that.
+implementation.
+
+The prototype keeps that boundary in one specific way worth naming: implementations
+register against the *id of the requirement they satisfy*
+(`registry.register("ELIGIBILITY-001", new EligibilityRuleFilter())`). The direction
+matters. Code names the business requirement it implements, so the EUC never has to
+name a class, and swapping the implementation cannot disturb the statement of
+intent.
 
 ---
 

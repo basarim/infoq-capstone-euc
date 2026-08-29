@@ -3,81 +3,121 @@
   "actor": "Nonprofit Program Manager",
   "goal": "Determine whether the organization should pursue a grant",
   "context": {
-    "description": "Shared object passed through the pipeline. Each filter reads from and writes to this context rather than exchanging isolated arguments; evaluation stages read the same context the execution stages wrote into, rather than a copy.",
+    "description": "The business information this decision depends on. seedFields names what must be present before any execution requirement runs; each requirement then declares what it reads and writes. Evaluation reads the same context execution wrote into, not a separate copy.",
     "seedFields": ["organization", "grant"]
   },
-  "executionPipeline": [
+  "rules": [
     {
-      "id": "ELIGIBILITY-001",
-      "filter": "eligibility",
-      "type": "deterministic",
-      "description": "Applicant must satisfy mandatory eligibility requirements",
-      "onFailure": "halt",
-      "group": 1,
-      "reads": ["organization", "grant"],
-      "writes": ["eligible", "failedEligibilityRules"]
+      "id": "RULE-ELIGIBILITY",
+      "description": "Applicant must satisfy all mandatory eligibility requirements"
     },
     {
-      "id": "GEOGRAPHY-001",
-      "filter": "geography",
-      "type": "deterministic",
-      "description": "Applicant must operate within the grant's specified geographic scope",
-      "onFailure": "halt",
-      "group": 2,
-      "reads": ["organization", "grant"],
-      "writes": ["eligible", "failedEligibilityRules"]
+      "id": "RULE-GEOGRAPHY",
+      "description": "Applicant must operate within the grant's specified geographic scope"
     },
     {
-      "id": "INFO-001",
-      "filter": "requiredInfo",
-      "type": "deterministic",
-      "description": "All required application information must be present before assessment proceeds",
-      "onFailure": "halt",
-      "group": 3,
-      "reads": ["organization"],
-      "writes": ["eligible", "failedEligibilityRules"]
+      "id": "RULE-REQUIRED-INFO",
+      "description": "All required application information must be present before assessment proceeds"
     },
     {
-      "id": "ALIGNMENT-001",
-      "filter": "alignmentReasoning",
-      "type": "reasoned",
-      "description": "Organization's mission and programs must be assessed for alignment with the funder's stated priorities",
-      "onFailure": "continue",
-      "group": 4,
-      "reads": ["organization", "grant", "eligible"],
-      "writes": ["fitClassification", "explanation", "supportingEvidence", "identifiedUncertainty"]
+      "id": "RULE-ELIGIBILITY-PRECEDES-FIT",
+      "description": "Strong alignment cannot overcome a failed mandatory requirement"
     }
   ],
   "policies": [
-    "Do not invent missing information",
-    "Support conclusions with evidence",
-    "Flag uncertainty rather than defaulting to a confident conclusion"
+    {
+      "id": "POLICY-MISSING-DATA",
+      "description": "Do not invent missing information"
+    },
+    {
+      "id": "POLICY-EVIDENCE",
+      "description": "Support conclusions with available evidence"
+    },
+    {
+      "id": "POLICY-UNCERTAINTY",
+      "description": "Flag uncertainty rather than defaulting to a confident conclusion"
+    }
   ],
   "expectedOutcomes": [
     "STRONG_FIT",
     "POSSIBLE_FIT",
     "POOR_FIT"
   ],
-  "evaluationPipeline": [
+  "executionRequirements": [
     {
-      "id": "eligibilityCorrectness",
-      "filter": "eligibilityCorrectness",
-      "evaluates": ["ELIGIBILITY-001", "GEOGRAPHY-001", "INFO-001"],
-      "group": 1,
+      "id": "ELIGIBILITY-001",
+      "type": "deterministic",
+      "responsibility": "Evaluate the applicant against the grant's mandatory eligibility requirements",
+      "onFailure": "halt",
+      "reads": ["organization", "grant"],
+      "writes": ["eligible", "failedEligibilityRules"]
+    },
+    {
+      "id": "GEOGRAPHY-001",
+      "type": "deterministic",
+      "responsibility": "Confirm the applicant operates within the grant's geographic scope",
+      "onFailure": "halt",
+      "reads": ["organization", "grant"],
+      "writes": ["eligible", "failedEligibilityRules"]
+    },
+    {
+      "id": "INFO-001",
+      "type": "deterministic",
+      "responsibility": "Confirm all required application information is present",
+      "onFailure": "halt",
+      "reads": ["organization"],
+      "writes": ["eligible", "failedEligibilityRules"]
+    },
+    {
+      "id": "ALIGNMENT-001",
+      "type": "reasoned",
+      "responsibility": "Assess the organization's mission and programs for alignment with the funder's stated priorities",
+      "onFailure": "continue",
+      "reads": ["organization", "grant", "eligible"],
+      "writes": ["fitClassification", "explanation", "supportingEvidence", "identifiedUncertainty"]
+    }
+  ],
+  "evaluationCriteria": [
+    {
+      "id": "EVAL-ELIGIBILITY",
+      "tracesTo": [
+        "ELIGIBILITY-001",
+        "GEOGRAPHY-001",
+        "INFO-001",
+        "RULE-ELIGIBILITY",
+        "RULE-GEOGRAPHY",
+        "RULE-REQUIRED-INFO"
+      ],
+      "criteria": [
+        "Eligibility follows the grant's mandatory requirements"
+      ],
       "reads": ["eligible", "failedEligibilityRules"]
     },
     {
-      "id": "programAlignment",
-      "filter": "programAlignment",
-      "evaluates": ["ALIGNMENT-001"],
-      "group": 2,
+      "id": "EVAL-ALIGNMENT",
+      "tracesTo": [
+        "ALIGNMENT-001",
+        "RULE-ELIGIBILITY-PRECEDES-FIT"
+      ],
+      "criteria": [
+        "Fit classification reflects the funder's stated priorities",
+        "An ineligible applicant is never recommended for pursuit"
+      ],
       "reads": ["fitClassification"]
     },
     {
-      "id": "evidenceGrounding",
-      "filter": "evidenceGrounding",
-      "evaluates": ["ALIGNMENT-001"],
-      "group": 3,
+      "id": "EVAL-EVIDENCE",
+      "tracesTo": [
+        "ALIGNMENT-001",
+        "POLICY-EVIDENCE",
+        "POLICY-MISSING-DATA",
+        "POLICY-UNCERTAINTY"
+      ],
+      "criteria": [
+        "The classification is supported by evidence present in the context",
+        "No unsupported information is introduced",
+        "Uncertainty is surfaced rather than resolved into false confidence"
+      ],
       "reads": ["supportingEvidence"]
     }
   ]

@@ -1,6 +1,6 @@
 package com.euc.grantfitassessment.pipeline;
 
-import com.euc.core.EucRule;
+import com.euc.core.ExecutionRequirement;
 import com.euc.core.ExecutionFilter;
 import com.euc.core.PipelineContext;
 import com.euc.grantfitassessment.Organization;
@@ -12,7 +12,7 @@ import java.util.List;
 public class RequiredInfoRuleFilter implements ExecutionFilter {
 
     @Override
-    public Outcome execute(PipelineContext context, EucRule stage) {
+    public Outcome execute(PipelineContext context, ExecutionRequirement stage) {
         Organization org = context.get(GrantFitContextKeys.ORGANIZATION, Organization.class);
 
         List<String> failures = new ArrayList<>();

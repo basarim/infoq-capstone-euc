@@ -63,8 +63,6 @@ one by hand, re-check for label collisions and that arrows terminate on a shape
 rather than in empty space.
 
 The JSON sample in section 03 shows the `executionRequirements` /
-`evaluationCriteria` / `tracesTo` schema from the proposal. Note that the
-committed EUC under `src/main/resources/euc/grant-fit-assessment/` still uses the
-older `executionPipeline` shape — migrating it is tracked in the proposal's
-"Where this stands" section. Until that lands, the page and the code describe
-different schema versions, and the page says so.
+`evaluationCriteria` / `tracesTo` schema, and it now matches the EUC the prototype
+actually loads from `src/main/resources/euc/grant-fit-assessment/`. If you change
+one, change the other — the page makes a factual claim about the code here.
