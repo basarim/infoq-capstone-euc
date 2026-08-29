@@ -579,9 +579,9 @@ ol.steps li::before{
     <div>
       <h2 class="tagline">Every change was reasonable. The tests are <em>green</em>.</h2>
       <div class="prose">
-        <p>Picture a team six months into an AI-native application. It works. It shipped. Since launch, someone tightened a prompt, someone else swapped in a newer model because it was cheaper and faster, the retrieval layer was re-chunked, and a downstream service started returning an extra field that quietly changed what the model sees.</p>
-        <p>Every one of those changes was reviewed. Then a stakeholder asks a question that should be easy — <strong>is the application still doing what the business intended?</strong> — and the room goes quiet.</p>
-        <p>Not because the team is careless. Because nobody can point at the thing that would settle it. Business intent is scattered across a requirements doc written in month one, a prompt edited forty times since, application code, policy constraints, and evaluation cases written by whoever was closest to the model that week.</p>
+        <p>Six months after an AI-native application goes into production, the system may look very different from the one that originally shipped. Prompts have been refined, models replaced, retrieval strategies adjusted, and upstream or downstream services changed. Each modification may be reasonable on its own and may pass the evaluations in place at the time.</p>
+        <p>The harder question is whether the application is still behaving in accordance with the original business intent.</p>
+        <p>That can be surprisingly difficult to determine. The intent is often distributed across requirements documents, application code, prompts, policy rules, retrieval logic, and evaluation cases. As each of these artifacts evolves independently, the connection between what the business originally intended and what the deployed system now does becomes increasingly difficult to trace.</p>
       </div>
       <div class="cards">
         <div class="card">
