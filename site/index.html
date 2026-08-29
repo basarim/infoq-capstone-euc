@@ -4,20 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Executable Use Cases</title>
-<meta name="description" content="Business intent as one machine-readable artifact that both runs your application and evaluates it — so drift becomes measurable instead of assumed away.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23e9e9e1"/><rect x="9" y="9" width="14" height="14" fill="none" stroke="%239c6b22" stroke-width="3" transform="rotate%2845 16 16%29"/></svg>">
+<meta name="description" content="Can a machine-readable use case keep business intent, AI implementation and evaluation connected as the application evolves? A capstone experiment.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20fill%3D%27%23e9e9e1%27%2F%3E%3Crect%20x%3D%279%27%20y%3D%279%27%20width%3D%2714%27%20height%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%239c6b22%27%20stroke-width%3D%273%27%20transform%3D%27rotate%2845%2016%2016%29%27%2F%3E%3C%2Fsvg%3E">
 <meta name="theme-color" content="#e9e9e1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#101615" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Executable Use Cases">
-<meta property="og:description" content="Business intent as one machine-readable artifact that both runs your application and evaluates it — so drift becomes measurable instead of assumed away.">
+<meta property="og:description" content="Can a machine-readable use case keep business intent, AI implementation and evaluation connected as the application evolves? A capstone experiment.">
 <meta property="og:image" content="og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Executable Use Cases — Intent that outlives the model. A fixed datum line with a measured behaviour curve drifting away from it.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Executable Use Cases">
-<meta name="twitter:description" content="Business intent as one machine-readable artifact that both runs your application and evaluates it — so drift becomes measurable instead of assumed away.">
+<meta name="twitter:description" content="Can a machine-readable use case keep business intent, AI implementation and evaluation connected as the application evolves? A capstone experiment.">
 <meta name="twitter:image" content="og-card.png">
 <style>
 /* ── Webfonts, subset to latin and embedded so the page has no network dependency ─ */
@@ -356,10 +356,120 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
   .reveal .measured{stroke-dashoffset:0}
   .reveal .band-fill{opacity:1}
 }
+
+/* ── Figures & diagrams ───────────────────────────────────────────────── */
+figure.figure{margin:34px 0 0;display:flex;flex-direction:column;gap:0}
+.figbody{
+  background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;
+  padding:18px;overflow-x:auto;box-shadow:var(--shadow);
+}
+.figbody svg{display:block;width:100%;height:auto;min-width:660px}
+figure.figure figcaption{
+  margin-top:11px;font-size:.845rem;line-height:1.55;color:var(--ink-faint);max-width:68ch;
+}
+figure.figure figcaption code{font-size:.85em}
+.fignote{margin-top:12px;font-size:.87rem;line-height:1.55;color:var(--ink-soft);max-width:68ch}
+
+/* object diagram type */
+.objdiag .oeuc{font-family:"Faustina",serif;font-size:16px;font-weight:600;fill:var(--ink)}
+.objdiag .onm{font-family:"DM Mono",monospace;font-size:11.5px;font-weight:500;fill:var(--ink)}
+.objdiag .oat{font-family:"DM Mono",monospace;font-size:10.5px;fill:var(--ink-soft)}
+.objdiag .ogrp{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:1.4px;fill:var(--ink-faint)}
+.objdiag .otrace{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.2px;fill:var(--brass)}
+.objdiag .trace{fill:none;stroke:var(--brass);stroke-width:1.1;stroke-dasharray:4 3}
+.objdiag .tracehead{fill:var(--brass)}
+
+/* context diagram type */
+.ctxdiag .ceuc{font-family:"DM Mono",monospace;font-size:12.5px;letter-spacing:1.6px;fill:var(--ink)}
+.ctxdiag .cnm{font-family:"Karla",sans-serif;font-size:12.5px;fill:var(--ink)}
+.ctxdiag .csub{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.9px;fill:var(--ink-faint)}
+.ctxdiag .cgrp{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:1.4px;fill:var(--ink-faint)}
+.ctxdiag .cedge{fill:none;stroke:var(--ink-faint);stroke-width:1.1}
+.ctxdiag .cedgehead{fill:var(--ink-faint)}
+.ctxdiag .cedgelbl{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.7px;fill:var(--ink-faint)}
+.ctxdiag .ctrace{fill:none;stroke:var(--brass);stroke-width:1.2;stroke-dasharray:4 3}
+.ctxdiag .ctracehead{fill:var(--brass)}
+.ctxdiag .ctracelbl{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:1.1px;fill:var(--brass)}
+
+/* interaction diagram type */
+.seqdiag .snm{font-family:"Karla",sans-serif;font-size:11.5px;font-weight:600;fill:var(--ink)}
+.seqdiag .slife{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4}
+.seqdiag .smsg{fill:none;stroke:var(--ink-soft);stroke-width:1.2}
+.seqdiag .smsg.dash{stroke:var(--ink-faint);stroke-dasharray:4 3}
+.seqdiag .smsghead{fill:var(--ink-soft)}
+.seqdiag .slbl{font-family:"DM Mono",monospace;font-size:10px;fill:var(--ink-soft)}
+.seqdiag .snumbg{fill:var(--brass-wash);stroke:var(--brass);stroke-width:.8}
+.seqdiag .snum{font-family:"DM Mono",monospace;font-size:9px;fill:var(--brass)}
+.seqdiag .salt{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:1px;fill:var(--brass)}
+.seqdiag .sguard{font-family:"DM Mono",monospace;font-size:10px;fill:var(--ink-faint)}
+
+/* ── Callout ──────────────────────────────────────────────────────────── */
+.callout{
+  margin-top:32px;padding:22px 24px;border:1px solid var(--rule-soft);border-left:2px solid var(--verdigris);
+  border-radius:3px;background:var(--surface);display:flex;flex-direction:column;gap:14px;
+}
+.callout p{font-size:.925rem;line-height:1.6;color:var(--ink-soft);max-width:66ch}
+.callout p.eyebrow{color:var(--verdigris);font-size:.69rem}
+.callout em{color:var(--ink)}
+
+/* ── Disclosure ───────────────────────────────────────────────────────── */
+.disclose{margin-top:30px;border-top:1px solid var(--rule-soft)}
+.disclose>summary{
+  cursor:pointer;padding:15px 0;list-style:none;
+  font-family:"DM Mono",monospace;font-size:.775rem;letter-spacing:.06em;color:var(--brass);
+  display:flex;align-items:center;gap:10px;
+}
+.disclose>summary::-webkit-details-marker{display:none}
+.disclose>summary::before{content:"+";font-size:1rem;line-height:1}
+.disclose[open]>summary::before{content:"–"}
+.disclose>summary:hover{color:var(--brass-lit)}
+
+/* ── Split, extended ──────────────────────────────────────────────────── */
+.split .splitsub{
+  font-size:.865rem;line-height:1.5;color:var(--ink-faint);margin-bottom:14px;
+  padding-bottom:13px;border-bottom:1px solid var(--rule-soft);
+}
+
+/* ── Numbered steps ───────────────────────────────────────────────────── */
+ol.steps{
+  margin:6px 0 0;padding:0;list-style:none;counter-reset:s;
+  display:flex;flex-direction:column;gap:0;border-top:1px solid var(--rule-soft);
+}
+ol.steps li{
+  counter-increment:s;display:grid;grid-template-columns:38px 1fr;gap:16px;align-items:baseline;
+  padding:13px 0;border-bottom:1px solid var(--rule-soft);
+  font-size:.94rem;color:var(--ink-soft);
+}
+ol.steps li::before{
+  content:counter(s);font-family:"DM Mono",monospace;font-size:.85rem;color:var(--brass);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── Stat figures ─────────────────────────────────────────────────────── */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:0;
+  margin-top:32px;border-top:1px solid var(--rule-soft);
+}
+.stat{padding:20px 22px 22px;border-bottom:1px solid var(--rule-soft);border-right:1px solid var(--rule-soft)}
+.stat:last-child{border-right:none}
+.stat .fig{
+  display:block;font-family:"Faustina",serif;font-size:2.5rem;font-weight:600;line-height:1;
+  color:var(--brass);letter-spacing:-.02em;margin-bottom:12px;font-variant-numeric:tabular-nums;
+}
+.stat .fig .unit{font-size:1.25rem;font-weight:400;letter-spacing:0}
+.stat p{font-size:.865rem;line-height:1.5;color:var(--ink-soft)}
+@media (max-width:760px){.stat{border-right:none}}
+
+/* ── Table emphasis ───────────────────────────────────────────────────── */
+.compare b.bad{color:var(--brass);font-weight:600}
+.compare tbody td:first-child,.compare tbody td:nth-child(2){color:var(--ink-faint)}
+
+/* ── Status, extended ─────────────────────────────────────────────────── */
+.sitem.next .st{color:var(--brass)}
+.sitem.open .st{color:var(--ink-faint)}
 </style>
 </head>
 <body>
-
 <a class="skiplink" href="#top">Skip to content</a>
 
 <header class="masthead">
@@ -371,10 +481,10 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
     </a>
     <nav class="navlinks">
       <a href="#problem">The problem</a>
-      <a href="#artifact">The artifact</a>
-      <a href="#drift">Drift</a>
-      <a href="#casestudy">Case study</a>
-      <a href="https://github.com/basarim/infoq-capstone-euc">Repository</a>
+      <a href="#anatomy">What it's made of</a>
+      <a href="#boundary">What it isn't</a>
+      <a href="#test">The experiment</a>
+      <a href="#worth">What it's worth</a>
     </nav>
     <button class="themetoggle" id="themetoggle" type="button" aria-label="Switch colour theme">Theme</button>
   </div>
@@ -382,16 +492,15 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
 
 <main id="top">
 
-<!-- ── Hero ───────────────────────────────────────────────────────────── -->
 <section class="hero">
   <div class="wrap">
     <div>
       <p class="eyebrow">InfoQ AI Engineering Certification &nbsp;·&nbsp; System-Building Project</p>
-      <h1>Intent that <em>outlives</em> the model.</h1>
-      <p class="lede">Prompts change. Models change. Retrieval changes. An <strong>Executable Use Case</strong> holds business intent still — one machine-readable artifact that both runs your application and evaluates it, so you can tell whether you are still building the thing you set out to build.</p>
+      <h1>Is it still doing what the business <em>intended</em>?</h1>
+      <p class="lede">Six months in, the prompt has been rewritten, the model has been swapped, the retrieval layer has been re-chunked — and every test is green. An <strong>Executable Use Case</strong> is the one thing that didn't change: a machine-readable statement of what the business needs, that the implementation and the evaluation both point back to.</p>
       <div class="cta">
         <a class="btn btn-fill" href="https://github.com/basarim/infoq-capstone-euc/blob/main/docs/proposal.md">Read the proposal <span class="arrow" aria-hidden="true">→</span></a>
-        <a class="btn btn-line" href="#artifact">See the artifact</a>
+        <a class="btn btn-line" href="#anatomy">See what an EUC is made of</a>
       </div>
     </div>
     <div>
@@ -410,8 +519,8 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
             <rect x="96" y="98" width="268" height="82" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.5"/>
             <rect x="102" y="104" width="256" height="70" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".55"/>
             <text x="230" y="130" text-anchor="middle" font-family="Faustina, serif" font-size="17" fill="var(--ink)" stroke="none">Executable Use Case</text>
-            <text x="230" y="152" text-anchor="middle" font-family="DM Mono, monospace" font-size="9.5" letter-spacing="1.4" fill="var(--ink-faint)" stroke="none">GOAL · RULES · POLICIES · OUTCOMES</text>
-            <text x="230" y="166" text-anchor="middle" font-family="DM Mono, monospace" font-size="9.5" letter-spacing="1.4" fill="var(--ink-faint)" stroke="none">EVALUATION CRITERIA</text>
+            <text x="230" y="152" text-anchor="middle" font-family="DM Mono, monospace" font-size="9.5" letter-spacing="1.4" fill="var(--ink-faint)" stroke="none">GOAL · RULES · POLICIES · REQUIREMENTS</text>
+            <text x="230" y="166" text-anchor="middle" font-family="DM Mono, monospace" font-size="9.5" letter-spacing="1.4" fill="var(--ink-faint)" stroke="none">OUTCOMES · CONTEXT · CRITERIA</text>
           </g>
 
           <!-- fork -->
@@ -421,19 +530,19 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
           <!-- consumers -->
           <g class="fade f3">
             <rect x="34" y="228" width="168" height="62" fill="var(--surface)" stroke="var(--rule)"/>
-            <text x="118" y="252" text-anchor="middle" font-family="Faustina, serif" font-size="15" fill="var(--ink)" stroke="none">Execution</text>
-            <text x="118" y="271" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" letter-spacing="1.1" fill="var(--verdigris)" stroke="none">RULES + REASONING</text>
+            <text x="118" y="252" text-anchor="middle" font-family="Faustina, serif" font-size="15" fill="var(--ink)" stroke="none">Implementation</text>
+            <text x="118" y="271" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" letter-spacing="1.1" fill="var(--verdigris)" stroke="none">RULES · RAG · REASONING</text>
 
             <rect x="258" y="228" width="168" height="62" fill="var(--surface)" stroke="var(--rule)"/>
             <text x="342" y="252" text-anchor="middle" font-family="Faustina, serif" font-size="15" fill="var(--ink)" stroke="none">Evaluation</text>
-            <text x="342" y="271" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" letter-spacing="1.1" fill="var(--verdigris)" stroke="none">SCORED AGAINST INTENT</text>
+            <text x="342" y="271" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" letter-spacing="1.1" fill="var(--verdigris)" stroke="none">MAPPED CRITERIA</text>
           </g>
 
           <!-- feedback -->
           <g class="fade f4">
             <path d="M426 259 L446 259 L446 38 L336 38" stroke="var(--verdigris)" stroke-width="1" stroke-dasharray="3 4"/>
             <path d="M342 34 L334 38 L342 42 Z" fill="var(--verdigris)" stroke="none"/>
-            <text x="440" y="55" text-anchor="end" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="1.2" fill="var(--ink-faint)" stroke="none">REFINES INTENT</text>
+            <text x="440" y="55" text-anchor="end" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="1.2" fill="var(--ink-faint)" stroke="none">tracesTo</text>
           </g>
         </g>
       </svg>
@@ -444,188 +553,391 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
 <div class="datumstrip">
   <div class="wrap">
     <p class="chain">
-      <b>Business Intent</b> <span aria-hidden="true">→</span> <b>EUC</b> <span aria-hidden="true">→</span> <b>Execution + Evaluation</b>
+      <b>Business Intent</b> <span aria-hidden="true">→</span> <b>EUC</b> <span aria-hidden="true">→</span> <b>Implementation + Evaluation</b>
     </p>
-    <p class="note">One definition, not two maintained in parallel.</p>
+    <p class="note">One reference, not two interpretations of it.</p>
   </div>
 </div>
 
 <div class="field">
 
-<!-- ── 01 Problem ─────────────────────────────────────────────────────── -->
 <section class="band" id="problem">
   <div class="wrap">
-    <div class="rail">
-      <span class="num">01</span>
-      <span class="lbl">The problem</span>
-    </div>
+    <div class="rail"><span class="num">01</span><span class="lbl">The problem</span></div>
     <div>
-      <h2 class="tagline">The eval passes. The <em>intent</em> moved.</h2>
+      <h2 class="tagline">Every change was reasonable. The tests are <em>green</em>.</h2>
       <div class="prose">
-        <p>A prompt tweak, a model upgrade, a context-window change — any one of them can silently shift what an application does, while the tests, dashboards and stakeholders still assume the original intent holds. In deterministic software, a passing suite is a reliable proxy for correctness. In an LLM-reasoned system, behaviour can drift in ways that clear every superficial check and still fail the business goal.</p>
-        <p>It compounds because <strong>business intent itself is fragmented</strong>: partly in a requirements doc, partly in a prompt, partly in application logic, partly in ad hoc eval scripts. Each fragment changes independently. None of them is the source of truth, so when a model changes, teams often cannot say with confidence whether they are still building the same thing.</p>
+        <p>Picture a team six months into an AI-native application. It works. It shipped. Since launch, someone tightened a prompt, someone else swapped in a newer model because it was cheaper and faster, the retrieval layer was re-chunked, and a downstream service started returning an extra field that quietly changed what the model sees.</p>
+        <p>Every one of those changes was reviewed. Then a stakeholder asks a question that should be easy — <strong>is the application still doing what the business intended?</strong> — and the room goes quiet.</p>
+        <p>Not because the team is careless. Because nobody can point at the thing that would settle it. Business intent is scattered across a requirements doc written in month one, a prompt edited forty times since, application code, policy constraints, and evaluation cases written by whoever was closest to the model that week.</p>
       </div>
       <div class="cards">
         <div class="card">
-          <span class="tag eyebrow">Fragment 01</span>
-          <h3>Application logic</h3>
-          <p>Encodes part of the intent in code that can at least be diffed — but only the part that was deterministic enough to write down.</p>
+          <span class="tag eyebrow">Where intent lives</span>
+          <h3>Application code</h3>
+          <p>Holds the part of the intent that was deterministic enough to write down. At least it can be diffed.</p>
         </div>
         <div class="card">
-          <span class="tag eyebrow">Fragment 02</span>
+          <span class="tag eyebrow">Where intent lives</span>
           <h3>Prompt &amp; context</h3>
-          <p>Carries the judgement calls. Edited by whoever is closest to the model, on a cadence nobody else tracks.</p>
+          <p>Carries the judgment calls. Edited by whoever is closest to the model, on a cadence nobody else tracks.</p>
         </div>
         <div class="card">
-          <span class="tag eyebrow">Fragment 03</span>
-          <h3>Evaluation criteria</h3>
-          <p>Derived from intent once, informally, then maintained separately — so it drifts away from both of the others.</p>
+          <span class="tag eyebrow">Where intent lives</span>
+          <h3>Evaluation cases</h3>
+          <p>Derived from intent once, informally, then maintained separately — so they drift away from both of the others.</p>
         </div>
       </div>
-      <blockquote class="quote">A passing eval shows internal consistency. It does not show that intent was preserved.</blockquote>
+      <div class="prose">
+        <p>Each of those artifacts holds a piece of the intent. <strong>None of them is the intent.</strong></p>
+        <p>In conventional software a green test suite is a decent proxy for correctness, because behavior is deterministic and any divergence is a bug you can bisect. An AI-native application breaks that proxy: half its behavior is model judgment, which can shift without a line of code changing.</p>
+      </div>
+      <blockquote class="quote">A passing evaluation shows internal consistency. It does not show that intent was preserved.</blockquote>
+      <div class="prose">
+        <p>This is not only a requirements problem. It becomes a production problem when the misalignment surfaces late and the team has to reopen requirements, implementation and evaluation at once — usually under pressure, usually with the original authors gone.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── 02 Artifact ────────────────────────────────────────────────────── -->
-<section class="band" id="artifact">
+<section class="band" id="usecase">
   <div class="wrap">
-    <div class="rail">
-      <span class="num">02</span>
-      <span class="lbl">The artifact</span>
-    </div>
+    <div class="rail"><span class="num">02</span><span class="lbl">The idea</span></div>
     <div>
-      <h2 class="tagline">One definition. <em>Two</em> consumers.</h2>
+      <h2 class="tagline">Thirty years old, and <em>almost</em> right.</h2>
       <div class="prose">
-        <p>An Executable Use Case keeps the actor-and-goal framing that Ivar Jacobson gave the use case in 1992 — and replaces the prose flow with a machine-readable, ordered pipeline of typed stages that can actually run and actually be evaluated against. <strong>“Executable” is doing real work in the name</strong>, not branding.</p>
-        <p>The schema is shaped around <strong>pipe-and-filter</strong>. Each stage names a <code>filter</code> — a lookup key into a registry — so a pipeline is assembled mechanically from the definition rather than hand-wired per use case. A single deterministic check is a valid one-filter pipeline; a four-stage assessment is the same contract, larger.</p>
+        <p>Use cases have described software from the point of view of a user and a business goal since Ivar Jacobson formalised the approach in 1992. A use case names an <strong>actor</strong>, a <strong>goal</strong>, and the flows toward it — deliberately about what the business needs, not how the software achieves it. That makes it a natural place to look for a stable expression of intent.</p>
+        <p>It has one disqualifying limitation here. <strong>It is prose.</strong> A person can read it and implement it by hand, but no application can consult it at runtime and no evaluation harness can score against it. When the model underneath changes, a prose use case has nothing to say, because nothing was ever wired to it.</p>
+        <p>So: keep the actor-and-goal framing, make it machine-readable, and keep it strictly about business behavior. An <strong>Executable Use Case</strong> says nothing about prompts, models, retrieval strategy, frameworks or code — those stay entirely free to change. That is the point. "Executable" is doing real work in the name.</p>
+      </div>
+      <div class="callout">
+        <p class="eyebrow">Industry example — Forward Deployed Engineering</p>
+        <p>A Forward Deployed Engineer translates a client's intent into a working AI solution: code, prompts, context, tools, policies and model reasoning. As it evolves over weeks, a practical question surfaces on both sides of the table — <em>how do the client and the engineering team know they still agree on what "done" means?</em></p>
+        <p>An EUC gives both sides one shared business reference. The domain stakeholder reviews it in terms they recognise; the engineer traces implementation and evaluation artifacts back to the same requirements. Neither has to take the other's word for it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="anatomy">
+  <div class="wrap">
+    <div class="rail"><span class="num">03</span><span class="lbl">What it's made of</span></div>
+    <div>
+      <h2 class="tagline">Seven parts, and one relationship that <em>matters</em>.</h2>
+      <div class="prose">
+        <p>The structure is easier to see than to read, so here is one real instance — the Grant Fit Assessment used throughout this project — with its parts and the relationships between them.</p>
+        <p>The relationship to watch is <code>tracesTo</code>. It is the only thing in the artifact that makes traceability concrete rather than aspirational: <strong>every evaluation criterion names the requirement, rule or policy it exists to validate.</strong> Follow those arrows backwards from any evaluation result and you arrive at a business requirement.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="figbody"><svg class="objdiag" viewBox="0 0 940 556" role="img" aria-label="Object diagram of one Executable Use Case instance. The outer box is grantFit, an ExecutableUseCase. It contains, on the left, the things the business requires: an eligibility Rule, an evidence Policy, a missingData Policy, a deterministic checkEligibility ExecutionRequirement that halts on failure, and a reasoned assessAlignment ExecutionRequirement that continues on failure. On the right it contains how the use case is judged: an evalEligibility and an evalAlignment EvaluationCriterion. Dashed arrows labelled tracesTo run from each evaluation criterion back to the specific requirements, rules and policies it validates. A context object and an outcomes object sit along the bottom.">
+  <rect x="4" y="4" width="932" height="548" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.6"/>
+  <text x="24" y="34" class="oeuc">grantFit : ExecutableUseCase</text>
+  <text x="24" y="56" class="oat">id = "grant-fit-assessment"</text>
+  <text x="24" y="74" class="oat">goal = "Determine whether the organization should pursue a grant"</text>
+  <line x1="4" y1="90" x2="936" y2="90" stroke="var(--brass)" stroke-opacity=".45"/>
+
+  <text x="30" y="110" class="ogrp">WHAT THE BUSINESS REQUIRES</text>
+  <text x="548" y="110" class="ogrp">HOW IT IS JUDGED</text>
+<rect x="30" y="118" width="420" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="43" y="139" class="onm">eligibility : Rule</text>
+<text x="43" y="158" class="oat">Must satisfy all mandatory requirements</text>
+<rect x="30" y="182" width="420" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="43" y="203" class="onm">evidence : Policy</text>
+<text x="43" y="222" class="oat">Support conclusions with evidence</text>
+<rect x="30" y="238" width="420" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="43" y="259" class="onm">missingData : Policy</text>
+<text x="43" y="278" class="oat">Do not invent missing information</text>
+<rect x="30" y="296" width="420" height="62" rx="2" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
+<text x="43" y="317" class="onm">checkEligibility : ExecutionRequirement</text>
+<text x="43" y="336" class="oat">type = deterministic</text>
+<text x="43" y="352" class="oat">onFailure = halt</text>
+<rect x="30" y="370" width="420" height="62" rx="2" fill="var(--brass-wash)" stroke="var(--brass)"/>
+<text x="43" y="391" class="onm">assessAlignment : ExecutionRequirement</text>
+<text x="43" y="410" class="oat">type = reasoned</text>
+<text x="43" y="426" class="oat">onFailure = continue</text>
+<rect x="548" y="118" width="362" height="96" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="561" y="139" class="onm">evalEligibility : EvaluationCriterion</text>
+<text x="561" y="158" class="oat">"Eligibility follows mandatory</text>
+<text x="561" y="174" class="oat">  grant requirements"</text>
+<rect x="548" y="238" width="362" height="194" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="561" y="259" class="onm">evalAlignment : EvaluationCriterion</text>
+<text x="561" y="278" class="oat">"Fit classification is supported</text>
+<text x="561" y="294" class="oat">  by evidence"</text>
+<text x="561" y="310" class="oat">"Explanation supports the</text>
+<text x="561" y="326" class="oat">  classification"</text>
+<text x="561" y="342" class="oat">"No unsupported information</text>
+<text x="561" y="358" class="oat">  is introduced"</text>
+<path d="M548 150 H458" class="trace"/>
+<path d="M458 145 l7 -4 v8 z" class="tracehead"/>
+<path d="M548 192 H536 V327 H458" class="trace"/>
+<path d="M458 327 l7 -4 v8 z" class="tracehead"/>
+<path d="M548 280 H524 V401 H458" class="trace"/>
+<path d="M458 401 l7 -4 v8 z" class="tracehead"/>
+<path d="M548 330 H512 V205 H458" class="trace"/>
+<path d="M458 205 l7 -4 v8 z" class="tracehead"/>
+<path d="M548 380 H500 V261 H458" class="trace"/>
+<path d="M458 261 l7 -4 v8 z" class="tracehead"/>
+  <text x="499" y="110" text-anchor="middle" class="otrace">tracesTo</text>
+
+<rect x="30" y="478" width="420" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="43" y="499" class="onm">context : Context</text>
+<text x="43" y="518" class="oat">needs = organization, grant</text>
+<rect x="548" y="478" width="362" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="561" y="499" class="onm">fit : Outcomes</text>
+<text x="561" y="518" class="oat">STRONG_FIT · POSSIBLE_FIT · POOR_FIT</text>
+</svg></div>
+        <figcaption>An Executable Use Case as objects. Everything inside the outer box is part of the use case. The dashed arrows are <code>tracesTo</code> — each criterion on the right names what it validates on the left.</figcaption>
+      </figure>
+
+      <div class="prose">
+        <p>Two things are worth reading off that diagram.</p>
+        <p><strong>Policies are not owned by any one requirement.</strong> "Do not invent missing information" is not a property of the alignment step; it is a constraint every reasoned step must respect. Jacobson made the same move for concerns that cut across use cases rather than living inside one.</p>
+        <p><strong>Evaluation points at requirements, not at implementations.</strong> <code>EVAL-ALIGNMENT</code> does not name a prompt, a model or a test file. It names <code>ALIGNMENT-001</code> and the two policies. That is precisely what lets the implementation underneath be replaced without the evaluation losing its meaning.</p>
       </div>
 
       <dl class="ftable">
-        <div class="frow"><dt>context</dt><dd>The shared object that flows through the pipeline. <code>seedFields</code> names what exists before any filter runs; every stage declares what it reads and writes.</dd></div>
-        <div class="frow"><dt>executionPipeline</dt><dd>An ordered, non-empty list of filter stages. Order matters — deterministic stages run before reasoned ones, so a cheap check can short-circuit an expensive model call.</dd></div>
-        <div class="frow"><dt>policies</dt><dd>Cross-cutting constraints every reasoned stage must respect. Structurally an aspect: they belong to the use case, not to any one stage of it.</dd></div>
-        <div class="frow"><dt>expectedOutcomes</dt><dd>The closed set of results the use case is allowed to produce.</dd></div>
-        <div class="frow"><dt>evaluationPipeline</dt><dd>Scoring stages that read the same context execution wrote into — not a separately maintained copy of it.</dd></div>
+        <div class="frow"><dt>Goal</dt><dd>The business objective.</dd></div>
+        <div class="frow"><dt>Rules</dt><dd>Deterministic business requirements.</dd></div>
+        <div class="frow"><dt>Policies</dt><dd>Behavioral constraints and guardrails that cut across the whole use case.</dd></div>
+        <div class="frow"><dt>Execution requirements</dt><dd>The business responsibilities the application must carry out.</dd></div>
+        <div class="frow"><dt>Outcomes</dt><dd>The acceptable business outcomes.</dd></div>
+        <div class="frow"><dt>Evaluation criteria</dt><dd>What must be checked — and, through <code>tracesTo</code>, which requirement each check stands for.</dd></div>
+        <div class="frow"><dt>Context</dt><dd>The business information the decision depends on.</dd></div>
       </dl>
 
-      <div class="codeblock">
-        <div class="head">grant-fit-assessment.json &nbsp;·&nbsp; abbreviated</div>
-<pre><span class="p">{</span>
+      <details class="disclose">
+        <summary>The same instance, as data</summary>
+        <div class="codeblock">
+          <div class="head">grant-fit-assessment.json &nbsp;·&nbsp; abbreviated</div>
+<pre>{
   <span class="k">"id"</span>: <span class="s">"grant-fit-assessment"</span>,
-  <span class="k">"actor"</span>: <span class="s">"Nonprofit Program Manager"</span>,
   <span class="k">"goal"</span>: <span class="s">"Determine whether the organization should pursue a grant"</span>,
-  <span class="k">"context"</span>: { <span class="k">"seedFields"</span>: [<span class="s">"organization"</span>, <span class="s">"grant"</span>] },
-  <span class="k">"executionPipeline"</span>: [
-    {
-      <span class="k">"id"</span>: <span class="s">"ELIGIBILITY-001"</span>,
-      <span class="k">"filter"</span>: <span class="s">"eligibility"</span>,
-      <span class="k">"type"</span>: <span class="s">"deterministic"</span>,
-      <span class="k">"onFailure"</span>: <span class="s">"halt"</span>,          <span class="c">// contract, not convention</span>
-      <span class="k">"group"</span>: <span class="s">1</span>,
-      <span class="k">"reads"</span>: [<span class="s">"organization"</span>, <span class="s">"grant"</span>],
-      <span class="k">"writes"</span>: [<span class="s">"eligible"</span>, <span class="s">"failedEligibilityRules"</span>]
-    },
-    {
-      <span class="k">"id"</span>: <span class="s">"ALIGNMENT-001"</span>,
-      <span class="k">"filter"</span>: <span class="s">"alignmentReasoning"</span>,
-      <span class="k">"type"</span>: <span class="s">"reasoned"</span>,
-      <span class="k">"onFailure"</span>: <span class="s">"continue"</span>,
-      <span class="k">"group"</span>: <span class="s">4</span>,
-      <span class="k">"writes"</span>: [<span class="s">"fitClassification"</span>, <span class="s">"explanation"</span>,
-                 <span class="s">"supportingEvidence"</span>, <span class="s">"identifiedUncertainty"</span>]
-    }
+
+  <span class="k">"rules"</span>: [
+    { <span class="k">"id"</span>: <span class="s">"RULE-ELIGIBILITY"</span>,
+      <span class="k">"description"</span>: <span class="s">"Must satisfy all mandatory eligibility requirements"</span> }
   ],
-  <span class="k">"policies"</span>: [<span class="s">"Do not invent missing information"</span>, <span class="c">…</span>],
+
+  <span class="k">"policies"</span>: [
+    { <span class="k">"id"</span>: <span class="s">"POLICY-EVIDENCE"</span>,
+      <span class="k">"description"</span>: <span class="s">"Support conclusions with available evidence"</span> },
+    { <span class="k">"id"</span>: <span class="s">"POLICY-MISSING-DATA"</span>,
+      <span class="k">"description"</span>: <span class="s">"Do not invent missing information"</span> }
+  ],
+
   <span class="k">"expectedOutcomes"</span>: [<span class="s">"STRONG_FIT"</span>, <span class="s">"POSSIBLE_FIT"</span>, <span class="s">"POOR_FIT"</span>],
-  <span class="k">"evaluationPipeline"</span>: [ <span class="c">/* scored against the same context */</span> ]
-<span class="p">}</span></pre>
-      </div>
+
+  <span class="k">"executionRequirements"</span>: [
+    { <span class="k">"id"</span>: <span class="s">"ELIGIBILITY-001"</span>,
+      <span class="k">"type"</span>: <span class="s">"deterministic"</span>,
+      <span class="k">"responsibility"</span>: <span class="s">"Evaluate mandatory eligibility"</span>,
+      <span class="k">"writes"</span>: [<span class="s">"eligible"</span>],
+      <span class="k">"onFailure"</span>: <span class="s">"halt"</span> },
+
+    { <span class="k">"id"</span>: <span class="s">"ALIGNMENT-001"</span>,
+      <span class="k">"type"</span>: <span class="s">"reasoned"</span>,
+      <span class="k">"responsibility"</span>: <span class="s">"Assess organization-to-grant alignment"</span>,
+      <span class="k">"reads"</span>: [<span class="s">"eligible"</span>],
+      <span class="k">"writes"</span>: [<span class="s">"fitClassification"</span>, <span class="s">"supportingEvidence"</span>, <span class="s">"explanation"</span>] }
+  ],
+
+  <span class="k">"evaluationCriteria"</span>: [
+    { <span class="k">"id"</span>: <span class="s">"EVAL-ELIGIBILITY"</span>,
+      <span class="k">"tracesTo"</span>: [<span class="s">"ELIGIBILITY-001"</span>, <span class="s">"RULE-ELIGIBILITY"</span>],
+      <span class="k">"criteria"</span>: [<span class="s">"Eligibility follows mandatory grant requirements"</span>] },
+
+    { <span class="k">"id"</span>: <span class="s">"EVAL-ALIGNMENT"</span>,
+      <span class="k">"tracesTo"</span>: [<span class="s">"ALIGNMENT-001"</span>, <span class="s">"POLICY-EVIDENCE"</span>, <span class="s">"POLICY-MISSING-DATA"</span>],
+      <span class="k">"criteria"</span>: [
+        <span class="s">"Fit classification is supported by evidence"</span>,
+        <span class="s">"Explanation supports the classification"</span>,
+        <span class="s">"No unsupported information is introduced"</span>
+      ] }
+  ]
+}</pre>
+        </div>
+        <p class="fignote">JSON is one option; YAML would do equally well. The idea matters more than the syntax — <code>executionRequirements</code> describe what the application must do, <code>evaluationCriteria</code> describe what must be checked, and <code>tracesTo</code> connects them. Nothing here says <em>how</em>.</p>
+      </details>
     </div>
   </div>
 </section>
 
-<!-- ── 03 Pipeline ────────────────────────────────────────────────────── -->
-<section class="band" id="pipeline">
+<section class="band" id="casestudy">
   <div class="wrap">
-    <div class="rail">
-      <span class="num">03</span>
-      <span class="lbl">The pipeline</span>
-    </div>
+    <div class="rail"><span class="num">04</span><span class="lbl">Case study</span></div>
     <div>
-      <h2 class="tagline">Deterministic where it can be. <em>Reasoned</em> where it must be.</h2>
+      <h2 class="tagline">One decision, <em>two</em> kinds of behavior.</h2>
       <div class="prose">
-        <p>Stages execute in ascending <code>group</code> order, and the split is the point: three deterministic gates precede the one stage that needs a model to weigh evidence. That isolates exactly where EUC-driven evaluation earns its value — deterministic rules can be checked conventionally, but reasoning is the layer where a prompt or model change is most likely to drift silently.</p>
+        <p>A schema is easy to admire in the abstract, so the prototype uses a real decision. A <strong>Grant Fit Assessment</strong> helps a nonprofit decide whether a grant is worth pursuing — applying costs real staff time, so knowing in advance matters. It answers two questions that behave completely differently.</p>
       </div>
 
-      <div class="stages">
-        <div class="stage">
-          <span class="g">1</span>
-          <div><span class="sid">ELIGIBILITY-001</span><p class="sdesc">Applicant must satisfy mandatory eligibility requirements.</p></div>
-          <div class="meta"><span class="pill det">deterministic</span><span class="pill halt">onFailure: halt</span></div>
+      <div class="split">
+        <div>
+          <h3>Is the organization eligible?</h3>
+          <p class="splitsub">Governed by explicit rules. Passes or fails. Changing a rule is a deliberate act.</p>
+          <ul>
+            <li>Organization eligibility</li>
+            <li>Geographic requirements</li>
+            <li>Mandatory constraints</li>
+            <li>Required information present</li>
+          </ul>
         </div>
-        <div class="stage">
-          <span class="g">2</span>
-          <div><span class="sid">GEOGRAPHY-001</span><p class="sdesc">Applicant must operate within the grant's specified geographic scope.</p></div>
-          <div class="meta"><span class="pill det">deterministic</span><span class="pill halt">onFailure: halt</span></div>
-        </div>
-        <div class="stage">
-          <span class="g">3</span>
-          <div><span class="sid">INFO-001</span><p class="sdesc">All required application information must be present before assessment.</p></div>
-          <div class="meta"><span class="pill det">deterministic</span><span class="pill halt">onFailure: halt</span></div>
-        </div>
-        <div class="stage">
-          <span class="g">4</span>
-          <div><span class="sid">ALIGNMENT-001</span><p class="sdesc">The organization's mission and programs are assessed for alignment with the funder's stated priorities.</p></div>
-          <div class="meta"><span class="pill rea">reasoned</span><span class="pill halt">onFailure: continue</span></div>
-        </div>
-      </div>
-
-      <div class="prose">
-        <p><strong>The halt is a contract.</strong> A failed mandatory rule short-circuits straight to <code>POOR_FIT</code> without ever invoking the model — strong alignment cannot rescue a failed requirement. The schema says so; the runtime obeys it; a test proves the reasoner is never called after a halt.</p>
-      </div>
-
-      <div class="cards">
-        <div class="card">
-          <span class="tag eyebrow">Evaluation filter</span>
-          <h3>eligibilityCorrectness</h3>
-          <p>Scores all three deterministic gates against ground truth. Should stay perfectly stable when the model underneath changes.</p>
-        </div>
-        <div class="card">
-          <span class="tag eyebrow">Evaluation filter</span>
-          <h3>programAlignment</h3>
-          <p>Scores the reasoned classification against the expected outcome for the case.</p>
-        </div>
-        <div class="card">
-          <span class="tag eyebrow">Evaluation filter</span>
-          <h3>evidenceGrounding</h3>
-          <p>Checks that the conclusion is carried by evidence actually present in the context — not invented to fit.</p>
+        <div>
+          <h3>How well does it align?</h3>
+          <p class="splitsub">Interpretive. Needs a model to weigh evidence and explain a judgment.</p>
+          <ul>
+            <li>Mission alignment</li>
+            <li>Program alignment</li>
+            <li>Evidence interpretation</li>
+            <li>Explanation</li>
+          </ul>
         </div>
       </div>
 
       <div class="prose">
-        <p class="eyebrow" style="margin-bottom:-6px">Cross-cutting policies</p>
-        <div class="chips"><span class="pill out">Do not invent missing information</span><span class="pill out">Support conclusions with evidence</span><span class="pill out">Flag uncertainty rather than defaulting to a confident conclusion</span></div>
+        <p>They are halves of one business decision, and the relationship between them is asymmetric in a way the business cares about: <strong>strong alignment cannot rescue failed eligibility.</strong> That is exactly the kind of rule that lives in a requirements doc, gets implemented once, and is never checked again.</p>
+        <p>Watch what that asymmetry looks like at runtime. A failed mandatory rule short-circuits straight to <code>POOR_FIT</code> without ever invoking the model — no tokens spent, and no chance for a persuasive explanation to paper over a hard failure.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="figbody"><svg class="seqdiag" viewBox="0 0 980 478" role="img" aria-label="Interaction diagram for one grant fit assessment. The program manager requests an assessment from the application. The application reads the goal, rules, policies and criteria from the Executable Use Case. It runs the deterministic ELIGIBILITY-001 requirement against the rules engine, which returns eligible = false. An alternative block shows the halt contract: if eligibility failed, the application returns POOR_FIT without ever invoking the model; if eligibility passed, it invokes the model for ALIGNMENT-001 under the use case policies. Finally the application sends the result and criteria to evaluation, which asks the same Executable Use Case which requirement each criterion traces back to.">
+    <rect x="38" y="8" width="132" height="56" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="104" y="28" text-anchor="middle" class="snm">Program</text>
+  <text x="104" y="44" text-anchor="middle" class="snm">Manager</text>
+  <line x1="104" y1="70" x2="104" y2="456" class="slife"/>
+  <rect x="200" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="266" y="28" text-anchor="middle" class="snm">Application</text>
+  <line x1="266" y1="52" x2="266" y2="456" class="slife"/>
+  <rect x="364" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="430" y="28" text-anchor="middle" class="snm">EUC</text>
+  <line x1="430" y1="52" x2="430" y2="456" class="slife"/>
+  <rect x="508" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="574" y="28" text-anchor="middle" class="snm">Rules</text>
+  <line x1="574" y1="52" x2="574" y2="456" class="slife"/>
+  <rect x="658" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="724" y="28" text-anchor="middle" class="snm">Model</text>
+  <line x1="724" y1="52" x2="724" y2="456" class="slife"/>
+  <rect x="822" y="8" width="132" height="38" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="888" y="28" text-anchor="middle" class="snm">Evaluation</text>
+  <line x1="888" y1="52" x2="888" y2="456" class="slife"/>
+  <path d="M104 104 H260" class="smsg"/>
+  <path d="M266 104 l-7 -4 v8 z" class="smsghead"/>
+  <text x="185.0" y="96" text-anchor="middle" class="slbl">request assessment</text>
+  <circle cx="19.0" cy="100" r="8.5" class="snumbg"/><text x="19.0" y="103" text-anchor="middle" class="snum">1</text>
+  <path d="M266 148 H424" class="smsg"/>
+  <path d="M430 148 l-7 -4 v8 z" class="smsghead"/>
+  <text x="348.0" y="140" text-anchor="middle" class="slbl">read goal, rules, policies, criteria</text>
+  <circle cx="19.0" cy="144" r="8.5" class="snumbg"/><text x="19.0" y="147" text-anchor="middle" class="snum">2</text>
+  <path d="M430 180 H272" class="smsg dash"/>
+  <path d="M266 180 l7 -4 v8 z" class="smsghead"/>
+  <text x="348.0" y="172" text-anchor="middle" class="slbl">business reference</text>
+  <path d="M266 222 H568" class="smsg"/>
+  <path d="M574 222 l-7 -4 v8 z" class="smsghead"/>
+  <text x="420.0" y="214" text-anchor="middle" class="slbl">ELIGIBILITY-001</text>
+  <circle cx="19.0" cy="218" r="8.5" class="snumbg"/><text x="19.0" y="221" text-anchor="middle" class="snum">3</text>
+  <path d="M574 254 H272" class="smsg dash"/>
+  <path d="M266 254 l7 -4 v8 z" class="smsghead"/>
+  <text x="420.0" y="246" text-anchor="middle" class="slbl">eligible = false</text>
+  <rect x="42" y="274" width="922" height="134" rx="2" fill="none" stroke="var(--brass)" stroke-opacity=".5" stroke-dasharray="3 3"/>
+  <rect x="42" y="274" width="88" height="19" fill="var(--brass-wash)" stroke="var(--brass)" stroke-opacity=".5"/>
+  <text x="52" y="288" class="salt">alt · halt</text>
+  <text x="146" y="288" class="sguard">[eligibility failed]</text>
+  <path d="M266 320 H110" class="smsg"/>
+  <path d="M104 320 l7 -4 v8 z" class="smsghead"/>
+  <text x="185.0" y="312" text-anchor="middle" class="slbl">POOR_FIT — model never invoked</text>
+  <circle cx="19.0" cy="316" r="8.5" class="snumbg"/><text x="19.0" y="319" text-anchor="middle" class="snum">4</text>
+  <line x1="42" y1="340" x2="964" y2="340" stroke="var(--brass)" stroke-opacity=".4" stroke-dasharray="3 3"/>
+  <text x="52" y="356" class="sguard">[eligibility passed]</text>
+  <path d="M266 388 H718" class="smsg"/>
+  <path d="M724 388 l-7 -4 v8 z" class="smsghead"/>
+  <text x="495.0" y="380" text-anchor="middle" class="slbl">ALIGNMENT-001, under policies</text>
+  <circle cx="19.0" cy="384" r="8.5" class="snumbg"/><text x="19.0" y="387" text-anchor="middle" class="snum">5</text>
+  <path d="M266 436 H882" class="smsg"/>
+  <path d="M888 436 l-7 -4 v8 z" class="smsghead"/>
+  <text x="577.0" y="428" text-anchor="middle" class="slbl">result + criteria</text>
+  <circle cx="19.0" cy="432" r="8.5" class="snumbg"/><text x="19.0" y="435" text-anchor="middle" class="snum">6</text>
+  <path d="M888 462 H436" class="smsg dash"/>
+  <path d="M430 462 l7 -4 v8 z" class="smsghead"/>
+  <text x="659.0" y="454" text-anchor="middle" class="slbl">which requirement does this trace to?</text>
+</svg></div>
+        <figcaption>One assessment, end to end. The dashed frame is the <code>onFailure: halt</code> requirement made concrete. Note the last step — evaluation asks the <em>same</em> use case which requirement each criterion traces back to, rather than a separately maintained copy of what someone believed the intent to be.</figcaption>
+      </figure>
+
+      <div class="prose">
+        <p class="eyebrow" style="margin-bottom:-6px">Acceptable outcomes</p>
+        <div class="chips"><span class="pill out">STRONG_FIT</span><span class="pill out">POSSIBLE_FIT</span><span class="pill out">POOR_FIT</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── 04 Drift ───────────────────────────────────────────────────────── -->
-<section class="band" id="drift">
+<section class="band" id="boundary">
   <div class="wrap">
-    <div class="rail">
-      <span class="num">04</span>
-      <span class="lbl">Measuring drift</span>
+    <div class="rail"><span class="num">05</span><span class="lbl">The boundary</span></div>
+    <div>
+      <h2 class="tagline">What an EUC <em>doesn't</em> do.</h2>
+      <div class="prose">
+        <p>This is the most commonly misread part of the idea. <strong>An EUC performs no retrieval, controls no model reasoning, and runs no evaluations.</strong> It is not a framework and not a runtime.</p>
+        <p>The boundary is deliberate: an artifact that did any of those things would have to change when they changed, which is exactly what it exists not to do. Existing tools — DeepEval, Ragas, or whatever a team already uses — provide the evaluation machinery. An EUC criterion is <em>mapped into</em> that machinery: to a deterministic assertion, a standard metric, or an LLM-as-a-judge rubric.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="figbody"><svg class="ctxdiag" viewBox="0 0 980 470" role="img" aria-label="Context diagram. Business intent is expressed as one Executable Use Case. Its requirements are implemented by deterministic logic, RAG and context, and LLM reasoning — all free to change. Its criteria are mapped into an evaluation framework such as DeepEval or Ragas, an LLM-as-a-judge, and assertions and metrics — also free to change. The implementation produces behavior that the evaluation measures, yielding an evaluation result that traces back to the Executable Use Case. The Executable Use Case itself performs no retrieval, controls no reasoning, and runs no evaluation.">
+    <rect x="360" y="10" width="260" height="44" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="490.0" y="37.0" text-anchor="middle" class="cnm">Business Intent</text>
+  <rect x="290" y="98" width="400" height="76" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="2"/>
+  <text x="490" y="126" text-anchor="middle" class="ceuc">EXECUTABLE USE CASE</text>
+  <text x="490" y="146" text-anchor="middle" class="csub">goal · rules · policies · requirements</text>
+  <text x="490" y="163" text-anchor="middle" class="csub">outcomes · context · criteria</text>
+  <rect x="52" y="238" width="396" height="150" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+  <text x="66" y="258" class="cgrp">IMPLEMENTATION — FREE TO CHANGE</text>
+  <rect x="70" y="270" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="250.0" y="290.0" text-anchor="middle" class="cnm">Deterministic logic</text>
+  <rect x="70" y="308" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="250.0" y="328.0" text-anchor="middle" class="cnm">RAG / context</text>
+  <rect x="70" y="346" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="250.0" y="366.0" text-anchor="middle" class="cnm">LLM reasoning</text>
+  <rect x="532" y="238" width="396" height="150" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+  <text x="546" y="258" class="cgrp">EVALUATION — FREE TO CHANGE</text>
+  <rect x="550" y="270" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="730.0" y="290.0" text-anchor="middle" class="cnm">Evaluation framework (DeepEval, Ragas…)</text>
+  <rect x="550" y="308" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="730.0" y="328.0" text-anchor="middle" class="cnm">LLM-as-a-judge</text>
+  <rect x="550" y="346" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="730.0" y="366.0" text-anchor="middle" class="cnm">Assertions &amp; metrics</text>
+  <rect x="360" y="414" width="260" height="44" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+  <text x="490.0" y="441.0" text-anchor="middle" class="cnm">Evaluation result</text>
+  <path d="M490 54 V94" class="cedge"/><path d="M486 88 l4 8 l4 -8 z" class="cedgehead"/>
+  <path d="M370 174 V234" class="cedge"/><path d="M366 228 l4 8 l4 -8 z" class="cedgehead"/>
+  <text x="382" y="198" class="cedgelbl">requirements</text><text x="382" y="212" class="cedgelbl">implemented by</text>
+  <path d="M610 174 V234" class="cedge"/><path d="M606 228 l4 8 l4 -8 z" class="cedgehead"/>
+  <text x="598" y="198" text-anchor="end" class="cedgelbl">criteria</text><text x="598" y="212" text-anchor="end" class="cedgelbl">mapped into</text>
+  <path d="M448 312 H528" class="cedge"/><path d="M532 312 l-8 -4 v8 z" class="cedgehead"/>
+  <text x="488" y="304" text-anchor="middle" class="cedgelbl">behavior</text>
+  <path d="M730 388 V436 H624" class="cedge"/><path d="M620 436 l8 -4 v8 z" class="cedgehead"/>
+  <path d="M356 436 H18 V136 H284" class="ctrace"/><path d="M286 136 l-8 -4 v8 z" class="ctracehead"/>
+  <text x="150" y="428" class="ctracelbl">tracesTo</text>
+</svg></div>
+        <figcaption>Where the EUC sits. Everything in the dashed boxes is free to change. The EUC is the only fixed point, and the only thing an evaluation result traces back to.</figcaption>
+      </figure>
+
+      <blockquote class="quote">The evaluation framework measures behavior. The EUC keeps that measurement connected to the business requirement it is meant to validate.</blockquote>
     </div>
+  </div>
+</section>
+
+<section class="band" id="test">
+  <div class="wrap">
+    <div class="rail"><span class="num">06</span><span class="lbl">The experiment</span></div>
     <div>
       <h2 class="tagline">Something has to <em>stay still</em> for movement to be measurable.</h2>
       <div class="prose">
-        <p>That is the whole wager. The EUC is the datum — fixed on purpose — while the prompt and the model underneath it are deliberately changed. If evaluation against that unchanged definition still catches the divergence, the artifact does its job. If behaviour drifts and the eval stays green, it does not, and that failure is the finding.</p>
+        <p>The validation follows directly from the question. Hold the EUC and the business scenarios fixed. Change one part of the application at a time — the prompt, the model, the retrieved context, how evidence is presented. Re-run the same mapped evaluators. Then ask whether the results still trace back to the original requirements.</p>
       </div>
 
       <div class="gauge reveal" id="gauge">
-        <svg viewBox="0 0 640 190" role="img" aria-label="A fixed horizontal datum line representing the unchanged Executable Use Case, with a measured behaviour line that tracks it closely at first and then diverges as the prompt and model change.">
+        <svg viewBox="0 0 640 190" role="img" aria-label="A fixed horizontal datum line representing the unchanged Executable Use Case, with a measured behaviour line that tracks it closely at first and then diverges as the prompt, model and context change.">
           <defs>
             <linearGradient id="driftfill" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stop-color="var(--brass)" stop-opacity="0"/>
@@ -650,114 +962,100 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
             <text x="60" y="182">BASELINE</text>
             <text x="180" y="182">PROMPT v2</text>
             <text x="320" y="182">MODEL SWAP</text>
-            <text x="460" y="182">PROMPT v3</text>
-            <text x="64" y="103" fill="var(--verdigris)">EUC — FIXED</text>
+            <text x="460" y="182">CONTEXT</text>
+            <text x="64" y="103" fill="var(--verdigris)">EUC + SCENARIOS — FIXED</text>
           </g>
         </svg>
         <p class="legend">
-          <span><i style="border-top:2px solid var(--verdigris)"></i>The EUC: unchanged across every variant</span>
-          <span><i style="border-top:2px solid var(--brass)"></i>Measured behaviour under prompt and model change</span>
+          <span><i style="border-top:2px solid var(--verdigris)"></i>The EUC and scenarios: unchanged across every variant</span>
+          <span><i style="border-top:2px solid var(--brass)"></i>Application behaviour under prompt, model and context change</span>
         </p>
       </div>
 
-      <div class="metrics">
-        <div class="metric"><span class="mname">Drift detection rate</span><p>How often evaluation catches a change that genuinely altered behaviour.</p></div>
-        <div class="metric"><span class="mname">False-flag rate</span><p>How often it raises drift when behaviour did not actually diverge.</p></div>
-        <div class="metric"><span class="mname">Deterministic-rule stability</span><p>Whether the rule-based half stays perfectly stable, as it should.</p></div>
-        <div class="metric"><span class="mname">Evidence-grounding consistency</span><p>Whether conclusions stay carried by evidence as the reasoning layer shifts.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 05 Case study ──────────────────────────────────────────────────── -->
-<section class="band" id="casestudy">
-  <div class="wrap">
-    <div class="rail">
-      <span class="num">05</span>
-      <span class="lbl">Case study</span>
-    </div>
-    <div>
-      <h2 class="tagline">Grant Fit Assessment.</h2>
       <div class="prose">
-        <p>Nonprofits fund programs partly by applying for grants, and applying costs real staff time — so they need to know in advance whether an opportunity is worth pursuing. The assessment compares an organization's profile and programs against a grant's requirements and priorities.</p>
-        <p>It makes a good testbed because <strong>eligibility and fit are not substitutes for each other</strong>. An organization can be eligible and still a poor fit; strong alignment cannot overcome a failed mandatory requirement. The two halves behave differently under evaluation, which is precisely what needs isolating.</p>
+        <p>For each controlled change, three questions:</p>
       </div>
+      <ol class="steps">
+        <li><span>Did runtime behavior violate an EUC business criterion?</span></li>
+        <li><span>Did the mapped evaluator identify the violation?</span></li>
+        <li><span>Can the result be traced back to the originating requirement?</span></li>
+      </ol>
 
-      <div class="split">
-        <div>
-          <h3>Deterministic</h3>
-          <ul>
-            <li>Organization eligibility</li>
-            <li>Geographic requirements</li>
-            <li>Required information present</li>
-            <li>Mandatory constraints</li>
-          </ul>
-        </div>
-        <div>
-          <h3>LLM-reasoned</h3>
-          <ul>
-            <li>Mission alignment</li>
-            <li>Program alignment</li>
-            <li>Evidence interpretation</li>
-            <li>Explanation generation</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="prose">
-        <p class="eyebrow" style="margin-bottom:-6px">Expected outcomes</p>
-        <div class="chips"><span class="pill out">STRONG_FIT</span><span class="pill out">POSSIBLE_FIT</span><span class="pill out">POOR_FIT</span></div>
-        <p>The eval dataset carries six cases with independently established ground truth, including the two that matter most — <strong>eligible but misaligned</strong>, and <strong>ineligible but aligned</strong>. Those are the cases where a drifting reasoner is most likely to give a plausible answer for the wrong reason.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 06 vs SDD ──────────────────────────────────────────────────────── -->
-<section class="band" id="sdd">
-  <div class="wrap">
-    <div class="rail">
-      <span class="num">06</span>
-      <span class="lbl">Related work</span>
-    </div>
-    <div>
-      <h2 class="tagline">Adjacent to spec-driven development. Aimed at a <em>different</em> failure.</h2>
-      <div class="prose">
-        <p>Spec-driven development is fundamentally about <strong>generation</strong> — spec in, code out. Executable Use Cases are fundamentally about <strong>evaluation under drift</strong>: the definition does not change; the thing running underneath it does. These overlap, with different centres of gravity — not competing alternatives.</p>
-      </div>
       <div class="compare">
         <table>
-          <thead>
-            <tr><th scope="col"></th><th scope="col">Spec-driven development</th><th scope="col">Executable Use Cases</th></tr>
-          </thead>
+          <thead><tr><th scope="col">Behavior</th><th scope="col">Evaluation</th><th scope="col">Interpretation</th></tr></thead>
           <tbody>
-            <tr><th scope="row">Drives</th><td>Generated code, tests, docs</td><td>Runtime reasoning behaviour <em>and</em> evaluation criteria</td></tr>
-            <tr><th scope="row">Consulted</th><td>At build time, before and during implementation</td><td>Continuously — at every inference, not just at build</td></tr>
-            <tr><th scope="row">“Drift” means</th><td>Code diverging from the spec — a version-control problem</td><td>The model's judgement diverging from intent while the code is unchanged — a non-determinism problem</td></tr>
-            <tr><th scope="row">Over its life</th><td>The spec is updated when requirements change; code is regenerated</td><td>The EUC stays fixed on purpose while the model and prompt beneath it change</td></tr>
+            <tr><td>Violates criterion</td><td>Flagged</td><td>Correct detection</td></tr>
+            <tr><td>Violates criterion</td><td>Passed</td><td><b class="bad">False negative</b> — the risk that matters most</td></tr>
+            <tr><td>Satisfies criterion</td><td>Flagged</td><td>False positive</td></tr>
+            <tr><td>Satisfies criterion</td><td>Passed</td><td>Correct pass</td></tr>
           </tbody>
         </table>
       </div>
+
+      <div class="prose">
+        <p>A <strong>false negative</strong> is the outcome that would falsify the idea: behavior drifted, and evaluation waved it through. That would mean EUC-anchored evaluation offers no real advantage over the status quo it is meant to improve on. A <strong>false positive</strong> rate that is too high means the criteria are brittle, or coupled too tightly to one implementation to serve as a stable reference.</p>
+        <p>Both failure modes are deliberately observable. <strong>A negative result is a legitimate finding, not a failed project</strong> — the experiment is designed so that "this does not work, and here is precisely where it breaks" is a publishable outcome.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── 07 Status ──────────────────────────────────────────────────────── -->
+<section class="band" id="worth">
+  <div class="wrap">
+    <div class="rail"><span class="num">07</span><span class="lbl">What it's worth</span></div>
+    <div>
+      <h2 class="tagline">The expensive part was never the <em>model</em>.</h2>
+      <div class="prose">
+        <p>If the link holds, a second and more practical benefit follows: reducing the cost of change. Production AI costs extend well beyond inference. Teams spend their time integrating systems, refining prompts and context, defining evaluations, satisfying governance requirements, investigating failures, and reworking solutions when behavior does not match expectations.</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="fig">~15<span class="unit">%</span></span>
+          <p>of a typical GenAI project's effort is the model itself, McKinsey reports. The rest is everything around it.</p>
+        </div>
+        <div class="stat">
+          <span class="fig">$3<span class="unit">:$1</span></span>
+          <p>change-management spend for every dollar of model development, on McKinsey's estimate.</p>
+        </div>
+        <div class="stat">
+          <span class="fig">≥50<span class="unit">%</span></span>
+          <p>of GenAI projects abandoned after proof of concept by end of 2025, Gartner reported — escalating cost among the reasons.</p>
+        </div>
+        <div class="stat">
+          <span class="fig">30–50<span class="unit">%</span></span>
+          <p>faster use-case development is associated with reusable code, per McKinsey. An EUC asks whether intent can be reusable too.</p>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>So the proposed benefit is not cheaper tokens or a cheaper model. It is reducing the work that has to be repeated every time the implementation changes. If business intent has not changed, the team should not have to rediscover what the application is supposed to do, or redefine what acceptable behavior means.</p>
+      </div>
+
+      <blockquote class="quote">By preserving business intent across implementation and evaluation, an EUC may reduce requirements clarification, evaluator redesign, and late-stage rework as AI applications evolve.</blockquote>
+
+      <div class="prose">
+        <p>This capstone does not attempt an enterprise-wide ROI or a claimed percentage saving. It tests the smaller, more defensible question: <strong>when business intent has not changed, can the application be changed and re-evaluated without redefining the requirement or rebuilding its evaluation criteria?</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="band" id="status">
   <div class="wrap">
-    <div class="rail">
-      <span class="num">07</span>
-      <span class="lbl">Where this stands</span>
-    </div>
+    <div class="rail"><span class="num">08</span><span class="lbl">Where this stands</span></div>
     <div>
-      <h2 class="tagline">A working prototype, and one honest gap.</h2>
+      <h2 class="tagline">A working prototype, and an honest list of what's next.</h2>
       <div class="status">
-        <div class="sitem done"><span class="st">Built</span><p>EUC schema and JSON authored; model and loader in Java, with <code>validate()</code> enforcing the pipeline contract at load time.</p></div>
-        <div class="sitem done"><span class="st">Built</span><p>Both halves are schema-driven: <code>PipelineBuilder</code> and <code>EvaluationPipelineBuilder</code> assemble their chains from the EUC through filter registries, with no per-use-case orchestration code.</p></div>
-        <div class="sitem done"><span class="st">Built</span><p>Deterministic eligibility engine and EUC-bound evaluator, both unit tested. The <code>halt</code> contract is verified offline with a reasoner that fails the test if it is ever invoked after a halt.</p></div>
-        <div class="sitem done"><span class="st">Built</span><p>Drift-experiment harness: baseline plus prompt and model variants, computing all four metrics — verified against known inputs with fake reasoners.</p></div>
-        <div class="sitem open"><span class="st">Pending</span><p>The first live eval pass and drift run against a real model. Every layer of wiring is verified offline; only the network call itself remains unexercised in this environment.</p></div>
+        <div class="sitem done"><span class="st">Built</span><p>EUC schema and JSON authored; model and loader in Java, with <code>validate()</code> enforcing the contract at load time.</p></div>
+        <div class="sitem done"><span class="st">Built</span><p>Deterministic eligibility rule engine and an evaluator bound to the EUC's criteria, both unit tested.</p></div>
+        <div class="sitem done"><span class="st">Built</span><p>LLM-reasoned alignment assessment, and the <code>onFailure: halt</code> contract — verified offline with a reasoner that fails the test if it is ever invoked after a halt.</p></div>
+        <div class="sitem done"><span class="st">Built</span><p>Controlled-change harness: baseline plus prompt and model variants, computing the result metrics against known inputs.</p></div>
+        <div class="sitem next"><span class="st">Next</span><p>Migrate the committed EUC from its pipeline shape to <code>executionRequirements</code> / <code>evaluationCriteria</code> / <code>tracesTo</code>, so the artifact carries traceability rather than an implementation choice.</p></div>
+        <div class="sitem next"><span class="st">Next</span><p>Map criteria into an existing evaluation framework — DeepEval or Ragas — rather than the current bespoke evaluator.</p></div>
+        <div class="sitem next"><span class="st">Next</span><p>Expand the dataset from 6 to 10–15 scenarios, and record the change-effort indicators during controlled-change runs.</p></div>
+        <div class="sitem open"><span class="st">Pending</span><p>First live evaluation pass against a real model. Every layer of wiring is verified offline; only the network call itself remains unexercised in this environment.</p></div>
       </div>
     </div>
   </div>
@@ -765,14 +1063,13 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
 
 </div><!-- /field -->
 
-<!-- ── Closing ────────────────────────────────────────────────────────── -->
 <section class="closing">
   <div class="wrap">
     <div class="rail"><span class="num">→</span><span class="lbl">Read on</span></div>
     <div>
-      <h2>Evaluation needs a reference point that <em>survives</em> iteration — authored once, by the people who own the intent.</h2>
+      <h2>Models will improve, prompts will evolve, retrieval will be replaced. The business intent should not have to be <em>rediscovered</em> every time.</h2>
       <div class="prose">
-        <p>The contribution is not the grant application. It is a domain-independent pattern, and a falsifiable claim about it: that a fixed, machine-readable definition of intent can still tell you whether behaviour stayed correct after the model underneath changed. The proposal states what would disprove it.</p>
+        <p>The contribution is not the grant application. It is a domain-independent pattern and a falsifiable claim about it: that a fixed, machine-readable statement of intent can keep implementation and evaluation connected while everything underneath them changes. The proposal states exactly what would disprove it.</p>
       </div>
       <div class="cta">
         <a class="btn btn-fill" href="https://github.com/basarim/infoq-capstone-euc/blob/main/docs/proposal.md">Read the full proposal <span class="arrow" aria-hidden="true">→</span></a>
@@ -786,10 +1083,10 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
 
 <footer>
   <div class="wrap">
-    <p>Executable Use Cases — an InfoQ AI Engineering Certification system-building project, on the theme <em>Engineering on Shifting Ground: Building Dependable Systems on Undependable Components</em>.</p>
+    <p>Executable Use Cases — an InfoQ AI Engineering Certification system-building project, on the theme <em>Engineering on Shifting Ground: Building Dependable Systems on Undependable Components</em>. Industry figures cited from McKinsey &amp; Company and Gartner; see the proposal for full references.</p>
     <div class="flinks">
       <a href="https://github.com/basarim/infoq-capstone-euc/blob/main/docs/proposal.md">Proposal</a>
-      <a href="https://github.com/basarim/infoq-capstone-euc/blob/main/src/main/resources/euc/grant-fit-assessment/grant-fit-assessment.json">The EUC</a>
+      <a href="https://github.com/basarim/infoq-capstone-euc/tree/main/src/main/resources/euc/grant-fit-assessment">The EUC</a>
       <a href="https://github.com/basarim/infoq-capstone-euc">Source</a>
     </div>
   </div>
@@ -814,7 +1111,7 @@ footer a:hover{color:var(--brass);border-bottom-color:var(--brass)}
     if('IntersectionObserver' in window){
       var io=new IntersectionObserver(function(entries){
         entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
-      },{threshold:.35});
+      },{threshold:.3});
       io.observe(g);
     } else { g.classList.add('on'); }
   }
