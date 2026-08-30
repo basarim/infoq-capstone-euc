@@ -17,25 +17,32 @@ import java.util.Map;
 
 /**
  * Scores an AssessmentResult against a TestCase's ground truth, using the
- * three criteria declared in the EUC's evaluationPipeline:
- * eligibilityCorrectness, programAlignment, evidenceGrounding.
+ * evaluation criteria the EUC declares.
  *
- * Scoring is driven by EvaluationPipelineBuilder from the EUC's
- * evaluationPipeline — each stage's `filter` key resolves through an
- * EvaluationFilterRegistry to a filter class in
- * com.euc.grantfitassessment.eval.pipeline — mirroring how GrantFitApplication
- * drives execution from executionPipeline (see docs/proposal.md Section 3:
- * the same schema-driven pattern covers both halves).
+ * Each evaluator is registered against a criterion id, and each criterion
+ * declares through `tracesTo` which requirements, rules and policies it
+ * validates — so a verdict here can be followed back to the business
+ * requirement it speaks to, which is the property this project exists to
+ * test.
+ *
+ * In the full design these evaluators are where an existing framework
+ * (DeepEval, Ragas, an LLM-as-a-judge rubric) would plug in; the prototype
+ * implements the assertions directly. See docs/proposal.md Section 5.
  */
 public class GrantFitEvaluator {
+
+    /** Criterion ids, as declared in grant-fit-assessment.json. */
+    private static final String ELIGIBILITY = "EVAL-ELIGIBILITY";
+    private static final String ALIGNMENT = "EVAL-ALIGNMENT";
+    private static final String EVIDENCE = "EVAL-EVIDENCE";
 
     private final EvaluationPipelineBuilder pipelineBuilder;
 
     public GrantFitEvaluator(EucDefinition euc) {
         EvaluationFilterRegistry registry = new EvaluationFilterRegistry()
-                .register("eligibilityCorrectness", new EligibilityCorrectnessFilter())
-                .register("programAlignment", new ProgramAlignmentFilter())
-                .register("evidenceGrounding", new EvidenceGroundingFilter());
+                .register(ELIGIBILITY, new EligibilityCorrectnessFilter())
+                .register(ALIGNMENT, new ProgramAlignmentFilter())
+                .register(EVIDENCE, new EvidenceGroundingFilter());
 
         this.pipelineBuilder = new EvaluationPipelineBuilder(euc, registry);
     }
@@ -56,9 +63,9 @@ public class GrantFitEvaluator {
 
         return new EvaluationScore(
                 testCase.caseId(),
-                verdicts.get("eligibilityCorrectness") == EvaluationFilter.Verdict.PASSED,
-                verdicts.get("programAlignment") == EvaluationFilter.Verdict.PASSED,
-                verdicts.get("evidenceGrounding") == EvaluationFilter.Verdict.PASSED,
+                verdicts.get(ELIGIBILITY) == EvaluationFilter.Verdict.PASSED,
+                verdicts.get(ALIGNMENT) == EvaluationFilter.Verdict.PASSED,
+                verdicts.get(EVIDENCE) == EvaluationFilter.Verdict.PASSED,
                 missingEvidence
         );
     }

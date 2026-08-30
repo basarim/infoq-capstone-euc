@@ -11,13 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * End-to-end test of the EUC-driven pipeline: EucLoader -> GrantFitApplication
- * -> PipelineBuilder -> ExecutionFilterRegistry -> filters, using a fake
- * FitReasoner so it runs offline without LLM_API_KEY. This is the "happy
- * scenario" proof that execution is actually assembled from
- * executionPipeline rather than hand-wired (docs/proposal.md Section 4) —
- * a live model call still needs a real key, but the pipeline mechanics
- * this test exercises are exactly what a live call would run through.
+ * End-to-end test of the EUC-driven run: EucLoader -> GrantFitApplication
+ * -> PipelineBuilder -> ExecutionFilterRegistry -> implementations, using a
+ * fake FitReasoner so it runs offline without LLM_API_KEY.
+ *
+ * This is the proof that execution is assembled from the EUC's declared
+ * execution requirements rather than hand-wired, and that the halt contract
+ * is honoured because the EUC says so. A live model call still needs a real
+ * key, but the mechanics exercised here are exactly what a live call runs
+ * through.
  */
 class GrantFitApplicationTest {
 

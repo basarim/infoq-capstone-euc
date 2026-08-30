@@ -6,13 +6,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Sanity check that the EUC resource loads and parses correctly — the
- * "does the single source of truth even load" test that everything else
- * depends on.
+ * Tests the EUC as a business artifact: that it loads, that its parts are
+ * declared, and above all that the link between evaluation and business
+ * intent actually holds.
+ *
+ * The traceability tests are the ones that matter. An EUC whose criteria
+ * point at requirements it does not declare is broken in exactly the way
+ * this project exists to prevent, so that is a load-time failure rather
+ * than something discovered later as a result nobody can explain.
  */
 class EucLoaderTest {
 
@@ -21,183 +28,208 @@ class EucLoaderTest {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
         assertEquals("grant-fit-assessment", euc.getId());
+        assertEquals("Nonprofit Program Manager", euc.getActor());
+        assertNotNull(euc.getGoal());
         assertEquals(3, euc.getExpectedOutcomes().size());
         assertTrue(euc.getExpectedOutcomes().contains("STRONG_FIT"));
-        assertTrue(euc.getEvaluationPipeline().stream()
-                .anyMatch(stage -> stage.getId().equals("eligibilityCorrectness")));
     }
 
     @Test
-    void separatesDeterministicAndReasonedStages() {
+    void declaresRulesAndPoliciesWithIds() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
-        assertTrue(euc.deterministicStages().size() >= 3, "expected multiple deterministic stages");
-        assertEquals(1, euc.reasonedStages().size(), "expected exactly one reasoned stage (ALIGNMENT-001)");
-    }
+        assertFalse(euc.getRules().isEmpty(), "expected declared business rules");
+        assertFalse(euc.getPolicies().isEmpty(), "expected declared policies");
 
-    @Test
-    void deterministicStagesHaltOnFailure() {
-        EucDefinition euc = EucLoader.loadGrantFitAssessment();
-
-        for (EucRule stage : euc.deterministicStages()) {
-            assertEquals(EucRule.OnFailure.HALT, stage.getOnFailure(),
-                    stage.getId() + " should halt the pipeline on failure");
+        for (BusinessRule rule : euc.getRules()) {
+            assertNotNull(rule.getId(), "every rule needs an id so a criterion can trace to it");
+            assertNotNull(rule.getDescription());
+        }
+        for (Policy policy : euc.getPolicies()) {
+            assertNotNull(policy.getId(), "every policy needs an id so a criterion can trace to it");
+            assertNotNull(policy.getDescription());
         }
     }
 
     @Test
-    void evaluationStagesReferenceValidExecutionStageIds() {
+    void separatesDeterministicAndReasonedRequirements() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
-        for (EvaluationStage stage : euc.getEvaluationPipeline()) {
-            for (String executionStageId : stage.getEvaluates()) {
-                // findStage throws if the id doesn't exist — asserting no exception
-                // confirms every evaluation stage points at a real execution stage.
-                euc.findStage(executionStageId);
+        assertTrue(euc.deterministicRequirements().size() >= 3,
+                "expected multiple deterministic requirements");
+        assertEquals(1, euc.reasonedRequirements().size(),
+                "expected exactly one reasoned requirement (ALIGNMENT-001)");
+    }
+
+    @Test
+    void deterministicRequirementsHaltOnFailure() {
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+
+        for (ExecutionRequirement requirement : euc.deterministicRequirements()) {
+            assertEquals(ExecutionRequirement.OnFailure.HALT, requirement.getOnFailure(),
+                    "a failed mandatory requirement must stop the run: " + requirement.getId());
+        }
+    }
+
+    @Test
+    void everyCriterionTracesToSomethingTheEucDeclares() {
+        EucDefinition euc = EucLoader.loadGrantFitAssessment();
+
+        for (EvaluationCriterion criterion : euc.getEvaluationCriteria()) {
+            assertFalse(criterion.getTracesTo().isEmpty(),
+                    "criterion " + criterion.getId() + " traces to nothing");
+            for (String target : criterion.getTracesTo()) {
+                assertTrue(euc.traceableIds().contains(target),
+                        "criterion " + criterion.getId() + " traces to unknown id " + target);
             }
         }
     }
 
     @Test
-    void loadedEucSatisfiesPipelineContract() {
-        // A pipeline is comprised of one or more filters — assert the real
-        // EUC actually meets that contract, not just that validate() exists.
+    void criteriaCoverEveryRequirementRuleAndPolicy() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
-        assertTrue(euc.getExecutionPipeline().size() >= 1);
-        assertTrue(euc.getEvaluationPipeline().size() >= 1);
+        assertEquals(List.of(), euc.untracedIds(),
+                "nothing this EUC declares should go unchecked — see docs/proposal.md, 'Visible mapping gaps'");
     }
 
     @Test
-    void currentVersionExecutesFullySerialized() {
-        // This version's PipelineBuilder (not yet implemented) is expected to
-        // execute strictly in array order regardless of `group` — locking in
-        // that every stage currently has a unique group number documents the
-        // "fully serial for now" guarantee. If a future change intentionally
-        // introduces real parallel groups, this test should be updated
-        // deliberately rather than broken by accident.
+    void everyCriterionHasAtLeastOneStatedCheck() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
-        long distinctExecutionGroups = euc.getExecutionPipeline().stream()
-                .map(EucRule::getGroup)
-                .distinct()
-                .count();
-        assertEquals(euc.getExecutionPipeline().size(), distinctExecutionGroups,
-                "expected every execution stage to have a unique group (fully serial) in this version");
-
-        long distinctEvaluationGroups = euc.getEvaluationPipeline().stream()
-                .map(EvaluationStage::getGroup)
-                .distinct()
-                .count();
-        assertEquals(euc.getEvaluationPipeline().size(), distinctEvaluationGroups,
-                "expected every evaluation stage to have a unique group (fully serial) in this version");
+        for (EvaluationCriterion criterion : euc.getEvaluationCriteria()) {
+            assertFalse(criterion.getCriteria().isEmpty(),
+                    "criterion " + criterion.getId() + " states nothing to check");
+        }
     }
 
     @Test
     void contextIsDeclaredWithSeedFields() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
-        assertTrue(euc.getContext() != null, "expected a declared shared-context spec");
+        assertNotNull(euc.getContext(), "expected a declared shared-context spec");
         assertTrue(euc.getContext().getSeedFields().containsAll(List.of("organization", "grant")));
     }
 
     @Test
-    void laterStageReadsWhatAnEarlierStageWrites() {
-        // ALIGNMENT-001 (group 4) reads "eligible" — confirms a stage in an
-        // earlier group actually writes it, so the data dependency the
-        // `group` ordering is supposed to satisfy is real, not just declared.
+    void laterRequirementReadsWhatAnEarlierOneWrites() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
-        EucRule alignment = euc.findStage("ALIGNMENT-001");
 
+        ExecutionRequirement alignment = euc.findRequirement("ALIGNMENT-001");
         assertTrue(alignment.getReads().contains("eligible"));
 
-        boolean someEarlierStageWritesEligible = euc.getExecutionPipeline().stream()
-                .filter(stage -> stage.getGroup() < alignment.getGroup())
-                .anyMatch(stage -> stage.getWrites().contains("eligible"));
-        assertTrue(someEarlierStageWritesEligible,
-                "expected a stage in an earlier group than ALIGNMENT-001 to write 'eligible'");
+        int alignmentIndex = euc.getExecutionRequirements().indexOf(alignment);
+        boolean earlierRequirementWritesEligible = euc.getExecutionRequirements().stream()
+                .limit(alignmentIndex)
+                .anyMatch(r -> r.getWrites() != null && r.getWrites().contains("eligible"));
+
+        assertTrue(earlierRequirementWritesEligible,
+                "ALIGNMENT-001 reads 'eligible', so an earlier requirement must write it");
     }
 
     @Test
-    void evaluationStageReadsFieldsExecutionWrote() {
-        // Evaluation reads the same context execution wrote into, not a
-        // separate copy — this checks that link is real for each evaluation
-        // stage, not just declared in isolation.
+    void criteriaReadFieldsExecutionWrote() {
         EucDefinition euc = EucLoader.loadGrantFitAssessment();
 
-        for (EvaluationStage evalStage : euc.getEvaluationPipeline()) {
-            for (String readField : evalStage.getReads()) {
-                boolean someExecutionStageWritesIt = euc.getExecutionPipeline().stream()
-                        .anyMatch(execStage -> execStage.getWrites().contains(readField));
-                assertTrue(someExecutionStageWritesIt,
-                        evalStage.getId() + " reads '" + readField
-                                + "' but no execution stage writes it");
+        for (EvaluationCriterion criterion : euc.getEvaluationCriteria()) {
+            if (criterion.getReads() == null) {
+                continue;
+            }
+            for (String field : criterion.getReads()) {
+                boolean written = euc.getExecutionRequirements().stream()
+                        .anyMatch(r -> r.getWrites() != null && r.getWrites().contains(field));
+                assertTrue(written,
+                        "criterion " + criterion.getId() + " reads '" + field
+                                + "', which no execution requirement writes");
             }
         }
     }
 
     @Test
-    void emptyExecutionPipelineFailsValidation() {
-        EucDefinition euc = new EucDefinition();
-        euc.setId("empty-execution-euc");
-        euc.setExecutionPipeline(List.of());
-        euc.setEvaluationPipeline(List.of(sampleEvaluationStage()));
+    void loadedEucPassesValidation() {
+        assertDoesNotThrow(EucLoader::loadGrantFitAssessment);
+    }
+
+    // ---- validation failures -------------------------------------------------
+
+    @Test
+    void emptyExecutionRequirementsFailsValidation() {
+        EucDefinition euc = minimalValidEuc();
+        euc.setExecutionRequirements(List.of());
 
         IllegalStateException ex = assertThrows(IllegalStateException.class, euc::validate);
-        assertTrue(ex.getMessage().contains("executionPipeline"));
+        assertTrue(ex.getMessage().contains("executionRequirements"));
     }
 
     @Test
-    void emptyEvaluationPipelineFailsValidation() {
-        EucDefinition euc = new EucDefinition();
-        euc.setId("empty-evaluation-euc");
-        euc.setExecutionPipeline(List.of(sampleExecutionStage()));
-        euc.setEvaluationPipeline(List.of());
+    void emptyEvaluationCriteriaFailsValidation() {
+        EucDefinition euc = minimalValidEuc();
+        euc.setEvaluationCriteria(List.of());
 
         IllegalStateException ex = assertThrows(IllegalStateException.class, euc::validate);
-        assertTrue(ex.getMessage().contains("evaluationPipeline"));
+        assertTrue(ex.getMessage().contains("evaluationCriteria"));
     }
 
     @Test
-    void stageWithoutFilterKeyFailsValidation() {
-        EucRule stageMissingFilter = new EucRule();
-        stageMissingFilter.setId("BAD-001");
-        stageMissingFilter.setType(EucRule.Type.DETERMINISTIC);
-        // filter intentionally left unset
+    void criterionTracingToNothingFailsValidation() {
+        EucDefinition euc = minimalValidEuc();
+        euc.getEvaluationCriteria().get(0).setTracesTo(List.of());
 
-        EucDefinition euc = new EucDefinition();
-        euc.setId("missing-filter-euc");
-        euc.setExecutionPipeline(List.of(stageMissingFilter));
-        euc.setEvaluationPipeline(List.of(sampleEvaluationStage()));
-
-        assertThrows(IllegalStateException.class, euc::validate);
+        IllegalStateException ex = assertThrows(IllegalStateException.class, euc::validate);
+        assertTrue(ex.getMessage().contains("traces to nothing"));
     }
 
     @Test
-    void singleStagePipelineIsValid() {
-        // "One or more" means a single filter is a valid pipeline, not just
-        // multi-stage ones — this asserts the boundary case explicitly.
-        EucDefinition euc = new EucDefinition();
-        euc.setId("single-stage-euc");
-        euc.setExecutionPipeline(List.of(sampleExecutionStage()));
-        euc.setEvaluationPipeline(List.of(sampleEvaluationStage()));
+    void criterionTracingToUnknownIdFailsValidation() {
+        EucDefinition euc = minimalValidEuc();
+        euc.getEvaluationCriteria().get(0).setTracesTo(List.of("REQUIREMENT-THAT-DOES-NOT-EXIST"));
 
+        IllegalStateException ex = assertThrows(IllegalStateException.class, euc::validate);
+        assertTrue(ex.getMessage().contains("REQUIREMENT-THAT-DOES-NOT-EXIST"),
+                "the message should name the broken link: " + ex.getMessage());
+    }
+
+    @Test
+    void requirementWithoutTypeFailsValidation() {
+        EucDefinition euc = minimalValidEuc();
+        euc.getExecutionRequirements().get(0).setType(null);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, euc::validate);
+        assertTrue(ex.getMessage().contains("no type"));
+    }
+
+    @Test
+    void untracedIdsReportsWhatNoCriterionChecks() {
+        EucDefinition euc = minimalValidEuc();
+
+        Policy unchecked = new Policy();
+        unchecked.setId("POLICY-NOBODY-CHECKS");
+        unchecked.setDescription("A constraint with no evaluator behind it");
+        euc.setPolicies(List.of(unchecked));
+
+        // Still valid — an unmeasured requirement is a finding to report, not a
+        // malformed artifact — but it must be visible.
         assertDoesNotThrow(euc::validate);
+        assertTrue(euc.untracedIds().contains("POLICY-NOBODY-CHECKS"));
     }
 
-    private EucRule sampleExecutionStage() {
-        EucRule stage = new EucRule();
-        stage.setId("SAMPLE-001");
-        stage.setFilter("sampleFilter");
-        stage.setType(EucRule.Type.DETERMINISTIC);
-        return stage;
-    }
+    /** A structurally valid EUC, built in code, for exercising validate() failures. */
+    private EucDefinition minimalValidEuc() {
+        EucDefinition euc = new EucDefinition();
+        euc.setId("test-euc");
 
-    private EvaluationStage sampleEvaluationStage() {
-        EvaluationStage stage = new EvaluationStage();
-        stage.setId("sampleEvaluation");
-        stage.setFilter("sampleEvaluationFilter");
-        stage.setEvaluates(List.of("SAMPLE-001"));
-        return stage;
+        ExecutionRequirement requirement = new ExecutionRequirement();
+        requirement.setId("REQ-001");
+        requirement.setType(ExecutionRequirement.Type.DETERMINISTIC);
+        requirement.setResponsibility("Do the thing the business requires");
+        euc.setExecutionRequirements(new java.util.ArrayList<>(List.of(requirement)));
+
+        EvaluationCriterion criterion = new EvaluationCriterion();
+        criterion.setId("EVAL-001");
+        criterion.setTracesTo(new java.util.ArrayList<>(List.of("REQ-001")));
+        criterion.setCriteria(new java.util.ArrayList<>(List.of("The thing was done")));
+        euc.setEvaluationCriteria(new java.util.ArrayList<>(List.of(criterion)));
+
+        return euc;
     }
 }

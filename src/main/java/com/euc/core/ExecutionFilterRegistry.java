@@ -4,26 +4,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Maps an EUC execution stage's `filter` key (e.g. "eligibility") to the
- * ExecutionFilter implementation that runs it. PipelineBuilder resolves
- * every stage through this registry rather than a hand-written switch, so
- * the executionPipeline's declared order and filter keys are what actually
- * drive execution.
+ * Binds each ExecutionRequirement id (e.g. "ELIGIBILITY-001") to the code
+ * that satisfies it.
+ *
+ * This binding lives here, in the implementation, rather than in the EUC.
+ * The business artifact declares what must happen; this registry is where a
+ * particular implementation says "and this class is how we do it" — so
+ * swapping the implementation never touches the statement of intent.
  */
 public class ExecutionFilterRegistry {
 
-    private final Map<String, ExecutionFilter> filters = new HashMap<>();
+    private final Map<String, ExecutionFilter> byRequirementId = new HashMap<>();
 
-    public ExecutionFilterRegistry register(String filterKey, ExecutionFilter filter) {
-        filters.put(filterKey, filter);
+    public ExecutionFilterRegistry register(String requirementId, ExecutionFilter filter) {
+        byRequirementId.put(requirementId, filter);
         return this;
     }
 
-    public ExecutionFilter get(String filterKey) {
-        ExecutionFilter filter = filters.get(filterKey);
+    public ExecutionFilter get(String requirementId) {
+        ExecutionFilter filter = byRequirementId.get(requirementId);
         if (filter == null) {
             throw new IllegalStateException(
-                    "No ExecutionFilter registered for filter key '" + filterKey + "'");
+                    "No implementation registered for execution requirement '" + requirementId + "'");
         }
         return filter;
     }
