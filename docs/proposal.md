@@ -112,6 +112,14 @@ An **Executable Use Case (EUC)** captures what must hold: the goal, the rules, t
 policies, the required responsibilities, the acceptable outcomes, the context the
 decision depends on, and the criteria by which it should be judged.
 
+The ordering is the method, not an accident of layout. **EUC applies
+first-principles thinking by starting with fundamental business intent, then
+deriving the system's behavior, constraints, evaluation criteria, and AI
+artifacts—such as Golden Sets, rubrics, and regression tests—from that intent.**
+Nothing in the artifact is assembled independently and reconciled later; every
+part of it descends from the same source, which is what gives the descendants
+something to be traced back to.
+
 It deliberately says nothing about prompts, models, retrieval strategy, frameworks,
 or code. Those remain entirely free to change — that is the point. "Executable" is
 doing real work in the name: the artifact is meant to be consulted by software, not
@@ -486,6 +494,13 @@ evaluation as the application changes.
 
 The EUC and the scenarios stay fixed for the whole experiment. Each EUC evaluation
 criterion is mapped once to an evaluator in the chosen framework.
+
+This is where the derivation above becomes concrete. The scenario table below is
+the **Golden Set**, drawn from the EUC's expected outcomes and policies rather than
+assembled separately. The **rubrics** an LLM-as-a-judge scores against come from the
+criteria text. The controlled-change re-runs in [Section 6.2](#62-change-the-application-not-the-business-intent)
+are the **regression tests**. All three are downstream of the same intent, which is
+precisely what lets a result be followed back to it.
 
 | Scenario | Business expectation |
 |---|---|
