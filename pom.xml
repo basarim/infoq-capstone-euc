@@ -39,6 +39,18 @@
 				2.18.9
 			</version>
 		</dependency>
+		<!-- Pipeline orchestration: compiles the EUC's executionRequirements into a graph -->
+		<dependency>
+			<groupId>
+				org.bsc.langgraph4j
+			</groupId>
+			<artifactId>
+				langgraph4j-core
+			</artifactId>
+			<version>
+				1.8.26
+			</version>
+		</dependency>
 		<!-- Testing -->
 		<dependency>
 			<groupId>
