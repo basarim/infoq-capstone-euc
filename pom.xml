@@ -22,6 +22,9 @@
 		<project.build.sourceEncoding>
 			UTF-8
 		</project.build.sourceEncoding>
+		<exec.mainClass>
+			com.euc.grantfitassessment.GrantFitApplication
+		</exec.mainClass>
 	</properties>
 	<dependencies>
 		<!-- JSON parsing for EUC definitions -->
@@ -66,7 +69,7 @@
 				</version>
 				<configuration>
 					<mainClass>
-						com.euc.grantfitassessment.GrantFitApplication
+						${exec.mainClass}
 					</mainClass>
 				</configuration>
 			</plugin>

@@ -113,12 +113,19 @@ public class LlmFitReasoner implements FitReasoner {
             userMessage.put("content", prompt);
             messages.add(userMessage);
 
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(API_URL))
                     .header("Content-Type", "application/json")
                     .header("x-api-key", apiKey)
                     .header("anthropic-version", API_VERSION)
-                    .timeout(Duration.ofSeconds(60))
+                    .timeout(Duration.ofSeconds(60));
+
+            String workspaceId = System.getenv("ANTHROPIC_WORKSPACE_ID");
+            if (workspaceId != null && !workspaceId.isBlank()) {
+                requestBuilder.header("anthropic-workspace-id", workspaceId);
+            }
+
+            HttpRequest request = requestBuilder
                     .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(payload)))
                     .build();
 
