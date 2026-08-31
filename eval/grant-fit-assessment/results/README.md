@@ -13,4 +13,4 @@ moment the model or prompt changes underneath it.
   timestamped JSON report here (`drift-experiment-<timestamp>.json`) and
   prints a summary.
 
-Both require `LLM_API_KEY` — see the root README's Build & Run section.
+Both require `ANTHROPIC_API_KEY` — see the root README's Build & Run section.

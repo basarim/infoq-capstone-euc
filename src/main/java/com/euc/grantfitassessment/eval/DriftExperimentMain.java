@@ -15,7 +15,7 @@ import java.util.List;
  * live model: a baseline LlmFitReasoner vs. a prompt-variant reasoner
  * (AlternateAlignmentPromptReasoner, expected to alter behavior) and,
  * optionally, a model-swap variant if LLM_MODEL_VARIANT is set. Requires
- * LLM_API_KEY — see README Build & Run.
+ * ANTHROPIC_API_KEY — see README Build & Run.
  *
  * Run from the project root:
  *   mvn exec:java -Dexec.mainClass="com.euc.grantfitassessment.eval.DriftExperimentMain"

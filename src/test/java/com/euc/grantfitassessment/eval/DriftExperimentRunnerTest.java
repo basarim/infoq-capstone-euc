@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Proves the drift-experiment mechanics (docs/proposal.md Section 7) work
  * offline, with fake FitReasoners standing in for real model/prompt
- * variants — no LLM_API_KEY needed. A live run (DriftExperimentMain) still
+ * variants — no ANTHROPIC_API_KEY needed. A live run (DriftExperimentMain) still
  * needs a real key; this test only verifies the metric computation itself
  * is correct once outcomes come back.
  */

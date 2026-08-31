@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * End-to-end test of the EUC-driven run: EucLoader -> GrantFitApplication
  * -> PipelineBuilder -> ExecutionFilterRegistry -> implementations, using a
- * fake FitReasoner so it runs offline without LLM_API_KEY.
+ * fake FitReasoner so it runs offline without ANTHROPIC_API_KEY.
  *
  * This is the proof that execution is assembled from the EUC's declared
  * execution requirements rather than hand-wired, and that the halt contract

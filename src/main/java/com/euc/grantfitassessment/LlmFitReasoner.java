@@ -44,10 +44,10 @@ public class LlmFitReasoner implements FitReasoner {
 
     @Override
     public FitReasoning assessFit(Organization org, GrantOpportunity grant, EucDefinition euc) {
-        String apiKey = System.getenv("LLM_API_KEY");
+        String apiKey = System.getenv("ANTHROPIC_API_KEY");
         if (apiKey == null || apiKey.isBlank()) {
             throw new IllegalStateException(
-                    "LLM_API_KEY environment variable is not set. Required to call " + API_URL);
+                    "ANTHROPIC_API_KEY environment variable is not set. Required to call " + API_URL);
         }
 
         String prompt = buildPrompt(org, grant, euc);

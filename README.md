@@ -72,7 +72,7 @@ engine.
 - [x] EUC schema defined and JSON authored
 - [x] EUC model + loader (Java)
 - [x] Deterministic eligibility rule engine (`EligibilityChecker`, unit tested)
-- [x] LLM-reasoned fit assessment (`LlmFitReasoner`, calls Anthropic Messages API — requires `LLM_API_KEY`)
+- [x] LLM-reasoned fit assessment (`LlmFitReasoner`, calls Anthropic Messages API — requires `ANTHROPIC_API_KEY`)
 - [x] Evaluator bound to EUC evaluation criteria (`GrantFitEvaluator`, unit tested)
 - [x] Eval dataset with ground truth — 6 cases in `eval/grant-fit-assessment/dataset/test-cases.json`, including both edge cases from the case study (eligible-but-misaligned, ineligible-but-aligned)
 - [x] Dataset loader (`TestCaseDataset`) wired into `EvaluationRunner`
@@ -81,7 +81,7 @@ engine.
 - [x] `EvaluationPipelineBuilder` assembles the evaluation chain from `evaluationPipeline` the same way: each stage's `filter` key ("eligibilityCorrectness", "programAlignment", "evidenceGrounding") resolves through an `EvaluationFilterRegistry` to a filter class in `com.euc.grantfitassessment.eval.pipeline`; `GrantFitEvaluator`'s public API is unchanged, but it now scores by running the pipeline rather than hand-checking the three criteria — both halves of the EUC are schema-driven.
 - [x] Fixed a bug found while wiring the above: `EucLoader`'s `ObjectMapper` didn't enable case-insensitive enum matching, so the EUC JSON (`"type": "deterministic"`, `"onFailure": "halt"`) never actually deserialized against the uppercase Java enums — every `EucLoader.loadGrantFitAssessment()` call was failing before this fix, including in the existing test suite.
 - [x] Drift-experiment scaffolding for Week 5 (Section 7 of `docs/proposal.md`): `FitReasonerVariant` (a `FitReasoner` + a declared "expected to alter behavior" flag), `DriftExperimentRunner` (runs the dataset against a baseline + candidate variants and computes the four Section 7 metrics), `DriftExperimentReport`/`DriftExperimentReportWriter` (summary + JSON output to `eval/grant-fit-assessment/results/`), and `AlternateAlignmentPromptReasoner` as a ready-made prompt-variant example (`LlmFitReasoner.alignmentInstructions()` is now the documented override point for prompt variants). Verified offline in `DriftExperimentRunnerTest` with fake reasoners — all four metrics computed correctly against known inputs.
-- [ ] First live eval pass and first live drift-experiment run against a real model (`LLM_API_KEY` not available in this environment — all wiring is verified offline; only the network call to Anthropic itself remains unverified), and gaps documented in "Lessons Learned" below
+- [ ] First live eval pass and first live drift-experiment run against a real model (`ANTHROPIC_API_KEY` not available in this environment — all wiring is verified offline; only the network call to Anthropic itself remains unverified), and gaps documented in "Lessons Learned" below
 
 **Not yet done, by design:** the reasoning layer has not been run against
 a live model in this environment (no API key configured here). Running it
@@ -98,13 +98,13 @@ mvn clean install
 # Run unit tests only (deterministic layer — no API key needed)
 mvn test
 
-# Run the Grant Fit application against the sample EUC (requires LLM_API_KEY)
+# Run the Grant Fit application against the sample EUC (requires ANTHROPIC_API_KEY)
 mvn exec:java
 
-# Run the evaluation suite against eval/grant-fit-assessment/dataset/test-cases.json (requires LLM_API_KEY)
+# Run the evaluation suite against eval/grant-fit-assessment/dataset/test-cases.json (requires ANTHROPIC_API_KEY)
 mvn exec:java -Dexec.mainClass="com.euc.grantfitassessment.eval.EvaluationRunner"
 
-# Run the Week 5 drift experiment: baseline vs. prompt/model variants (requires LLM_API_KEY)
+# Run the Week 5 drift experiment: baseline vs. prompt/model variants (requires ANTHROPIC_API_KEY)
 # optional — set LLM_MODEL_VARIANT to also test a model swap alongside the built-in prompt variant
 mvn exec:java -Dexec.mainClass="com.euc.grantfitassessment.eval.DriftExperimentMain"
 ```
@@ -113,7 +113,7 @@ mvn exec:java -Dexec.mainClass="com.euc.grantfitassessment.eval.DriftExperimentM
 environment variable before running the app or the eval suite:
 
 ```bash
-export LLM_API_KEY=your-anthropic-api-key
+export ANTHROPIC_API_KEY=your-anthropic-api-key
 # optional — defaults to claude-sonnet-4-6
 export LLM_MODEL=claude-sonnet-4-6
 ```
