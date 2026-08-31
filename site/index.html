@@ -289,6 +289,7 @@ code{font-family:"DM Mono",ui-monospace,Menlo,monospace;font-size:.87em;color:va
 
 /* gauge */
 .gauge{margin-top:34px;background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:22px 22px 16px;box-shadow:var(--shadow)}
+.gauge .gtitle{font-size:var(--step-1);line-height:1.3;margin-bottom:14px;max-width:38ch}
 .gauge svg{width:100%;height:auto;display:block}
 .gauge .legend{display:flex;gap:22px;flex-wrap:wrap;margin-top:14px;font-family:"DM Mono",monospace;font-size:.7rem;color:var(--ink-faint)}
 .gauge .legend i{display:inline-block;width:16px;height:0;border-top-width:2px;margin-right:8px;vertical-align:middle}
@@ -385,8 +386,8 @@ figure.figure figcaption code{font-size:.85em}
 .objdiag .oat{font-family:"DM Mono",monospace;font-size:10.5px;fill:var(--ink-soft)}
 .objdiag .ogrp{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:1.4px;fill:var(--ink-faint)}
 .objdiag .otrace{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.2px;fill:var(--brass)}
-.objdiag .trace{fill:none;stroke:var(--brass);stroke-width:1.1;stroke-dasharray:4 3}
-.objdiag .tracehead{fill:var(--brass)}
+.objdiag .trace{fill:none;stroke:var(--brass);stroke-width:1.15;stroke-dasharray:4 3;stroke-linecap:round;opacity:.75}
+.objdiag .tracepoint{fill:var(--brass)}
 
 /* context diagram type */
 .ctxdiag .ceuc{font-family:"DM Mono",monospace;font-size:12.5px;letter-spacing:1.6px;fill:var(--ink)}
@@ -496,7 +497,7 @@ ol.steps li::before{
       <a href="#anatomy">What it's made of</a>
       <a href="#boundary">What it isn't</a>
       <a href="#test">The experiment</a>
-      <a href="#worth">What it's worth</a>
+      <a href="#worth">Why EUC matters for AI Engineering</a>
     </nav>
     <button class="themetoggle" id="themetoggle" type="button" aria-label="Switch colour theme">Theme</button>
   </div>
@@ -509,7 +510,7 @@ ol.steps li::before{
     <div>
       <p class="eyebrow">InfoQ AI Engineering Certification &nbsp;·&nbsp; System-Building Project</p>
       <h1>Is it still doing what the business <em>intended</em>?</h1>
-      <p class="lede">Six months in, a team has rewritten the prompt, swapped the model, and re-chunked the retrieval layer. Every test still passes — and not one of them can answer that question. An <strong>Executable Use Case</strong> can: a machine-readable statement of what the business needs, which the implementation and the evaluation both trace back to.</p>
+      <p class="lede">Six months after launch, the team has revised the prompts, replaced the model, and changed how the application retrieves information. Each change passed the existing tests. Yet the team still cannot tell whether the system serves the original business goal. An <strong>Executable Use Case</strong> addresses this gap by recording what the business needs in a machine-readable form, giving the implementation and its evaluation the same reference point.</p>
       <div class="cta">
         <a class="btn btn-fill" href="https://github.com/basarim/infoq-capstone-euc/blob/main/docs/proposal.md">Read the proposal <span class="arrow" aria-hidden="true">→</span></a>
         <a class="btn btn-line" href="#anatomy">See what an EUC is made of</a>
@@ -577,36 +578,35 @@ ol.steps li::before{
   <div class="wrap">
     <div class="rail"><span class="num">01</span><span class="lbl">The problem</span></div>
     <div>
-      <h2 class="tagline">Every change was reasonable. The tests are <em>green</em>.</h2>
+      <h2 class="tagline">How do we know the system still serves the original business goal?</h2>
       <div class="prose">
-        <p>Six months after an AI-native application goes into production, the system may look very different from the one that originally shipped. Prompts have been refined, models replaced, retrieval strategies adjusted, and upstream or downstream services changed. Each modification may be reasonable on its own and may pass the evaluations in place at the time.</p>
-        <p>The harder question is whether the application is still behaving in accordance with the original business intent.</p>
-        <p>That can be surprisingly difficult to determine. The intent is often distributed across requirements documents, application code, prompts, policy rules, retrieval logic, and evaluation cases. As each of these artifacts evolves independently, the connection between what the business originally intended and what the deployed system now does becomes increasingly difficult to trace.</p>
+        <p>To understand the uncertainty, follow the business goal from the original requirement to the behaviour running in production. Three parts of that chain need to remain connected.</p>
       </div>
       <div class="cards">
         <div class="card">
-          <span class="tag eyebrow">Where intent lives</span>
-          <h3>Application code</h3>
-          <p>Holds the part of the intent that was deterministic enough to write down. At least it can be diffed.</p>
+          <span class="tag eyebrow">Part of the chain</span>
+          <h3>Business requirement</h3>
+          <p>States the goal and the rules the business expects the application to follow.</p>
         </div>
         <div class="card">
-          <span class="tag eyebrow">Where intent lives</span>
-          <h3>Prompt &amp; context</h3>
-          <p>Carries the judgment calls. Edited by whoever is closest to the model, on a cadence nobody else tracks.</p>
+          <span class="tag eyebrow">Part of the chain</span>
+          <h3>Implementation</h3>
+          <p>Turns the requirement into code, prompts, context, and model behaviour. It changes as the application evolves.</p>
         </div>
         <div class="card">
-          <span class="tag eyebrow">Where intent lives</span>
-          <h3>Evaluation cases</h3>
-          <p>Derived from intent once, informally, then maintained separately — so they drift away from both of the others.</p>
+          <span class="tag eyebrow">Part of the chain</span>
+          <h3>Evaluation</h3>
+          <p>Checks whether the resulting behaviour meets defined criteria. It may continue to pass when those criteria no longer represent the original requirement.</p>
         </div>
       </div>
       <div class="prose">
-        <p>Each of those artifacts holds a piece of the intent. <strong>None of them is the intent.</strong></p>
-        <p>In conventional software a green test suite is a decent proxy for correctness, because behavior is deterministic and any divergence is a bug you can bisect. An AI-native application breaks that proxy: half its behavior is model judgment, which can shift without a line of code changing.</p>
+        <p>The problem is not that any one part is missing. It is that teams maintain each part separately, making the links between them easy to lose. The implementation and evaluation can remain consistent with each other while both move away from the business goal.</p>
+        <p>In a traditional software development lifecycle, teams translate requirements into code and test whether known inputs produce expected outputs. When behaviour changes, the code or its configuration usually provides a traceable cause.</p>
+        <p>An AI development lifecycle, however, introduces more sources of change. The prompt, model, and retrieved context all influence the application’s behaviour, while the evaluation criteria determine how that behaviour is judged. A change to any one of them may alter the result without causing a conventional software failure. Tests can therefore continue to pass even after what they measure has drifted from the original business requirement.</p>
       </div>
-      <blockquote class="quote">A passing evaluation shows internal consistency. It does not show that intent was preserved.</blockquote>
+      <blockquote class="quote">A passing evaluation shows that the application met the test. It does not show that the test still represents the business goal.</blockquote>
       <div class="prose">
-        <p>This is not only a requirements problem. It becomes a production problem when the misalignment surfaces late and the team has to reopen requirements, implementation and evaluation at once — usually under pressure, usually with the original authors gone.</p>
+        <p>If the connection between the business requirement, implementation, and evaluation is lost, the problem may become visible only after the application reaches production. Resolving it means tracing the observed behaviour through the evaluation and implementation to the original requirement. That work becomes harder when decisions are scattered across artifacts or the people who made them are no longer available. Teams therefore need a shared reference that preserves those decisions and keeps all three parts connected as the application evolves.</p>
       </div>
     </div>
   </div>
@@ -616,16 +616,16 @@ ol.steps li::before{
   <div class="wrap">
     <div class="rail"><span class="num">02</span><span class="lbl">The idea</span></div>
     <div>
-      <h2 class="tagline">Thirty years old, and <em>almost</em> right.</h2>
+      <h2 class="tagline">Jacobson’s use case, extended for AI-native engineering.</h2>
       <div class="prose">
-        <p>Use cases have described software from the point of view of a user and a business goal since Ivar Jacobson formalised the approach in 1992. A use case names an <strong>actor</strong>, a <strong>goal</strong>, and the flows toward it — deliberately about what the business needs, not how the software achieves it. That makes it a natural place to look for a stable expression of intent.</p>
-        <p>It has one disqualifying limitation here. <strong>It is prose.</strong> A person can read it and implement it by hand, but no application can consult it at runtime and no evaluation harness can score against it. When the model underneath changes, a prose use case has nothing to say, because nothing was ever wired to it.</p>
-        <p>So: keep the actor-and-goal framing, make it machine-readable, and keep it strictly about business behavior. An <strong>Executable Use Case</strong> says nothing about prompts, models, retrieval strategy, frameworks or code — those stay entirely free to change. That is the point. "Executable" is doing real work in the name.</p>
+        <p>Introduced by Ivar Jacobson in the 1980s and formalised in 1992, a use case describes how an <strong>actor</strong> works with a system to achieve a <strong>goal</strong> while separating required behaviour from implementation. That separation remains useful in AI-native engineering, where prompts, models, and retrieval methods can change while the business goal remains stable.</p>
+        <p>AI-native engineering adds a new traceability need to that foundation. As prompts, models, and retrieval methods change, teams need to keep both the implementation and its evaluation connected to the business goal. This project addresses that need by extending, rather than replacing, Jacobson’s actor-and-goal framing.</p>
+        <p>An <strong>Executable Use Case</strong> makes that extension concrete. It retains the actor and goal, expresses the required business behaviour in a machine-readable form, and links each evaluation criterion to the requirement, rule, or policy it validates. It does not prescribe a prompt, model, retrieval strategy, framework, or code structure. Those implementation choices can change while both the application and its evaluation remain connected to the same business reference.</p>
       </div>
       <div class="callout">
-        <p class="eyebrow">Industry example — Forward Deployed Engineering</p>
-        <p>A Forward Deployed Engineer translates a client's intent into a working AI solution: code, prompts, context, tools, policies and model reasoning. As it evolves over weeks, a practical question surfaces on both sides of the table — <em>how do the client and the engineering team know they still agree on what "done" means?</em></p>
-        <p>An EUC gives both sides one shared business reference. The domain stakeholder reviews it in terms they recognise; the engineer traces implementation and evaluation artifacts back to the same requirements. Neither has to take the other's word for it.</p>
+        <p class="eyebrow">Industry challenge — Forward Deployed Engineering and AI consulting</p>
+        <p>Forward Deployed Engineers and AI consultants turn a client’s business need into a production system. As prompts, models, context, and integrations change, the delivery team’s technical definition of success may drift from the client’s original expectation. Both sides may believe the project is on track while working toward different definitions of “done.”</p>
+        <p>An EUC gives both sides a shared meaning for delivery: one machine-readable definition of the goal, requirements, acceptable outcomes, and evaluation criteria. The client reviews what success means in business terms, while the delivery team binds implementation and evaluation to the same named requirements. When the system changes, both can see whether the business intent changed or only the way the system meets it. This makes alignment explicit, exposes disagreements earlier, and may reduce rework caused by different definitions of “done.”</p>
       </div>
     </div>
   </div>
@@ -633,64 +633,84 @@ ol.steps li::before{
 
 <section class="band" id="anatomy">
   <div class="wrap">
-    <div class="rail"><span class="num">03</span><span class="lbl">What it's made of</span></div>
+    <div class="rail"><span class="num">03</span><span class="lbl">The artifact</span></div>
     <div>
-      <h2 class="tagline">Seven parts, and one relationship that <em>matters</em>.</h2>
+      <h2 class="tagline">What is an Executable Use Case (EUC)?</h2>
       <div class="prose">
-        <p>The structure is easier to see than to read, so here is one real instance — the Grant Fit Assessment used throughout this project — with its parts and the relationships between them.</p>
-        <p>The relationship to watch is <code>tracesTo</code>. It is the only thing in the artifact that makes traceability concrete rather than aspirational: <strong>every evaluation criterion names the requirement, rule or policy it exists to validate.</strong> Follow those arrows backwards from any evaluation result and you arrive at a business requirement.</p>
+        <p>An EUC brings the business goal, the behaviour the application must provide, and the criteria used to judge it into one machine-readable artifact. Here, <em>executable</em> does not mean that the EUC runs the application. It means software can validate the artifact and use its contents to guide implementation, evaluation, and release decisions. The object diagram below uses the project’s Grant Fit Assessment to show those parts as real objects contained within the same EUC. The structure defines what belongs to the artifact; the links between the objects make it traceable.</p>
+        <p>The key link is <code>tracesTo</code>. Each evaluation criterion names the requirement, rule, or policy it validates, so an evaluation result can be followed back to a specific piece of business intent. The criteria in the diagram record those names directly.</p>
       </div>
 
+      <blockquote class="quote">An EUC applies first-principles thinking: start with business intent, then derive the required behaviour, constraints, and evaluation criteria from it. Those criteria can anchor downstream evaluation artifacts — curated datasets, often called Golden Sets, scoring rubrics, and regression tests — so each remains connected to the intent it is meant to protect.</blockquote>
+
       <figure class="figure">
-        <div class="figbody"><svg class="objdiag" viewBox="0 0 940 556" role="img" aria-label="Object diagram of one Executable Use Case instance. The outer box is grantFit, an ExecutableUseCase. It contains, on the left, the things the business requires: an eligibility Rule, an evidence Policy, a missingData Policy, a deterministic checkEligibility ExecutionRequirement that halts on failure, and a reasoned assessAlignment ExecutionRequirement that continues on failure. On the right it contains how the use case is judged: an evalEligibility and an evalAlignment EvaluationCriterion. Dashed arrows labelled tracesTo run from each evaluation criterion back to the specific requirements, rules and policies it validates. A context object and an outcomes object sit along the bottom.">
+        <div class="figbody"><svg class="objdiag" viewBox="0 0 940 556" role="img" aria-label="Object diagram of the committed Grant Fit Assessment Executable Use Case. The outer box is grantFit, an ExecutableUseCase for a Nonprofit Program Manager deciding whether to pursue a grant. On the left are four business rules, three policies, three deterministic execution requirements, and one reasoned execution requirement. On the right are three evaluation criteria: eligibility, alignment, and evidence. Dashed tracesTo lines connect each criterion to the requirements, rules, or policies it validates, whose exact identifiers are recorded inside the criterion. Context and acceptable outcomes sit along the bottom.">
   <rect x="4" y="4" width="932" height="548" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.6"/>
   <text x="24" y="34" class="oeuc">grantFit : ExecutableUseCase</text>
   <text x="24" y="56" class="oat">id = "grant-fit-assessment"</text>
+  <text x="350" y="56" class="oat">actor = "Nonprofit Program Manager"</text>
   <text x="24" y="74" class="oat">goal = "Determine whether the organization should pursue a grant"</text>
   <line x1="4" y1="90" x2="936" y2="90" stroke="var(--brass)" stroke-opacity=".45"/>
 
   <text x="30" y="110" class="ogrp">WHAT THE BUSINESS REQUIRES</text>
-  <text x="548" y="110" class="ogrp">HOW IT IS JUDGED</text>
-<rect x="30" y="118" width="420" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-<text x="43" y="139" class="onm">eligibility : Rule</text>
-<text x="43" y="158" class="oat">Must satisfy all mandatory requirements</text>
-<rect x="30" y="182" width="420" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-<text x="43" y="203" class="onm">evidence : Policy</text>
-<text x="43" y="222" class="oat">Support conclusions with evidence</text>
-<rect x="30" y="238" width="420" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-<text x="43" y="259" class="onm">missingData : Policy</text>
-<text x="43" y="278" class="oat">Do not invent missing information</text>
-<rect x="30" y="296" width="420" height="62" rx="2" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
-<text x="43" y="317" class="onm">checkEligibility : ExecutionRequirement</text>
-<text x="43" y="336" class="oat">type = deterministic</text>
-<text x="43" y="352" class="oat">onFailure = halt</text>
-<rect x="30" y="370" width="420" height="62" rx="2" fill="var(--brass-wash)" stroke="var(--brass)"/>
-<text x="43" y="391" class="onm">assessAlignment : ExecutionRequirement</text>
-<text x="43" y="410" class="oat">type = reasoned</text>
-<text x="43" y="426" class="oat">onFailure = continue</text>
-<rect x="548" y="118" width="362" height="96" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-<text x="561" y="139" class="onm">evalEligibility : EvaluationCriterion</text>
-<text x="561" y="158" class="oat">"Eligibility follows mandatory</text>
-<text x="561" y="174" class="oat">  grant requirements"</text>
-<rect x="548" y="238" width="362" height="194" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
-<text x="561" y="259" class="onm">evalAlignment : EvaluationCriterion</text>
-<text x="561" y="278" class="oat">"Fit classification is supported</text>
-<text x="561" y="294" class="oat">  by evidence"</text>
-<text x="561" y="310" class="oat">"Explanation supports the</text>
-<text x="561" y="326" class="oat">  classification"</text>
-<text x="561" y="342" class="oat">"No unsupported information</text>
-<text x="561" y="358" class="oat">  is introduced"</text>
-<path d="M548 150 H458" class="trace"/>
-<path d="M458 145 l7 -4 v8 z" class="tracehead"/>
-<path d="M548 192 H536 V327 H458" class="trace"/>
-<path d="M458 327 l7 -4 v8 z" class="tracehead"/>
-<path d="M548 280 H524 V401 H458" class="trace"/>
-<path d="M458 401 l7 -4 v8 z" class="tracehead"/>
-<path d="M548 330 H512 V205 H458" class="trace"/>
-<path d="M458 205 l7 -4 v8 z" class="tracehead"/>
-<path d="M548 380 H500 V261 H458" class="trace"/>
-<path d="M458 261 l7 -4 v8 z" class="tracehead"/>
   <text x="499" y="110" text-anchor="middle" class="otrace">tracesTo</text>
+  <text x="548" y="110" class="ogrp">HOW IT IS JUDGED</text>
+<rect x="30" y="118" width="420" height="92" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="43" y="139" class="onm">grantRules : Rule[4]</text>
+<text x="43" y="158" class="oat">RULE-ELIGIBILITY · RULE-GEOGRAPHY</text>
+<text x="43" y="176" class="oat">RULE-REQUIRED-INFO</text>
+<text x="43" y="194" class="oat">RULE-ELIGIBILITY-PRECEDES-FIT</text>
+
+<rect x="30" y="220" width="420" height="78" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="43" y="241" class="onm">useCasePolicies : Policy[3]</text>
+<text x="43" y="260" class="oat">POLICY-EVIDENCE · POLICY-MISSING-DATA</text>
+<text x="43" y="278" class="oat">POLICY-UNCERTAINTY</text>
+
+<rect x="30" y="308" width="420" height="60" rx="2" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
+<text x="43" y="329" class="onm">deterministicChecks : ExecutionRequirement[3]</text>
+<text x="43" y="348" class="oat">ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001</text>
+<text x="43" y="364" class="oat">type = deterministic · onFailure = halt</text>
+
+<rect x="30" y="378" width="420" height="64" rx="2" fill="var(--brass-wash)" stroke="var(--brass)"/>
+<text x="43" y="399" class="onm">assessAlignment : ExecutionRequirement</text>
+<text x="43" y="418" class="oat">id = ALIGNMENT-001 · type = reasoned</text>
+<text x="43" y="434" class="oat">onFailure = continue</text>
+
+<rect x="548" y="118" width="362" height="106" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="561" y="139" class="onm">evalEligibility : EvaluationCriterion</text>
+<text x="561" y="158" class="oat">Eligibility follows mandatory requirements</text>
+<text x="561" y="181" class="otrace">ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001</text>
+<text x="561" y="199" class="otrace">RULE-ELIGIBILITY · RULE-GEOGRAPHY</text>
+<text x="561" y="217" class="otrace">RULE-REQUIRED-INFO</text>
+
+<rect x="548" y="234" width="362" height="88" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="561" y="255" class="onm">evalAlignment : EvaluationCriterion</text>
+<text x="561" y="274" class="oat">Fit reflects priorities; ineligible is never recommended</text>
+<text x="561" y="297" class="otrace">ALIGNMENT-001</text>
+<text x="561" y="315" class="otrace">RULE-ELIGIBILITY-PRECEDES-FIT</text>
+
+<rect x="548" y="332" width="362" height="110" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+<text x="561" y="353" class="onm">evalEvidence : EvaluationCriterion</text>
+<text x="561" y="372" class="oat">Evidence is supported · no invention</text>
+<text x="561" y="388" class="oat">Uncertainty is surfaced</text>
+<text x="561" y="411" class="otrace">ALIGNMENT-001 · POLICY-EVIDENCE</text>
+<text x="561" y="429" class="otrace">POLICY-MISSING-DATA · POLICY-UNCERTAINTY</text>
+
+<!-- tracesTo relationships: criterion on the right to business definition on the left -->
+<path d="M548 168 C515 168 483 158 450 158" class="trace"/>
+<path d="M548 202 C515 202 483 338 450 338" class="trace"/>
+<path d="M548 258 C515 258 483 194 450 194" class="trace"/>
+<path d="M548 304 C515 304 483 410 450 410" class="trace"/>
+<path d="M548 370 C515 370 483 260 450 260" class="trace"/>
+<path d="M548 420 C515 420 483 426 450 426" class="trace"/>
+<g class="tracepoint">
+  <circle cx="548" cy="168" r="2"/><circle cx="450" cy="158" r="2"/>
+  <circle cx="548" cy="202" r="2"/><circle cx="450" cy="338" r="2"/>
+  <circle cx="548" cy="258" r="2"/><circle cx="450" cy="194" r="2"/>
+  <circle cx="548" cy="304" r="2"/><circle cx="450" cy="410" r="2"/>
+  <circle cx="548" cy="370" r="2"/><circle cx="450" cy="260" r="2"/>
+  <circle cx="548" cy="420" r="2"/><circle cx="450" cy="426" r="2"/>
+</g>
 
 <rect x="30" y="478" width="420" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
 <text x="43" y="499" class="onm">context : Context</text>
@@ -699,16 +719,20 @@ ol.steps li::before{
 <text x="561" y="499" class="onm">fit : Outcomes</text>
 <text x="561" y="518" class="oat">STRONG_FIT · POSSIBLE_FIT · POOR_FIT</text>
 </svg></div>
-        <figcaption>An Executable Use Case as objects. Everything inside the outer box is part of the use case. The dashed arrows are <code>tracesTo</code> — each criterion on the right names what it validates on the left.</figcaption>
       </figure>
 
       <div class="prose">
+        <p>The diagram uses the Grant Fit Assessment to illustrate the pieces that make up an EUC and how they relate. Everything inside the outer box belongs to the use case. The dashed <code>tracesTo</code> lines connect each evaluation criterion on the right to the requirements, rules, or policies it validates on the left.</p>
+      </div>
+
+      <div class="prose">
         <p>Two things are worth reading off that diagram.</p>
-        <p><strong>Policies are not owned by any one requirement.</strong> "Do not invent missing information" is not a property of the alignment step; it is a constraint every reasoned step must respect. Jacobson made the same move for concerns that cut across use cases rather than living inside one.</p>
-        <p><strong>Evaluation points at requirements, not at implementations.</strong> <code>EVAL-ALIGNMENT</code> does not name a prompt, a model or a test file. It names <code>ALIGNMENT-001</code> and the two policies. That is precisely what lets the implementation underneath be replaced without the evaluation losing its meaning.</p>
+        <p><strong>Policies apply to the use case as a whole, not to a single requirement.</strong> For example, “Do not invent missing information” constrains every step that relies on model judgement, not only the alignment assessment. This structure draws on Jacobson and Ng’s work on cross-cutting concerns — rules whose scope spans multiple steps.</p>
+        <p><strong>Evaluation stays connected to business requirements, not implementation choices.</strong> In the committed EUC, <code>EVAL-ALIGNMENT</code> traces to <code>ALIGNMENT-001</code> and <code>RULE-ELIGIBILITY-PRECEDES-FIT</code>; it does not name a prompt, model, or test file. The team can therefore change how alignment is implemented while continuing to judge the result against the same business requirement and rule.</p>
       </div>
 
       <dl class="ftable">
+        <div class="frow"><dt>Actor</dt><dd>The person or role seeking the outcome.</dd></div>
         <div class="frow"><dt>Goal</dt><dd>The business objective.</dd></div>
         <div class="frow"><dt>Rules</dt><dd>Deterministic business requirements.</dd></div>
         <div class="frow"><dt>Policies</dt><dd>Behavioral constraints and guardrails that cut across the whole use case.</dd></div>
@@ -724,18 +748,21 @@ ol.steps li::before{
           <div class="head">grant-fit-assessment.json &nbsp;·&nbsp; abbreviated</div>
 <pre>{
   <span class="k">"id"</span>: <span class="s">"grant-fit-assessment"</span>,
+  <span class="k">"actor"</span>: <span class="s">"Nonprofit Program Manager"</span>,
   <span class="k">"goal"</span>: <span class="s">"Determine whether the organization should pursue a grant"</span>,
+  <span class="k">"context"</span>: { <span class="k">"seedFields"</span>: [<span class="s">"organization"</span>, <span class="s">"grant"</span>] },
 
   <span class="k">"rules"</span>: [
-    { <span class="k">"id"</span>: <span class="s">"RULE-ELIGIBILITY"</span>,
-      <span class="k">"description"</span>: <span class="s">"Must satisfy all mandatory eligibility requirements"</span> }
+    { <span class="k">"id"</span>: <span class="s">"RULE-ELIGIBILITY"</span> },
+    { <span class="k">"id"</span>: <span class="s">"RULE-GEOGRAPHY"</span> },
+    { <span class="k">"id"</span>: <span class="s">"RULE-REQUIRED-INFO"</span> },
+    { <span class="k">"id"</span>: <span class="s">"RULE-ELIGIBILITY-PRECEDES-FIT"</span> }
   ],
 
   <span class="k">"policies"</span>: [
-    { <span class="k">"id"</span>: <span class="s">"POLICY-EVIDENCE"</span>,
-      <span class="k">"description"</span>: <span class="s">"Support conclusions with available evidence"</span> },
-    { <span class="k">"id"</span>: <span class="s">"POLICY-MISSING-DATA"</span>,
-      <span class="k">"description"</span>: <span class="s">"Do not invent missing information"</span> }
+    { <span class="k">"id"</span>: <span class="s">"POLICY-EVIDENCE"</span> },
+    { <span class="k">"id"</span>: <span class="s">"POLICY-MISSING-DATA"</span> },
+    { <span class="k">"id"</span>: <span class="s">"POLICY-UNCERTAINTY"</span> }
   ],
 
   <span class="k">"expectedOutcomes"</span>: [<span class="s">"STRONG_FIT"</span>, <span class="s">"POSSIBLE_FIT"</span>, <span class="s">"POOR_FIT"</span>],
@@ -743,33 +770,44 @@ ol.steps li::before{
   <span class="k">"executionRequirements"</span>: [
     { <span class="k">"id"</span>: <span class="s">"ELIGIBILITY-001"</span>,
       <span class="k">"type"</span>: <span class="s">"deterministic"</span>,
-      <span class="k">"responsibility"</span>: <span class="s">"Evaluate mandatory eligibility"</span>,
-      <span class="k">"writes"</span>: [<span class="s">"eligible"</span>],
+      <span class="k">"onFailure"</span>: <span class="s">"halt"</span> },
+    { <span class="k">"id"</span>: <span class="s">"GEOGRAPHY-001"</span>,
+      <span class="k">"type"</span>: <span class="s">"deterministic"</span>,
+      <span class="k">"onFailure"</span>: <span class="s">"halt"</span> },
+    { <span class="k">"id"</span>: <span class="s">"INFO-001"</span>,
+      <span class="k">"type"</span>: <span class="s">"deterministic"</span>,
       <span class="k">"onFailure"</span>: <span class="s">"halt"</span> },
 
     { <span class="k">"id"</span>: <span class="s">"ALIGNMENT-001"</span>,
       <span class="k">"type"</span>: <span class="s">"reasoned"</span>,
-      <span class="k">"responsibility"</span>: <span class="s">"Assess organization-to-grant alignment"</span>,
-      <span class="k">"reads"</span>: [<span class="s">"eligible"</span>],
-      <span class="k">"writes"</span>: [<span class="s">"fitClassification"</span>, <span class="s">"supportingEvidence"</span>, <span class="s">"explanation"</span>] }
+      <span class="k">"onFailure"</span>: <span class="s">"continue"</span> }
   ],
 
   <span class="k">"evaluationCriteria"</span>: [
     { <span class="k">"id"</span>: <span class="s">"EVAL-ELIGIBILITY"</span>,
-      <span class="k">"tracesTo"</span>: [<span class="s">"ELIGIBILITY-001"</span>, <span class="s">"RULE-ELIGIBILITY"</span>],
-      <span class="k">"criteria"</span>: [<span class="s">"Eligibility follows mandatory grant requirements"</span>] },
+      <span class="k">"tracesTo"</span>: [<span class="s">"ELIGIBILITY-001"</span>, <span class="s">"GEOGRAPHY-001"</span>, <span class="s">"INFO-001"</span>,
+                   <span class="s">"RULE-ELIGIBILITY"</span>, <span class="s">"RULE-GEOGRAPHY"</span>, <span class="s">"RULE-REQUIRED-INFO"</span>],
+      <span class="k">"criteria"</span>: [<span class="s">"Eligibility follows the grant's mandatory requirements"</span>] },
 
     { <span class="k">"id"</span>: <span class="s">"EVAL-ALIGNMENT"</span>,
-      <span class="k">"tracesTo"</span>: [<span class="s">"ALIGNMENT-001"</span>, <span class="s">"POLICY-EVIDENCE"</span>, <span class="s">"POLICY-MISSING-DATA"</span>],
+      <span class="k">"tracesTo"</span>: [<span class="s">"ALIGNMENT-001"</span>, <span class="s">"RULE-ELIGIBILITY-PRECEDES-FIT"</span>],
       <span class="k">"criteria"</span>: [
-        <span class="s">"Fit classification is supported by evidence"</span>,
-        <span class="s">"Explanation supports the classification"</span>,
-        <span class="s">"No unsupported information is introduced"</span>
+        <span class="s">"Fit classification reflects the funder's stated priorities"</span>,
+        <span class="s">"An ineligible applicant is never recommended for pursuit"</span>
+      ] },
+
+    { <span class="k">"id"</span>: <span class="s">"EVAL-EVIDENCE"</span>,
+      <span class="k">"tracesTo"</span>: [<span class="s">"ALIGNMENT-001"</span>, <span class="s">"POLICY-EVIDENCE"</span>,
+                   <span class="s">"POLICY-MISSING-DATA"</span>, <span class="s">"POLICY-UNCERTAINTY"</span>],
+      <span class="k">"criteria"</span>: [
+        <span class="s">"The classification is supported by evidence present in the context"</span>,
+        <span class="s">"No unsupported information is introduced"</span>,
+        <span class="s">"Uncertainty is surfaced rather than resolved into false confidence"</span>
       ] }
   ]
 }</pre>
         </div>
-        <p class="fignote">JSON is one option; YAML would do equally well. The idea matters more than the syntax — <code>executionRequirements</code> describe what the application must do, <code>evaluationCriteria</code> describe what must be checked, and <code>tracesTo</code> connects them. Nothing here says <em>how</em>. This is the shape the prototype actually loads: a <code>tracesTo</code> entry naming something the use case doesn't declare fails at load time, so one mistyped id breaks the build rather than quietly producing a result nobody can account for.</p>
+        <p class="fignote">JSON is one option; YAML would do equally well. The idea matters more than the syntax — <code>executionRequirements</code> describe what the application must do, <code>evaluationCriteria</code> describe what must be checked, and <code>tracesTo</code> connects them. This abbreviated view omits descriptions and read/write fields, but its field names, ids, and trace links match the prototype. A <code>tracesTo</code> entry naming something the use case does not declare fails at load time, so one mistyped id breaks the build rather than quietly producing a result nobody can account for.</p>
       </details>
     </div>
   </div>
@@ -779,41 +817,42 @@ ol.steps li::before{
   <div class="wrap">
     <div class="rail"><span class="num">04</span><span class="lbl">Case study</span></div>
     <div>
-      <h2 class="tagline">One decision, <em>two</em> kinds of behavior.</h2>
+      <h2 class="tagline">A real grant decision requires both fixed rules and model judgement.</h2>
       <div class="prose">
-        <p>A schema is easy to admire in the abstract, so the prototype uses a real decision. A <strong>Grant Fit Assessment</strong> helps a nonprofit decide whether a grant is worth pursuing — applying costs real staff time, so knowing in advance matters. It answers two questions that behave completely differently.</p>
+        <p>An EUC becomes concrete when it guides a real business decision. Before a nonprofit commits staff time to an application, it needs to decide whether the grant is worth pursuing. The prototype captures that decision in the <strong>Grant Fit Assessment</strong>, an Executable Use Case that records the business intent in a machine-readable form. The application then uses its requirements to guide runtime behaviour.</p>
+        <p>The assessment asks two questions in sequence: does the organization meet the grant’s explicit eligibility rules, and, if so, how well do its mission and programs align with the funder’s priorities? Fixed rules settle the first question; model judgement handles the second.</p>
       </div>
 
       <div class="split">
         <div>
           <h3>Is the organization eligible?</h3>
-          <p class="splitsub">Governed by explicit rules. Passes or fails. Changing a rule is a deliberate act.</p>
+          <p class="splitsub">Explicit grant requirements determine a pass or fail. Changing a rule represents a deliberate change to the business requirement.</p>
           <ul>
-            <li>Organization eligibility</li>
-            <li>Geographic requirements</li>
-            <li>Mandatory constraints</li>
-            <li>Required information present</li>
+            <li>Mandatory eligibility</li>
+            <li>Geographic scope</li>
+            <li>Required information</li>
+            <li>Eligibility before fit</li>
           </ul>
         </div>
         <div>
-          <h3>How well does it align?</h3>
-          <p class="splitsub">Interpretive. Needs a model to weigh evidence and explain a judgment.</p>
+          <h3>How well does the grant align?</h3>
+          <p class="splitsub">A model weighs the available evidence, classifies the fit, and explains its judgement.</p>
           <ul>
             <li>Mission alignment</li>
             <li>Program alignment</li>
-            <li>Evidence interpretation</li>
-            <li>Explanation</li>
+            <li>Supporting evidence</li>
+            <li>Uncertainty</li>
           </ul>
         </div>
       </div>
 
       <div class="prose">
-        <p>They are halves of one business decision, and the relationship between them is asymmetric in a way the business cares about: <strong>strong alignment cannot rescue failed eligibility.</strong> That is exactly the kind of rule that lives in a requirements doc, gets implemented once, and is never checked again.</p>
-        <p>Watch what that asymmetry looks like at runtime. A failed mandatory rule short-circuits straight to <code>POOR_FIT</code> without ever invoking the model — no tokens spent, and no chance for a persuasive explanation to paper over a hard failure.</p>
+        <p>Both answers inform the same decision, but eligibility comes first. The EUC makes that order explicit through <code>RULE-ELIGIBILITY-PRECEDES-FIT</code>, which states that <strong>strong alignment cannot overcome a failed mandatory requirement.</strong> <code>EVAL-ALIGNMENT</code> traces back to the same rule, keeping the evaluation criterion connected to the business constraint that governs runtime behaviour.</p>
+        <p>The prototype puts this rule into practice. If a mandatory requirement fails, the assessment returns <code>POOR_FIT</code> before the model is invoked. This avoids an unnecessary model call. More importantly, it prevents model judgement from overriding an explicit eligibility rule. The interaction diagram shows how the runtime applies the rule and how the evaluator reads its criteria from the same EUC.</p>
       </div>
 
       <figure class="figure">
-        <div class="figbody"><svg class="seqdiag" viewBox="0 0 1040 954" role="img" aria-label="Interaction diagram with seven participants: client, intent routing agent, EUC registry, criteria evaluator, rules evaluator, LLM model, and evaluation. The client asks the intent routing agent to assess a grant opportunity. The agent resolves the grant-fit-assessment use case from the EUC registry, receiving its goal, rules, policies, requirements and criteria. An alternative block then routes by the requirement's declared type. On the deterministic path, the agent applies the mandatory rules through the rules evaluator, gets eligible = false, and returns POOR_FIT to the client; a note records that the criterion in play is EVAL-ELIGIBILITY, tracing to the eligibility, geography and required-information requirements, and that the LLM lane is never touched. On the reasoned path, the agent asks the criteria evaluator to assess alignment, which invokes the LLM model for semantic interpretation of mission against funder priorities, returning a fit classification with supporting evidence and an explanation; a note records that the criteria in play are EVAL-ALIGNMENT and EVAL-EVIDENCE, tracing to the alignment requirement and the evidence and missing-data policies. After either path, the agent sends the result and the context execution wrote to evaluation, which asks the same EUC registry which criteria apply and what they trace to, then returns verdicts to the client, each traced back to a business requirement.">
+        <div class="figbody"><svg class="seqdiag" viewBox="0 0 1040 954" role="img" aria-label="Interaction diagram with seven participants: client, intent routing agent, EUC registry, criteria evaluator, rules evaluator, LLM model, and evaluation. The client asks the intent routing agent to assess a grant opportunity. The agent resolves the grant-fit-assessment use case from the EUC registry, receiving its goal, rules, policies, requirements, and criteria. An alternative block routes by the requirement's declared type. On the deterministic path, the agent applies the mandatory rules, gets eligible = false, and returns POOR_FIT without invoking the model. EVAL-ELIGIBILITY traces to the three deterministic requirements and their three rules. On the reasoned path, the agent invokes the model to assess alignment, returning a fit classification with supporting evidence and an explanation. EVAL-ALIGNMENT traces to ALIGNMENT-001 and the rule that eligibility precedes fit; EVAL-EVIDENCE also traces to the evidence, missing-data, and uncertainty policies. After either path, evaluation asks the same EUC registry which criteria apply and what they trace to, then returns verdicts to the client.">
     <rect x="40" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
   <text x="105" y="37" text-anchor="middle" class="snm">Client</text>
   <rect x="182" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
@@ -870,12 +909,13 @@ ol.steps li::before{
   <path d="M105 380 l7 -4 v8 z" class="smsghead"/>
   <text x="176.0" y="372" text-anchor="middle" class="slbl">POOR_FIT</text>
   <circle cx="16.0" cy="376" r="8" class="snumbg"/><text x="16.0" y="379" text-anchor="middle" class="snum">4</text>
-  <path d="M404 400 H1013 L1024 411 V469 H404 Z" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
+  <path d="M404 400 H1013 L1024 411 V485 H404 Z" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
   <path d="M1013 400 V411 H1024" fill="none" stroke="var(--verdigris)"/>
   <text x="415" y="417" class="snotet">CRITERION IN PLAY — EVAL-ELIGIBILITY</text>
   <text x="415" y="434" class="snote">“Eligibility follows the grant's mandatory requirements”</text>
-  <text x="415" y="449" class="snote">tracesTo: ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001 · RULE-ELIGIBILITY</text>
-  <text x="415" y="464" class="snote">Settled by rules alone — the LLM lane is never touched.</text>
+  <text x="415" y="449" class="snote">tracesTo: ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001</text>
+  <text x="415" y="464" class="snote">RULE-ELIGIBILITY · RULE-GEOGRAPHY · RULE-REQUIRED-INFO</text>
+  <text x="415" y="479" class="snote">Settled by rules alone — the LLM lane is never touched.</text>
   <line x1="38" y1="491" x2="1026" y2="491" stroke="var(--brass)" stroke-opacity=".4" stroke-dasharray="3 3"/>
   <text x="47" y="507" class="sguard">[ reasoned — ALIGNMENT-001, under the use case policies ]</text>
   <path d="M247 547 H525" class="smsg"/>
@@ -896,12 +936,13 @@ ol.steps li::before{
   <path d="M105 669 l7 -4 v8 z" class="smsghead"/>
   <text x="176.0" y="661" text-anchor="middle" class="slbl">STRONG_FIT / POSSIBLE_FIT / POOR_FIT</text>
   <circle cx="16.0" cy="665" r="8" class="snumbg"/><text x="16.0" y="668" text-anchor="middle" class="snum">7</text>
-  <path d="M404 689 H1013 L1024 700 V758 H404 Z" fill="var(--brass-wash)" stroke="var(--brass)"/>
+  <path d="M404 689 H1013 L1024 700 V775 H404 Z" fill="var(--brass-wash)" stroke="var(--brass)"/>
   <path d="M1013 689 V700 H1024" fill="none" stroke="var(--brass)"/>
   <text x="415" y="706" class="snotet">CRITERIA IN PLAY — EVAL-ALIGNMENT, EVAL-EVIDENCE</text>
-  <text x="415" y="723" class="snote">“Fit classification reflects the funder's stated priorities”</text>
-  <text x="415" y="738" class="snote">“No unsupported information is introduced”</text>
-  <text x="415" y="753" class="snote">tracesTo: ALIGNMENT-001 · POLICY-EVIDENCE · POLICY-MISSING-DATA</text>
+  <text x="415" y="723" class="snote">Alignment: fit reflects priorities; ineligible is never recommended</text>
+  <text x="415" y="738" class="snote">Evidence: grounded · no invention · uncertainty surfaced</text>
+  <text x="415" y="753" class="snote">tracesTo: ALIGNMENT-001 · RULE-ELIGIBILITY-PRECEDES-FIT</text>
+  <text x="415" y="768" class="snote">POLICY-EVIDENCE · POLICY-MISSING-DATA · POLICY-UNCERTAINTY</text>
   <path d="M247 826 H951" class="smsg"/>
   <path d="M957 826 l-7 -4 v8 z" class="smsghead"/>
   <text x="602.0" y="818" text-anchor="middle" class="slbl">result + the context execution wrote</text>
@@ -918,8 +959,11 @@ ol.steps li::before{
   <text x="531.0" y="918" text-anchor="middle" class="slbl">verdicts, each traced back to a business requirement</text>
   <circle cx="16.0" cy="922" r="8" class="snumbg"/><text x="16.0" y="925" text-anchor="middle" class="snum">10</text>
 </svg></div>
-        <figcaption>One assessment, end to end. The routing agent reads the use case once, then routes each requirement by its declared <code>type</code>: the deterministic path is settled by rules alone and never reaches the model, while the reasoned path goes to semantic interpretation under the use case policies. The two notes name the criterion in play on each path, and what it traces back to. Note the last steps — evaluation asks the <em>same</em> registry which criteria apply, rather than a separately maintained copy of what someone believed the intent to be.</figcaption>
       </figure>
+
+      <div class="prose">
+        <p>The diagram follows one grant assessment from request to evaluation. The routing agent reads the EUC once, then uses each requirement’s type to choose the appropriate path. Fixed requirements go to the rules evaluator; the reasoned requirement invokes the model. If an eligibility rule fails, the assessment returns <code>POOR_FIT</code> before the model is invoked. Once execution is complete, the evaluator retrieves the relevant criteria from the same EUC, keeping each verdict traceable to the business requirement it checks.</p>
+      </div>
 
       <div class="prose">
         <p class="eyebrow" style="margin-bottom:-6px">Acceptable outcomes</p>
@@ -933,14 +977,15 @@ ol.steps li::before{
   <div class="wrap">
     <div class="rail"><span class="num">05</span><span class="lbl">The boundary</span></div>
     <div>
-      <h2 class="tagline">What an EUC <em>doesn't</em> do.</h2>
+      <h2 class="tagline">The EUC defines the work; it does not perform it.</h2>
       <div class="prose">
-        <p>This is the most commonly misread part of the idea. <strong>An EUC performs no retrieval, controls no model reasoning, and runs no evaluations.</strong> It is not a framework and not a runtime.</p>
-        <p>The boundary is deliberate: an artifact that did any of those things would have to change when they changed, which is exactly what it exists not to do. Existing tools — DeepEval, Ragas, or whatever a team already uses — provide the evaluation machinery. An EUC criterion is <em>mapped into</em> that machinery: to a deterministic assertion, a standard metric, or an LLM-as-a-judge rubric.</p>
+        <p>The Grant Fit case study shows an EUC guiding runtime behaviour, but the EUC is not the runtime. It defines what the application must do and how its results should be judged. The implementation and evaluation tools still perform the work: the EUC retrieves no information, controls no model reasoning, and runs no evaluations.</p>
+        <p>That separation is deliberate. If the EUC retrieved information, invoked a model, or ran evaluations, a change to any of those mechanisms could also force the business artifact to change. Keeping them outside allows the EUC to remain stable while the implementation evolves, unless the business intent itself changes. Teams can continue using tools such as DeepEval or Ragas, mapping each EUC criterion to a deterministic assertion, a standard metric, or a rubric scored by a model.</p>
+        <p>The same boundary applies to the artifacts those tools use. A Golden Set remains outside the EUC, but it is derived from it: each scenario and expected outcome should exercise a named requirement or evaluation criterion. Teams likewise build scoring rubrics and regression tests from, or map them to, the EUC’s criteria, then run them with their chosen evaluation framework. These tools and artifacts can evolve while the EUC preserves the business definition against which their results are interpreted.</p>
       </div>
 
       <figure class="figure">
-        <div class="figbody"><svg class="ctxdiag" viewBox="0 0 980 470" role="img" aria-label="Context diagram. Business intent is expressed as one Executable Use Case. Its requirements are implemented by deterministic logic, RAG and context, and LLM reasoning — all free to change. Its criteria are mapped into an evaluation framework such as DeepEval or Ragas, an LLM-as-a-judge, and assertions and metrics — also free to change. The implementation produces behavior that the evaluation measures, yielding an evaluation result that traces back to the Executable Use Case. The Executable Use Case itself performs no retrieval, controls no reasoning, and runs no evaluation.">
+        <div class="figbody"><svg class="ctxdiag" viewBox="0 0 980 470" role="img" aria-label="Context diagram. Business intent is expressed as one Executable Use Case. Its requirements are implemented by deterministic logic, RAG and context, and LLM reasoning — all free to change. Its criteria are mapped into an evaluation framework such as DeepEval or Ragas, an LLM-as-a-judge, and assertions and metrics — also free to change. The implementation produces behaviour that the evaluation measures, yielding an evaluation result that traces back to the Executable Use Case. The Executable Use Case itself performs no retrieval, controls no reasoning, and runs no evaluation.">
     <rect x="360" y="10" width="260" height="44" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
   <text x="490.0" y="37.0" text-anchor="middle" class="cnm">Business Intent</text>
   <rect x="290" y="98" width="400" height="76" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="2"/>
@@ -971,15 +1016,18 @@ ol.steps li::before{
   <path d="M610 174 V234" class="cedge"/><path d="M606 228 l4 8 l4 -8 z" class="cedgehead"/>
   <text x="598" y="198" text-anchor="end" class="cedgelbl">criteria</text><text x="598" y="212" text-anchor="end" class="cedgelbl">mapped into</text>
   <path d="M448 312 H528" class="cedge"/><path d="M532 312 l-8 -4 v8 z" class="cedgehead"/>
-  <text x="488" y="304" text-anchor="middle" class="cedgelbl">behavior</text>
+  <text x="488" y="304" text-anchor="middle" class="cedgelbl">behaviour</text>
   <path d="M730 388 V436 H624" class="cedge"/><path d="M620 436 l8 -4 v8 z" class="cedgehead"/>
   <path d="M356 436 H18 V136 H284" class="ctrace"/><path d="M286 136 l-8 -4 v8 z" class="ctracehead"/>
   <text x="150" y="428" class="ctracelbl">tracesTo</text>
 </svg></div>
-        <figcaption>Where the EUC sits. Everything in the dashed boxes is free to change. The EUC is the only fixed point, and the only thing an evaluation result traces back to.</figcaption>
       </figure>
 
-      <blockquote class="quote">The evaluation framework measures behavior. The EUC keeps that measurement connected to the business requirement it is meant to validate.</blockquote>
+      <div class="prose">
+        <p>The diagram places the EUC between business intent and the systems that implement and evaluate it. When that intent remains unchanged, the EUC serves as the shared reference: its requirements guide implementation, and its criteria guide evaluation. The components in the dashed boxes can change independently while each evaluation result remains traceable to the requirement it assesses.</p>
+      </div>
+
+      <blockquote class="quote">Evaluation measures what the system did. The EUC connects that result to what the business needs.</blockquote>
     </div>
   </div>
 </section>
@@ -988,13 +1036,16 @@ ol.steps li::before{
   <div class="wrap">
     <div class="rail"><span class="num">06</span><span class="lbl">The experiment</span></div>
     <div>
-      <h2 class="tagline">Something has to <em>stay still</em> for movement to be measurable.</h2>
+      <h2 class="tagline">Can the EUC tell a safe change from a business regression?</h2>
       <div class="prose">
-        <p>The validation follows directly from the question. Hold the EUC and the business scenarios fixed. Change one part of the application at a time — the prompt, the model, the retrieved context, how evidence is presented. Re-run the same mapped evaluators. Then ask whether the results still trace back to the original requirements.</p>
+        <p>The demo uses the Grant Fit Assessment, a use case that helps a nonprofit decide whether a grant is worth the staff time required to pursue it. The assessment first checks whether the organization meets the grant’s mandatory eligibility rules. Only eligible organizations proceed to a model-based assessment of how well their mission and programs align with the funder’s priorities.</p>
+        <p>Against that baseline, the demo simulates routine changes to the AI implementation. The prompt may be revised, the model replaced, or the context updated, while the business expectations recorded in the EUC remain fixed. If the organization fails a mandatory eligibility rule, the assessment must not recommend pursuing the grant. For an eligible organization, the fit decision must reflect the funder’s priorities, use available evidence, and surface uncertainty. The demo asks whether evaluation linked to those expectations can tell a safe implementation change from a business regression.</p>
+        <p>To keep the experiment focused, it uses one EUC and a small Golden Set derived from its requirements and evaluation criteria. Both remain fixed while each run changes one part of the implementation. The baseline establishes the expected behaviour, and the same mapped evaluators assess every variant. A variant that preserves the business requirements should pass; when it violates them, the evaluation should identify the failed criterion and trace it back to the originating requirement, rule, or policy.</p>
       </div>
 
       <div class="gauge reveal" id="gauge">
-        <svg viewBox="0 0 640 190" role="img" aria-label="A fixed horizontal datum line representing the unchanged Executable Use Case, with a measured behaviour line that tracks it closely at first and then diverges as the prompt, model and context change.">
+        <h3 class="gtitle">Controlled-change experiment: what stays fixed and what changes</h3>
+        <svg viewBox="0 0 640 190" role="img" aria-label="A fixed horizontal datum line representing the unchanged Executable Use Case and the Golden Set derived from it, with a measured behaviour line that tracks it closely at first and then diverges as the prompt, model and context change.">
           <defs>
             <linearGradient id="driftfill" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stop-color="var(--brass)" stop-opacity="0"/>
@@ -1020,27 +1071,27 @@ ol.steps li::before{
             <text x="180" y="182">PROMPT v2</text>
             <text x="320" y="182">MODEL SWAP</text>
             <text x="460" y="182">CONTEXT</text>
-            <text x="64" y="103" fill="var(--verdigris)">EUC + SCENARIOS — FIXED</text>
+            <text x="64" y="103" fill="var(--verdigris)">EUC + GOLDEN SET — FIXED</text>
           </g>
         </svg>
         <p class="legend">
-          <span><i style="border-top:2px solid var(--verdigris)"></i>The EUC and scenarios: unchanged across every variant</span>
+          <span><i style="border-top:2px solid var(--verdigris)"></i>The EUC and its derived Golden Set: unchanged across every variant</span>
           <span><i style="border-top:2px solid var(--brass)"></i>Application behaviour under prompt, model and context change</span>
         </p>
       </div>
 
       <div class="prose">
-        <p>For each controlled change, three questions:</p>
+        <p>Each controlled change must answer three questions:</p>
       </div>
       <ol class="steps">
-        <li><span>Did runtime behavior violate an EUC business criterion?</span></li>
+        <li><span>Did runtime behaviour violate a business requirement captured in the EUC?</span></li>
         <li><span>Did the mapped evaluator identify the violation?</span></li>
         <li><span>Can the result be traced back to the originating requirement?</span></li>
       </ol>
 
       <div class="compare">
         <table>
-          <thead><tr><th scope="col">Behavior</th><th scope="col">Evaluation</th><th scope="col">Interpretation</th></tr></thead>
+          <thead><tr><th scope="col">Behaviour</th><th scope="col">Evaluation</th><th scope="col">Interpretation</th></tr></thead>
           <tbody>
             <tr><td>Violates criterion</td><td>Flagged</td><td>Correct detection</td></tr>
             <tr><td>Violates criterion</td><td>Passed</td><td><b class="bad">False negative</b> — the risk that matters most</td></tr>
@@ -1051,8 +1102,7 @@ ol.steps li::before{
       </div>
 
       <div class="prose">
-        <p>A <strong>false negative</strong> is the outcome that would falsify the idea: behavior drifted, and evaluation waved it through. That would mean EUC-anchored evaluation offers no real advantage over the status quo it is meant to improve on. A <strong>false positive</strong> rate that is too high means the criteria are brittle, or coupled too tightly to one implementation to serve as a stable reference.</p>
-        <p>Both failure modes are deliberately observable. <strong>A negative result is a legitimate finding, not a failed project</strong> — the experiment is designed so that "this does not work, and here is precisely where it breaks" is a publishable outcome.</p>
+        <p>The demo measures both missed regressions and false alarms. If evaluation passes a business violation, it is not protecting the requirement it was designed to check. If it repeatedly flags safe changes, the criteria may be too closely tied to one implementation. Either result shows what must improve before EUC-linked evaluation can support a reliable release decision.</p>
       </div>
     </div>
   </div>
@@ -1060,40 +1110,43 @@ ol.steps li::before{
 
 <section class="band" id="worth">
   <div class="wrap">
-    <div class="rail"><span class="num">07</span><span class="lbl">What it's worth</span></div>
+    <div class="rail"><span class="num">07</span><span class="lbl">Why EUC matters for AI Engineering</span></div>
     <div>
-      <h2 class="tagline">The expensive part was never the <em>model</em>.</h2>
+      <h2 class="tagline">A shared definition of success, from discovery to release.</h2>
       <div class="prose">
-        <p>If the link holds, a second and more practical benefit follows: reducing the cost of change. Production AI costs extend well beyond inference. Teams spend their time integrating systems, refining prompts and context, defining evaluations, satisfying governance requirements, investigating failures, and reworking solutions when behavior does not match expectations.</p>
+        <p>An EUC provides a stable reference throughout the lifecycle of an AI capability. Before development begins, it makes the required outcomes, evidence, rules, and evaluation criteria explicit enough for business stakeholders, clients, and technical teams to review together. That shared definition of “done” can expose mismatched assumptions before they become implementation rework, strengthen client confidence, and provide a clearer basis for acceptance.</p>
+        <p>Once agreed, the same EUC carries those decisions into delivery. Its machine-readable requirements can guide implementation, including AI-assisted development, while its evaluation criteria can be used to derive a Golden Set and regression tests. As prompts, models, and context change, the derived tests and mapped evaluators can check whether the capability still meets the agreed intent and trace a failed criterion to the originating requirement. This does not make the system predictable; it makes the effects of change easier to evaluate and investigate. That continuity matters because much of the effort involved in AI delivery lies beyond model development, as the figures below show.</p>
       </div>
 
       <div class="stats">
         <div class="stat">
           <span class="fig">~15<span class="unit">%</span></span>
-          <p>of a typical GenAI project's effort is the model itself, McKinsey reports. The rest is everything around it.</p>
+          <p>of a typical GenAI project's effort may be the model itself, McKinsey reports. Most delivery work sits elsewhere.</p>
         </div>
         <div class="stat">
           <span class="fig">$3<span class="unit">:$1</span></span>
-          <p>change-management spend for every dollar of model development, on McKinsey's estimate.</p>
+          <p>change-management spend for every dollar of model development, according to McKinsey's experience.</p>
         </div>
         <div class="stat">
           <span class="fig">≥50<span class="unit">%</span></span>
-          <p>of GenAI projects abandoned after proof of concept by end of 2025, Gartner reported — escalating cost among the reasons.</p>
+          <p>of GenAI projects had been abandoned after proof of concept by the end of 2025, Gartner reported, citing unclear value, inadequate controls, poor data, or rising costs.</p>
         </div>
         <div class="stat">
           <span class="fig">30–50<span class="unit">%</span></span>
-          <p>faster use-case development is associated with reusable code, per McKinsey. An EUC asks whether intent can be reusable too.</p>
+          <p>faster use-case development is associated with reusable code, per McKinsey. This capstone asks whether business intent and evaluation criteria can be reused too.</p>
         </div>
       </div>
 
       <div class="prose">
-        <p>So the proposed benefit is not cheaper tokens or a cheaper model. It is reducing the work that has to be repeated every time the implementation changes. If business intent has not changed, the team should not have to rediscover what the application is supposed to do, or redefine what acceptable behavior means.</p>
+        <p>These figures do not measure the impact of an EUC directly. They show why reuse, alignment, and control beyond the model matter. An EUC is intended to address a narrow part of that work: repeated requirements clarification, late disagreements about acceptance, evaluation redesign, and regression investigation when a shared definition of success is lost.</p>
+        <p>That shared definition can extend to release and operation. If the experiment supports the approach, evaluation linked to the EUC could contribute to a release gate alongside existing technical and operational checks. A failed criterion would identify the business requirement at risk, while a pass would provide traceable evidence that the change still meets the agreed intent. With appropriate production monitoring and observability, the same links could connect post-deployment drift or failure to the originating requirement, making troubleshooting easier.</p>
       </div>
 
-      <blockquote class="quote">By preserving business intent across implementation and evaluation, an EUC may reduce requirements clarification, evaluator redesign, and late-stage rework as AI applications evolve.</blockquote>
+      <blockquote class="quote">An EUC does not promise a risk-free release. It gives each release a stable business standard and traceable evidence against it.</blockquote>
 
       <div class="prose">
-        <p>This capstone does not attempt an enterprise-wide ROI or a claimed percentage saving. It tests the smaller, more defensible question: <strong>when business intent has not changed, can the application be changed and re-evaluated without redefining the requirement or rebuilding its evaluation criteria?</strong></p>
+          <p>This capstone examines whether the EUC can function as a <strong>first-class artifact of the AI SDLC</strong>—<strong>a durable, machine-readable expression of business intent that remains connected to how an AI capability is designed, built, evaluated, released, and monitored</strong>. Rather than allowing intent to fragment across documents, prompts, code, and test cases, the EUC provides a common reference that can persist as the system evolves. The prototype is intended to demonstrate that continuity: business intent can remain explicit, traceable, and actionable throughout the lifecycle.</p>
+        <p>That same structure may improve AI-assisted development and token economy. By recording the goal, constraints, evidence, and acceptance criteria once, a developer can ask an AI coding tool to implement a registered EUC instead of rebuilding the requirement through repeated prompts. A complete initial brief may reduce back-and-forth and token use, although success should be measured by the delivered outcome and total tokens rather than assumed from a one-shot attempt. That precision does not imply waterfall delivery. It supports agile development and thin slicing: stakeholders can refine the EUC registry as they learn, then implement and validate one small, valuable use case at a time.</p>
       </div>
     </div>
   </div>
