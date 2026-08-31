@@ -23,7 +23,7 @@ date: "2026-08-29"
 | 4 | [Trying it on a real decision](#4-trying-it-on-a-real-decision) | Does it survive contact with a real use case? |
 | 5 | [Where the EUC sits](#5-where-the-euc-sits) | What does it *not* do? |
 | 6 | [Testing whether the link holds](#6-testing-whether-the-link-holds) | How would we know if this is wrong? |
-| 7 | [Why this matters in practice](#7-why-this-matters-in-practice) | What is it worth? |
+| 7 | [Why EUC matters for AI Engineering](#7-why-euc-matters-for-ai-engineering) | What is it worth? |
 | 8 | [Building only what we need](#8-building-only-what-we-need) | What gets built, and what counts as success? |
 | 9 | [Where this stands](#9-where-this-stands) | What is actually done? |
 | — | [Appendix A: Implementation notes](#appendix-a-implementation-notes) | |
@@ -42,6 +42,10 @@ important question: Is the system still doing what the business intended?
 An Executable Use Case (EUC) provides a machine-readable definition of the intended
 business outcome, creating a common reference point for implementation, evaluation,
 and ongoing monitoring as the system evolves.
+
+Here, *executable* does not mean that the EUC performs the runtime or evaluation
+work itself. It means software can validate the artifact and use its contents to
+guide implementation, evaluation, and release decisions.
 
 The team cannot answer that question today, and not because anyone was careless.
 There is simply nothing to point at that would settle it: business intent lives in a
@@ -588,10 +592,32 @@ evidence for both the traceability argument and a potential cost-of-change benef
 
 ---
 
-## 7. Why this matters in practice
+## 7. Why EUC matters for AI Engineering
 
 The immediate question is whether an EUC can preserve a traceable link between
 intent, implementation, and evaluation as an AI application changes.
+
+That question addresses several documented problems in AI delivery:
+
+- The U.S. National Institute of Standards and Technology (NIST) warns that
+  pre-deployment evaluation for generative AI may be applied inconsistently or fail
+  to reflect real deployment conditions, with gaps made worse by prompt sensitivity
+  and varied contexts of use [7].
+- AWS identifies a disconnect between the technical metrics tracked by engineering
+  teams and the business outcomes expected by leadership [9].
+- A Microsoft study found that AI components are harder to isolate than conventional
+  software components and can exhibit unexpected error behavior when the system
+  changes [8].
+- Gartner includes unclear business value and inadequate risk controls among the
+  reasons GenAI projects are abandoned after proof of concept [5].
+
+An EUC is positioned to mitigate these specific problems by keeping the business
+outcome, requirements, and evaluation criteria in one traceable reference. The
+Golden Set and evaluators are derived from or mapped to that reference. When a
+prompt, model, or context changes, the implementation can be checked against the
+same definition of acceptable behavior. This does not make change predictable; it
+makes the business effect easier to detect and explain. An EUC does not solve poor
+data, security, infrastructure reliability, or model cost.
 
 If that link holds, a second and more practical benefit follows: **reducing the cost
 of change.**
@@ -621,6 +647,24 @@ If business intent has not changed, the team should not have to rediscover what 
 application is supposed to do, or redefine what acceptable behavior means. The same
 EUC stays the reference while the implementation evolves and the mapped evaluations
 are re-run.
+
+If the experiment supports the approach, those mapped evaluations could become one
+part of a release gate. Existing code, integration, security, and operational checks
+would remain in place; EUC-linked evaluation would add evidence that the AI feature
+still meets its business requirements. A failed criterion could identify the
+requirement at risk and prevent the change from progressing, while a pass could
+provide traceable evidence for the release decision. This would not guarantee a
+defect-free release or replace monitoring in production.
+
+A further hypothesis concerns AI-assisted development. A registered EUC can present
+the goal, constraints, evidence, and acceptance criteria in one machine-readable
+artifact, allowing an implementation request to point to that definition instead of
+reconstructing it through repeated prompts. This may reduce clarification turns and
+token use, but the benefit must be measured against successful outcomes and total
+tokens rather than assumed from a one-shot attempt. That precision does not imply
+waterfall delivery. The approach supports agile development and thin slicing:
+stakeholders refine the EUC registry as they learn, then implement and validate one
+small, valuable use case at a time.
 
 > **Cost hypothesis.** By preserving business intent across implementation and
 > evaluation, an EUC may reduce requirements clarification, evaluator redesign, and
@@ -760,7 +804,7 @@ build-time translation. EUCs are about **traceability under change** — the ref
 does not change; the thing running underneath it does; the question is whether the
 same reference still connects behavior to intent.
 
-The field's own maturity taxonomy — spec-first, spec-anchored, spec-as-source [7] —
+The field's own maturity taxonomy — spec-first, spec-anchored, spec-as-source [10] —
 has a middle tier, *spec-anchored*, where the specification evolves alongside the
 software rather than being discarded after generation. That is closer to what an EUC
 does than either endpoint. The two approaches complement each other; generating code
@@ -775,8 +819,10 @@ If the initial experiment is promising:
 
 - agentic and self-correcting workflows that trace decisions and evaluations back to
   stable EUC requirements;
-- automatic generation of implementation or evaluation artifacts from EUC
-  requirements;
+- automatic generation or AI-assisted implementation of code and evaluation
+  artifacts from EUC requirements, including testing whether a concise instruction
+  such as "implement this EUC" provides enough direction and recording the prompt
+  turns and tokens required to reach a passing implementation;
 - richer context-dependency mappings for RAG and GraphRAG;
 - CI/CD evaluation gates and operational monitoring linked to EUC criteria; and
 - EUC libraries for sharing business intent across teams and systems.
@@ -809,8 +855,21 @@ If the initial experiment is promising:
    Reports that roughly 30–50% of a team's GenAI innovation time may be spent making
    solutions compliant or waiting for requirements to become practical, and
    describes duplicated and one-off work as barriers to scale.
+7. National Institute of Standards and Technology, *Artificial Intelligence Risk
+   Management Framework: Generative Artificial Intelligence Profile*, NIST AI
+   600-1, July 2024. Notes that pre-deployment evaluation may be inadequate,
+   inconsistently applied, or mismatched to deployment contexts, particularly where
+   systems are sensitive to prompts and contexts of use.
+8. Amershi, S., et al., "Software Engineering for Machine Learning: A Case Study,"
+   *IEEE/ACM International Conference on Software Engineering: Software Engineering
+   in Practice*, 2019. Reports that AI components are harder to isolate than
+   conventional software components and may exhibit non-monotonic error behavior.
+9. Amazon Web Services, *Generative AI Lifecycle Operational Excellence: Delivering
+   and sustaining the value of a generative AI application*. Identifies a potential
+   disconnect between technical metrics and expected business value, and recommends
+   tracing measurements to business outcomes.
 
 **Related work**
 
-7. Spec-driven development maturity taxonomy — spec-first, spec-anchored,
+10. Spec-driven development maturity taxonomy — spec-first, spec-anchored,
    spec-as-source.
