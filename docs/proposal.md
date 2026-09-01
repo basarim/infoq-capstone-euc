@@ -726,14 +726,15 @@ An honest account of the prototype as of this revision.
 
 | Status | Item |
 |---|---|
-| ✅ Built | EUC schema defined and JSON authored; model and loader in Java, with `validate()` enforcing the contract at load time |
+| ✅ Built | EUC schema defined and JSON authored; model and loader in Python, with `validate()` enforcing the contract at load time |
 | ✅ Built | Deterministic eligibility rule engine, unit tested |
 | ✅ Built | LLM-reasoned alignment assessment calling the Anthropic Messages API |
 | ✅ Built | Evaluator bound to the EUC's evaluation criteria, unit tested |
 | ✅ Built | Eval dataset with independently-established ground truth, including both edge cases (eligible-but-misaligned, ineligible-but-aligned) |
 | ✅ Built | The `onFailure: halt` contract, verified offline with a reasoner that fails the test if it is ever invoked after a halt |
 | ✅ Built | Controlled-change harness: baseline plus prompt and model variants, computing the result metrics — verified against known inputs with fake reasoners |
-| ✅ Built | 34 tests passing offline, covering the deterministic layer, the halt contract, the evaluators, the controlled-change metrics, and the traceability contract above |
+| ✅ Built | **Requirement sequencing runs on a compiled graph.** A [LangGraph](https://github.com/langchain-ai/langgraph) `StateGraph` — one node per execution requirement, wired by conditional edges — replaces a hand-rolled loop; a failed mandatory requirement routes straight to the graph's end instead of the next node ([Appendix A](#appendix-a-implementation-notes)) |
+| ✅ Built | 38 tests passing offline, covering the deterministic layer, the halt contract, the evaluators, the controlled-change metrics, the traceability contract above, and the graph-based orchestration engine |
 | ✅ Built | **The EUC now carries traceability, not an implementation choice.** Migrated to `rules` / `policies` / `executionRequirements` / `evaluationCriteria` with `tracesTo`; the `filter` and `group` keys are gone from the artifact, and implementations bind to requirement ids instead ([Section 3](#3-what-an-euc-is-made-of)) |
 | ✅ Built | **`tracesTo` is enforced at load time.** A criterion tracing to an undeclared id fails validation with a message naming the broken link; `untracedIds()` reports anything no criterion checks, so mapping gaps are visible rather than silent |
 | ⏳ Next | **Map criteria into an existing evaluation framework** (DeepEval or Ragas) rather than the current bespoke evaluator ([Section 5](#5-where-the-euc-sits)) |
@@ -765,14 +766,14 @@ Choosing the best evaluation framework is outside the scope of this capstone.
 
 ### Pipe-and-filter mapping
 
-The prototype may use a pipe-and-filter arrangement, because it maps cleanly onto
-the EUC's execution responsibilities:
+The prototype uses a pipe-and-filter arrangement, because it maps cleanly onto the
+EUC's execution responsibilities:
 
 | EUC | Prototype |
 |---|---|
 | Execution requirements | Filter responsibilities |
 | `reads` / `writes` | Shared context |
-| `onFailure` | Pipeline control |
+| `onFailure` | Graph routing |
 | Evaluation criteria | Evaluator mappings |
 
 **This is an implementation choice, not a requirement of the EUC concept.** An EUC
@@ -781,10 +782,38 @@ implementation.
 
 The prototype keeps that boundary in one specific way worth naming: implementations
 register against the *id of the requirement they satisfy*
-(`registry.register("ELIGIBILITY-001", new EligibilityRuleFilter())`). The direction
+(`registry.register("ELIGIBILITY-001", eligibility_rule_filter)`). The direction
 matters. Code names the business requirement it implements, so the EUC never has to
 name a class, and swapping the implementation cannot disturb the statement of
 intent.
+
+### Orchestration engine: a compiled graph, not a hand-rolled loop
+
+Requirement sequencing and the halt gate are compiled into a
+[**LangGraph**](https://github.com/langchain-ai/langgraph) `StateGraph` — one
+node per execution requirement, wired by conditional edges that route to the next
+requirement on a pass and straight to the graph's end on a failed mandatory one.
+
+The pipeline this EUC produces is still linear — one path forward, with one
+early-exit branch per deterministic gate — so a graph engine is more machinery than
+this particular pipeline strictly requires. It was adopted anyway, as a deliberate
+choice to exercise graph-based orchestration on a real EUC rather than because the
+current shape demanded it. Each node still calls the same execution-filter
+implementations registered against requirement ids, unchanged from the mapping
+above; only how they are sequenced and gated moved from a `for` loop to a compiled
+graph, verified by dedicated tests (`test_pipeline_builder.py`) plus the existing
+offline halt-contract tests, and a live run against Claude.
+
+An earlier revision of this prototype was written in Java, where the same idea was
+built on **LangGraph4j**, a community Java port of LangGraph — there is no official
+Java SDK for LangGraph. Porting the prototype to Python and moving onto LangGraph
+itself dropped a piece of JVM-specific machinery that revision needed: LangGraph4j's
+default state serializer clones state via Java serialization between nodes, which
+would have forced every object passed through the graph to implement `Serializable`
+and handed each node a deserialized copy rather than the original mutable object —
+so that revision overrode the serializer to do a cheap shallow copy instead, purely
+to preserve reference identity. LangGraph passes state through by reference within a
+single process, so no such workaround is needed here.
 
 ---
 

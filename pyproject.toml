@@ -1,0 +1,30 @@
+[project]
+name = "euc"
+version = "0.1.0"
+description = "Executable Use Cases — Grant Fit Assessment case study"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31",
+    "langgraph>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+grant-fit-app = "euc.grantfitassessment.app:main"
+grant-fit-eval = "euc.grantfitassessment.eval.evaluation_runner:main"
+grant-fit-drift = "euc.grantfitassessment.eval.drift_experiment_main:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

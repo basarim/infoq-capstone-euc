@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # demo_setup.sh — verifies ANTHROPIC_API_KEY is available before running the
-# Grant Fit Assessment demo (GrantFitApplication, EvaluationRunner,
-# DriftExperimentMain). Never prints the key itself.
+# Grant Fit Assessment demo (euc.grantfitassessment.app, evaluation_runner,
+# drift_experiment_main). Never prints the key itself.
 #
 # Run this with `source` (not as a subprocess) so it can see and reuse
 # whatever's already exported in your current shell:
@@ -36,6 +36,6 @@ echo "ANTHROPIC_API_KEY is set."
 echo "LLM_MODEL=$LLM_MODEL"
 echo ""
 echo "Ready to run:"
-echo "  mvn exec:java"
-echo "  mvn exec:java -Dexec.mainClass=\"com.euc.grantfitassessment.eval.EvaluationRunner\""
-echo "  mvn exec:java -Dexec.mainClass=\"com.euc.grantfitassessment.eval.DriftExperimentMain\""
+echo "  python -m euc.grantfitassessment.app"
+echo "  python -m euc.grantfitassessment.eval.evaluation_runner"
+echo "  python -m euc.grantfitassessment.eval.drift_experiment_main"

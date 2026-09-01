@@ -1,0 +1,8 @@
+ORGANIZATION = "organization"
+GRANT = "grant"
+ELIGIBLE = "eligible"
+FAILED_ELIGIBILITY_RULES = "failedEligibilityRules"
+FIT_CLASSIFICATION = "fitClassification"
+EXPLANATION = "explanation"
+SUPPORTING_EVIDENCE = "supportingEvidence"
+IDENTIFIED_UNCERTAINTY = "identifiedUncertainty"
