@@ -17,7 +17,7 @@ static_sites:
   - name: demo
     github:
       repo: basarim/infoq-capstone-euc
-      branch: appmod/java-upgrade-20260831185259
+      branch: main
       deploy_on_push: true
     source_dir: site/demo
     index_document: index.html
@@ -25,7 +25,7 @@ static_sites:
   - name: landing
     github:
       repo: basarim/infoq-capstone-euc
-      branch: appmod/java-upgrade-20260831185259
+      branch: main
       deploy_on_push: true
     source_dir: site
     index_document: index.html
