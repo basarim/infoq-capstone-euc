@@ -2,10 +2,6 @@
 
 ### InfoQ Certified AI Engineering Program · August 2026
 
-The project repository is available here:
-
-https://github.com/basarim/infoq-capstone-euc
-
 The interactive demo is deployed here:
 
 https://euc-capstone-znjes.ondigitalocean.app/#proposal
