@@ -734,10 +734,10 @@ An honest account of the prototype as of this revision.
 | ✅ Built | The `onFailure: halt` contract, verified offline with a reasoner that fails the test if it is ever invoked after a halt |
 | ✅ Built | Controlled-change harness: baseline plus prompt and model variants, computing the result metrics — verified against known inputs with fake reasoners |
 | ✅ Built | **Requirement sequencing runs on a compiled graph.** A [LangGraph](https://github.com/langchain-ai/langgraph) `StateGraph` — one node per execution requirement, wired by conditional edges — replaces a hand-rolled loop; a failed mandatory requirement routes straight to the graph's end instead of the next node ([Appendix A](#appendix-a-implementation-notes)) |
-| ✅ Built | 38 tests passing offline, covering the deterministic layer, the halt contract, the evaluators, the controlled-change metrics, the traceability contract above, and the graph-based orchestration engine |
+| ✅ Built | 43 tests passing offline, covering the deterministic layer, the halt contract, the evaluators (bespoke and DeepEval's two deterministic metrics), the controlled-change metrics, the traceability contract above, and the graph-based orchestration engine |
 | ✅ Built | **The EUC now carries traceability, not an implementation choice.** Migrated to `rules` / `policies` / `executionRequirements` / `evaluationCriteria` with `tracesTo`; the `filter` and `group` keys are gone from the artifact, and implementations bind to requirement ids instead ([Section 3](#3-what-an-euc-is-made-of)) |
 | ✅ Built | **`tracesTo` is enforced at load time.** A criterion tracing to an undeclared id fails validation with a message naming the broken link; `untracedIds()` reports anything no criterion checks, so mapping gaps are visible rather than silent |
-| ⏳ Next | **Map criteria into an existing evaluation framework** (DeepEval or Ragas) rather than the current bespoke evaluator ([Section 5](#5-where-the-euc-sits)) |
+| ✅ Built | **Criteria mapped into an existing evaluation framework.** `DeepEvalGrantFitEvaluator` scores the same three criterion ids as the bespoke evaluator: the two exact-match criteria as DeepEval custom metrics, and evidence grounding as a `GEval` metric judged by Claude instead of a keyword-substring proxy ([Appendix A](#appendix-a-implementation-notes)) |
 | ⏳ Next | **Expand the dataset** from 6 to 10–15 scenarios, covering all six business expectations in [Section 6.1](#61-establish-a-stable-reference) |
 | ⏳ Next | **Record the effort indicators** in [Section 6.4](#64-record-what-the-change-cost) during controlled-change runs |
 | ⏳ Pending | First live evaluation pass and controlled-change run against a real model — all wiring is verified offline; only the network call itself remains unexercised in the current environment |
@@ -755,14 +755,37 @@ experiment but are not themselves the research contribution.
 
 ### Evaluation framework
 
-An existing framework such as DeepEval or Ragas provides test cases, metrics,
-assertions, and LLM-based evaluators. EUC criteria are mapped into the inputs that
-framework requires.
+An existing framework such as [DeepEval](https://deepeval.com) provides test cases,
+metrics, assertions, and LLM-based evaluators. EUC criteria are mapped into the
+inputs that framework requires — not all criteria need the same kind of mapping.
 
 > The EUC says *what the business needs validated*; the evaluation framework
 > provides the tools to measure it.
 
-Choosing the best evaluation framework is outside the scope of this capstone.
+`DeepEvalGrantFitEvaluator` maps the same three criterion ids the bespoke evaluator
+uses onto DeepEval, and the split follows from what each criterion actually asks:
+
+- **`EVAL-ELIGIBILITY`** and **`EVAL-ALIGNMENT`** are exact-match checks against
+  ground truth — an LLM judge would be pointless there, so both become DeepEval
+  custom `BaseMetric` subclasses with the identical equality logic the bespoke
+  evaluator already uses.
+- **`EVAL-EVIDENCE`** is a genuine judgment call — is the explanation grounded in
+  real evidence, or does it invent things? The bespoke evaluator answers that with a
+  case-insensitive keyword-substring check, which is a crude proxy at best. DeepEval
+  runs it as a `GEval` metric judged by Claude instead, scoring the actual intent
+  behind `POLICY-EVIDENCE`, `POLICY-MISSING-DATA`, and `POLICY-UNCERTAINTY` rather
+  than whether a handful of expected words happen to appear.
+
+DeepEval's `GEval` defaults to OpenAI as its judge model; this project only has an
+Anthropic key, so `ClaudeJudgeModel` wraps Claude as a `DeepEvalBaseLLM` (via the
+`anthropic` SDK and `instructor` for structured output) and is passed to `GEval`
+explicitly. Run it live with
+`python -m euc.grantfitassessment.eval.deepeval_evaluation_runner`, or offline (the
+two deterministic metrics only, no API key) with `pytest`.
+
+Choosing the best evaluation framework is outside the scope of this capstone; this
+is one mapping, not a recommendation that DeepEval is the right choice for every
+team.
 
 ### Pipe-and-filter mapping
 

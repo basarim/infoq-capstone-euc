@@ -12,11 +12,17 @@ dependencies = [
 dev = [
     "pytest>=8.0",
 ]
+deepeval = [
+    "deepeval",
+    "anthropic",
+    "instructor",
+]
 
 [project.scripts]
 grant-fit-app = "euc.grantfitassessment.app:main"
 grant-fit-eval = "euc.grantfitassessment.eval.evaluation_runner:main"
 grant-fit-drift = "euc.grantfitassessment.eval.drift_experiment_main:main"
+grant-fit-deepeval = "euc.grantfitassessment.eval.deepeval_evaluation_runner:main"
 
 [build-system]
 requires = ["setuptools>=68"]

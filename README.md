@@ -84,8 +84,9 @@ routes straight to the graph's end instead of the next node. See
 - [x] `EvaluationPipelineBuilder` runs the EUC's `evaluationCriteria` the same way, but as a plain ordered loop — every criterion is scored regardless of another's verdict, since each measures something independent rather than gating a shared outcome
 - [x] `tracesTo` is enforced at load time: a criterion tracing to an undeclared id fails validation naming the broken link; `untraced_ids()` reports anything no criterion checks, so mapping gaps are visible rather than silent
 - [x] Drift-experiment harness (`docs/proposal.md` Section 7): `FitReasonerVariant` (a `FitReasoner` + a declared "expected to alter behavior" flag), `DriftExperimentRunner` (runs the dataset against a baseline + candidate variants and computes the four Section 7 metrics), `DriftExperimentReport`/`drift_experiment_report_writer` (summary + JSON output to `eval/grant-fit-assessment/results/`), and `AlternateAlignmentPromptReasoner` as a ready-made prompt-variant example (`LlmFitReasoner._alignment_instructions()` is the documented override point for prompt variants) — verified offline in `test_drift_experiment_runner.py` with fake reasoners, and live against Claude
-- [x] 38 tests passing offline, covering the deterministic layer, the halt contract, the evaluators, the controlled-change metrics, the traceability contract, and the graph-based orchestration engine
-- [x] Live run against Claude verified for the application, the evaluation runner, and the drift experiment
+- [x] `DeepEvalGrantFitEvaluator` maps the same three criterion ids into [DeepEval](https://deepeval.com): `EVAL-ELIGIBILITY`/`EVAL-ALIGNMENT` as custom deterministic metrics (identical logic to the bespoke evaluator), `EVAL-EVIDENCE` as a `GEval` metric judged by Claude (via a `ClaudeJudgeModel` wrapper, since DeepEval defaults to OpenAI) — a genuine semantic grounding judgment in place of the bespoke evaluator's keyword-substring check
+- [x] 43 tests passing offline, covering the deterministic layer, the halt contract, the evaluators (bespoke and DeepEval's two deterministic metrics), the controlled-change metrics, the traceability contract, and the graph-based orchestration engine
+- [x] Live run against Claude verified for the application, the evaluation runner, the drift experiment, and the DeepEval evaluator (including a live `GEval` judgment)
 
 ## Build & Run
 
@@ -108,6 +109,11 @@ python -m euc.grantfitassessment.eval.evaluation_runner
 # Run the drift experiment: baseline vs. prompt/model variants (requires ANTHROPIC_API_KEY)
 # optional — set LLM_MODEL_VARIANT to also test a model swap alongside the built-in prompt variant
 python -m euc.grantfitassessment.eval.drift_experiment_main
+
+# Run the same golden set through DeepEval instead of the bespoke evaluator
+# (requires the deepeval extra and ANTHROPIC_API_KEY — see below)
+pip install -e ".[deepeval]"
+python -m euc.grantfitassessment.eval.deepeval_evaluation_runner
 ```
 
 `LlmFitReasoner` calls the Anthropic Messages API directly. Set your key via
@@ -140,7 +146,8 @@ Each EUC gets its own folder under `src/euc/`, `resources/euc/`, and `eval/` —
 │   └── grantfitassessment/        # Grant Fit Assessment EUC — application, evaluator, eval/drift runners
 │       ├── pipeline/              #   execution filters (eligibility, geography, requiredInfo, alignment)
 │       └── eval/
-│           └── pipeline/          #   evaluation filters (eligibilityCorrectness, programAlignment, evidenceGrounding)
+│           ├── pipeline/          #   bespoke evaluation filters (eligibilityCorrectness, programAlignment, evidenceGrounding)
+│           └── deepeval/          #   DeepEval mapping of the same three criteria (see deepeval_evaluator.py)
 ├── resources/euc/
 │   └── grant-fit-assessment/
 │       └── grant-fit-assessment.json
@@ -148,6 +155,7 @@ Each EUC gets its own folder under `src/euc/`, `resources/euc/`, and `eval/` —
 │   ├── core/                      # Engine unit tests
 │   └── grantfitassessment/        # Grant Fit Assessment unit + offline integration tests
 │       └── eval/
+│           └── deepeval/          #   offline tests for the two deterministic DeepEval metrics
 └── eval/
     └── grant-fit-assessment/
         ├── dataset/                # Test cases with ground truth

@@ -6,3 +6,6 @@ __pycache__/
 *.egg-info/
 .venv/
 .pytest_cache/
+.deepeval/
+.deepeval-cache.json
+.deepeval_telemetry.txt
