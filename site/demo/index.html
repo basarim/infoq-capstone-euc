@@ -104,6 +104,7 @@ code{font-family:var(--mono);font-size:.87em;color:var(--verdigris);background:v
 @media (max-width:880px){.bench{grid-template-columns:1fr}}
 
 /* docket (case picker) */
+.docket{position:relative;overflow:hidden;border-radius:3px}
 .docket h2{font-size:.8rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:400;margin-bottom:12px}
 .caselist{display:flex;flex-direction:column;gap:8px}
 .casecard{
@@ -117,13 +118,17 @@ code{font-family:var(--mono);font-size:.87em;color:var(--verdigris);background:v
 .casecard .cmeta{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);display:flex;gap:8px;flex-wrap:wrap}
 .casecard .cmission{font-size:.82rem;color:var(--ink-soft);line-height:1.4}
 
-.orgflyout{position:fixed;z-index:55;width:270px;background:var(--surface);border:1px solid var(--rule-soft);border-left:4px solid var(--brass);border-radius:3px;box-shadow:var(--shadow);padding:14px 16px;opacity:0;transform:translateX(-14px);transition:opacity .2s ease,transform .2s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+/* Confined to .docket's own box (position:relative + overflow:hidden above) —
+   never a viewport-floating overlay, so it can't drift over the workspace
+   and cover the Run assessment button at any screen size. */
+.orgflyout{position:absolute;inset:0;z-index:5;background:var(--surface);border-left:4px solid var(--brass);padding:16px;opacity:0;transform:translateX(-100%);transition:opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1);pointer-events:none;overflow-y:auto}
 .orgflyout.show{opacity:1;transform:translateX(0)}
-.orgflyout .oftag{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-top:11px}
-.orgflyout .oftag:first-child{margin-top:0}
+.orgflyout .ofname{display:block;font-family:var(--serif);font-weight:600;font-size:1.02rem;color:var(--ink)}
+.orgflyout .oftag{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-top:14px}
+.orgflyout .ofname+.oftag{margin-top:12px}
 .orgflyout p{margin:4px 0 0;font-family:var(--sans);font-size:.82rem;line-height:1.5;color:var(--ink-soft)}
 @media (max-width:880px){.orgflyout{display:none}}
-@media (prefers-reduced-motion:reduce){.orgflyout{transition:opacity .2s ease}}
+@media (prefers-reduced-motion:reduce){.orgflyout{transition:opacity .24s ease}}
 
 /* workspace */
 .workspace{display:flex;flex-direction:column;gap:22px;min-width:0}
@@ -1559,6 +1564,13 @@ mark.tracehit.flash{background:var(--brass);color:var(--ground)}
       <aside class="docket">
         <h2>Case docket</h2>
         <div class="caselist" id="caselist"></div>
+        <div class="orgflyout" id="orgFlyout" role="tooltip">
+          <span class="ofname"></span>
+          <span class="oftag">Key strength</span>
+          <p class="ofstrength"></p>
+          <span class="oftag">What we're testing</span>
+          <p class="oftest"></p>
+        </div>
       </aside>
 
       <div class="workspace">
@@ -1708,13 +1720,6 @@ mark.tracehit.flash{background:var(--brass);color:var(--ground)}
   <p>This trace's tag is the EUC's own id — every trace this EUC produces correlates back to the same instance.</p>
 </div>
 
-<div class="orgflyout" id="orgFlyout" role="tooltip">
-  <span class="oftag">Key strength</span>
-  <p class="ofstrength"></p>
-  <span class="oftag">What we're testing</span>
-  <p class="oftest"></p>
-</div>
-
 <script>
 (function(){
 "use strict";
@@ -1847,29 +1852,27 @@ CASES.forEach(function(c){
     '<span class="cmission">'+(c.organization.missionStatement||'<em>No mission statement on file.</em>')+'</span>';
   card.addEventListener('click',function(){ selectCase(c.caseId); });
   var nameEl=card.querySelector('.cname');
-  nameEl.addEventListener('mouseenter',function(){ showOrgFlyout(nameEl,c); });
+  nameEl.addEventListener('mouseenter',function(){ showOrgFlyout(c); });
   nameEl.addEventListener('mouseleave',hideOrgFlyout);
-  card.addEventListener('focus',function(){ showOrgFlyout(nameEl,c); });
+  card.addEventListener('focus',function(){ showOrgFlyout(c); });
   card.addEventListener('blur',hideOrgFlyout);
   caselist.appendChild(card);
 });
 
-/* ── org flyout: hovering (or focusing) a case's name slides in a card
-     with that case's key strength and what the case is designed to test ── */
+/* ── org flyout: hovering (or focusing) a case's name slides a section in
+     from the left, inside the docket itself — never a viewport-floating
+     overlay, so it can't drift over the workspace at any screen size ── */
 var orgFlyout=document.getElementById('orgFlyout');
+var orgFlyoutName=orgFlyout.querySelector('.ofname');
 var orgFlyoutStrength=orgFlyout.querySelector('.ofstrength');
 var orgFlyoutTest=orgFlyout.querySelector('.oftest');
 var orgFlyoutHideTimer=null;
-function showOrgFlyout(nameEl,c){
+function showOrgFlyout(c){
   clearTimeout(orgFlyoutHideTimer);
+  orgFlyoutName.textContent=c.organization.name;
   orgFlyoutStrength.textContent=c.keyStrength;
   orgFlyoutTest.textContent=c.testFocus;
   orgFlyout.classList.add('show');
-  var rect=nameEl.getBoundingClientRect();
-  var top=Math.min(rect.top-4, window.innerHeight-orgFlyout.offsetHeight-14);
-  top=Math.max(top,12);
-  orgFlyout.style.top=top+'px';
-  orgFlyout.style.left=(rect.right+16)+'px';
 }
 function hideOrgFlyout(){
   clearTimeout(orgFlyoutHideTimer);
