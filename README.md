@@ -147,7 +147,7 @@ this project set up to deploy. It's static HTML with no server and no live
 network calls, so it needs **no secrets, no environment variables, and no
 container**: `.do/app.yaml` is a [DigitalOcean App
 Platform](https://docs.digitalocean.com/products/app-platform/) static-site
-spec pointing at the `site/` directory.
+spec pointing at `site/` and `site/demo/`.
 
 ```bash
 doctl apps create --spec .do/app.yaml       # first deploy
@@ -156,9 +156,11 @@ doctl apps update <app-id> --spec .do/app.yaml   # subsequent changes
 
 Or paste `.do/app.yaml`'s contents into the console: **Create Resource From
 Source Code → Edit Your App Spec**. Either way, App Platform serves
-`site/index.html` at `/` and `site/demo/index.html` at `/demo/` — see
-`site/README.md` and `site/demo/README.md` for what each page does, and
-`site/demo/README.md` in particular for exactly how it was checked for
+`site/demo/index.html` at `/` and `site/index.html` (the landing page) at
+`/proposal` — two static-site components, since each one's own `index.html`
+is what its ingress path's root resolves to. See `site/README.md` and
+`site/demo/README.md` for what each page does, and `site/demo/README.md`
+in particular for exactly how it was checked for
 secrets before publishing.
 
 The Python backend (`euc-*` scripts above) is CLI-only — there's no HTTP API

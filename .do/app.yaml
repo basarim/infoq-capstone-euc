@@ -1,7 +1,11 @@
-# DigitalOcean App Platform spec for the static site (landing page + demo).
+# DigitalOcean App Platform spec for the static site (demo + landing page).
 # No env vars, no secrets: both pages are fully self-contained HTML with no
 # server, no build step, and no live network calls out (see site/README.md
 # and site/demo/README.md for what each page does and does not call).
+#
+# Routing: the demo is the app's root; the landing page lives at /proposal.
+# Two components are needed because each one's own index.html is what's
+# served at its ingress path's root, and the two pages have different ones.
 #
 # Deploy with either:
 #   doctl apps create --spec .do/app.yaml
@@ -10,7 +14,15 @@
 # (Create Resource From Source Code -> Edit Your App Spec).
 name: euc-capstone
 static_sites:
-  - name: site
+  - name: demo
+    github:
+      repo: basarim/infoq-capstone-euc
+      branch: appmod/java-upgrade-20260831185259
+      deploy_on_push: true
+    source_dir: site/demo
+    index_document: index.html
+    error_document: index.html
+  - name: landing
     github:
       repo: basarim/infoq-capstone-euc
       branch: appmod/java-upgrade-20260831185259
@@ -18,3 +30,15 @@ static_sites:
     source_dir: site
     index_document: index.html
     error_document: index.html
+ingress:
+  rules:
+    - component:
+        name: landing
+      match:
+        path:
+          prefix: /proposal
+    - component:
+        name: demo
+      match:
+        path:
+          prefix: /
