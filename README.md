@@ -85,8 +85,9 @@ routes straight to the graph's end instead of the next node. See
 - [x] `tracesTo` is enforced at load time: a criterion tracing to an undeclared id fails validation naming the broken link; `untraced_ids()` reports anything no criterion checks, so mapping gaps are visible rather than silent
 - [x] Drift-experiment harness (`docs/proposal.md` Section 7): `FitReasonerVariant` (a `FitReasoner` + a declared "expected to alter behavior" flag), `DriftExperimentRunner` (runs the dataset against a baseline + candidate variants and computes the four Section 7 metrics), `DriftExperimentReport`/`drift_experiment_report_writer` (summary + JSON output to `eval/grant-fit-assessment/results/`), and `AlternateAlignmentPromptReasoner` as a ready-made prompt-variant example (`LlmFitReasoner._alignment_instructions()` is the documented override point for prompt variants) — verified offline in `test_drift_experiment_runner.py` with fake reasoners, and live against Claude
 - [x] `DeepEvalGrantFitEvaluator` maps the same three criterion ids into [DeepEval](https://deepeval.com): `EVAL-ELIGIBILITY`/`EVAL-ALIGNMENT` as custom deterministic metrics (identical logic to the bespoke evaluator), `EVAL-EVIDENCE` as a `GEval` metric judged by Claude (via a `ClaudeJudgeModel` wrapper, since DeepEval defaults to OpenAI) — a genuine semantic grounding judgment in place of the bespoke evaluator's keyword-substring check
-- [x] 43 tests passing offline, covering the deterministic layer, the halt contract, the evaluators (bespoke and DeepEval's two deterministic metrics), the controlled-change metrics, the traceability contract, and the graph-based orchestration engine
-- [x] Live run against Claude verified for the application, the evaluation runner, the drift experiment, and the DeepEval evaluator (including a live `GEval` judgment)
+- [x] `TracedFitReasoner`/`TracedGrantFitEvaluator`/`traced_filter_wrapper` wrap any `FitReasoner`, any evaluator sharing `GrantFitEvaluator`'s shape, and (via an optional `filter_wrapper` hook on `GrantFitApplication`) each deterministic gate, with [Langfuse](https://langfuse.com) observability — a `generation` per reasoning call (prompt, raw output, model name, real token usage), a `tool` observation per deterministic gate that actually runs (so a halted run shows exactly where it stopped instead of going dark), and the same three criterion ids attached as boolean scores on that run's trace. Every trace also carries a per-request correlation id (metadata) and the EUC's own id (a tag). Additive, like the DeepEval wrapper: nothing in `GrantFitApplication`'s existing behavior, `PipelineBuilder`, `GrantFitEvaluator`, or `DeepEvalGrantFitEvaluator` changes. Built using Langfuse's [Agent Skill](https://github.com/langfuse/skills), which requires fetching current docs rather than instrumenting from memory and running a mandatory trace-fetch-audit-fix loop — two rounds of that loop found and fixed real gaps (missing token usage, invisible deterministic gates, a dynamic case id in a span name, non-verb-first tool names, no `environment` attribute)
+- [x] 53 tests passing offline, covering the deterministic layer, the halt contract, the evaluators (bespoke and DeepEval's two deterministic metrics), the controlled-change metrics, the traceability contract, the graph-based orchestration engine, and the Langfuse tracing wrappers (a fake client double, no credentials needed)
+- [x] Live run against Claude verified for the application, the evaluation runner, the drift experiment, the DeepEval evaluator (including a live `GEval` judgment), and the Langfuse-wrapped runner — for the last of these, a trace was fetched back from a real Langfuse project via `client.api.trace.get()` and its full shape (root span, nested tool/generation observations, token usage, tags, metadata, scores) inspected directly against Langfuse's published best-practices guidance
 
 ## Build & Run
 
@@ -114,6 +115,16 @@ python -m euc.grantfitassessment.eval.drift_experiment_main
 # (requires the deepeval extra and ANTHROPIC_API_KEY — see below)
 pip install -e ".[deepeval]"
 python -m euc.grantfitassessment.eval.deepeval_evaluation_runner
+
+# Run the same golden set with Langfuse observability wrapping the reasoner,
+# the evaluator, and each deterministic gate (requires the langfuse extra and
+# ANTHROPIC_API_KEY; without LANGFUSE_PUBLIC_KEY/LANGFUSE_SECRET_KEY it still
+# runs, it just has nowhere to send traces; optionally set
+# LANGFUSE_TRACING_ENVIRONMENT, e.g. "development", to keep these traces
+# distinguishable from any other environment sending traces to the same
+# Langfuse project)
+pip install -e ".[langfuse]"
+python -m euc.grantfitassessment.eval.langfuse_evaluation_runner
 ```
 
 `LlmFitReasoner` calls the Anthropic Messages API directly. Set your key via
@@ -145,6 +156,7 @@ Each EUC gets its own folder under `src/euc/`, `resources/euc/`, and `eval/` —
 │   ├── core/                      # Domain-agnostic engine: EUC model, loader, both pipeline builders
 │   └── grantfitassessment/        # Grant Fit Assessment EUC — application, evaluator, eval/drift runners
 │       ├── pipeline/              #   execution filters (eligibility, geography, requiredInfo, alignment)
+│       ├── langfuse_tracing.py    #   TracedFitReasoner/TracedGrantFitEvaluator — optional Langfuse observability
 │       └── eval/
 │           ├── pipeline/          #   bespoke evaluation filters (eligibilityCorrectness, programAlignment, evidenceGrounding)
 │           └── deepeval/          #   DeepEval mapping of the same three criteria (see deepeval_evaluator.py)
@@ -154,6 +166,7 @@ Each EUC gets its own folder under `src/euc/`, `resources/euc/`, and `eval/` —
 ├── tests/
 │   ├── core/                      # Engine unit tests
 │   └── grantfitassessment/        # Grant Fit Assessment unit + offline integration tests
+│       ├── test_langfuse_tracing.py  # Offline, fake-client tests for the Langfuse wrappers
 │       └── eval/
 │           └── deepeval/          #   offline tests for the two deterministic DeepEval metrics
 └── eval/

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import os
+from typing import Callable
 
 from euc.core.context import PipelineContext
-from euc.core.filters import ExecutionFilterRegistry
+from euc.core.filters import ExecutionFilterFn, ExecutionFilterRegistry
 from euc.core.loader import load_grant_fit_assessment
 from euc.core.models import EucDefinition
 from euc.core.pipeline import PipelineBuilder
@@ -15,14 +16,32 @@ from euc.grantfitassessment.pipeline.geography_filter import geography_rule_filt
 from euc.grantfitassessment.pipeline.required_info_filter import required_info_rule_filter
 from euc.grantfitassessment.reasoner import FitReasoner, LlmFitReasoner
 
+FilterWrapper = Callable[[str, ExecutionFilterFn], ExecutionFilterFn]
+
 
 class GrantFitApplication:
-    def __init__(self, euc: EucDefinition, fit_reasoner: FitReasoner) -> None:
+    def __init__(
+        self,
+        euc: EucDefinition,
+        fit_reasoner: FitReasoner,
+        filter_wrapper: FilterWrapper | None = None,
+    ) -> None:
+        """filter_wrapper is an optional observability hook: if given, every
+        registered filter — including the deterministic gates, not just the
+        reasoner — is passed through it as (requirement_id, filter) before
+        registration. Unused by default; see langfuse_tracing.py for the one
+        caller that supplies it."""
         registry = ExecutionFilterRegistry()
-        registry.register("ELIGIBILITY-001", eligibility_rule_filter)
-        registry.register("GEOGRAPHY-001", geography_rule_filter)
-        registry.register("INFO-001", required_info_rule_filter)
-        registry.register("ALIGNMENT-001", AlignmentReasoningFilter(fit_reasoner, euc))
+
+        def register(requirement_id: str, filter_fn: ExecutionFilterFn) -> None:
+            if filter_wrapper is not None:
+                filter_fn = filter_wrapper(requirement_id, filter_fn)
+            registry.register(requirement_id, filter_fn)
+
+        register("ELIGIBILITY-001", eligibility_rule_filter)
+        register("GEOGRAPHY-001", geography_rule_filter)
+        register("INFO-001", required_info_rule_filter)
+        register("ALIGNMENT-001", AlignmentReasoningFilter(fit_reasoner, euc))
         self._pipeline_builder = PipelineBuilder(euc, registry)
 
     def assess(self, org: Organization, grant: GrantOpportunity) -> AssessmentResult:

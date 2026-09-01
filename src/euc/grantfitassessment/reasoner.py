@@ -37,6 +37,10 @@ class FitReasoner(Protocol):
 class LlmFitReasoner:
     def __init__(self, model_name: str) -> None:
         self.model_name = model_name
+        # Populated after each assess_fit() call — an observability side
+        # channel (see langfuse_tracing.py), not part of this class's return
+        # contract.
+        self.last_usage: dict[str, int] | None = None
 
     def assess_fit(self, org: Organization, grant: GrantOpportunity, euc: EucDefinition) -> FitReasoning:
         api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -113,6 +117,12 @@ class LlmFitReasoner:
     def _parse_response(self, response_body: str, euc: EucDefinition) -> FitReasoning:
         try:
             root = json.loads(response_body)
+            usage = root.get("usage") or {}
+            if "input_tokens" in usage or "output_tokens" in usage:
+                self.last_usage = {
+                    "input": usage.get("input_tokens", 0),
+                    "output": usage.get("output_tokens", 0),
+                }
             text = root["content"][0]["text"]
 
             cleaned = text.strip()

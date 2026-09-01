@@ -734,10 +734,11 @@ An honest account of the prototype as of this revision.
 | ✅ Built | The `onFailure: halt` contract, verified offline with a reasoner that fails the test if it is ever invoked after a halt |
 | ✅ Built | Controlled-change harness: baseline plus prompt and model variants, computing the result metrics — verified against known inputs with fake reasoners |
 | ✅ Built | **Requirement sequencing runs on a compiled graph.** A [LangGraph](https://github.com/langchain-ai/langgraph) `StateGraph` — one node per execution requirement, wired by conditional edges — replaces a hand-rolled loop; a failed mandatory requirement routes straight to the graph's end instead of the next node ([Appendix A](#appendix-a-implementation-notes)) |
-| ✅ Built | 43 tests passing offline, covering the deterministic layer, the halt contract, the evaluators (bespoke and DeepEval's two deterministic metrics), the controlled-change metrics, the traceability contract above, and the graph-based orchestration engine |
+| ✅ Built | 53 tests passing offline, covering the deterministic layer, the halt contract, the evaluators (bespoke and DeepEval's two deterministic metrics), the controlled-change metrics, the traceability contract above, the graph-based orchestration engine, and the Langfuse tracing wrappers |
 | ✅ Built | **The EUC now carries traceability, not an implementation choice.** Migrated to `rules` / `policies` / `executionRequirements` / `evaluationCriteria` with `tracesTo`; the `filter` and `group` keys are gone from the artifact, and implementations bind to requirement ids instead ([Section 3](#3-what-an-euc-is-made-of)) |
 | ✅ Built | **`tracesTo` is enforced at load time.** A criterion tracing to an undeclared id fails validation with a message naming the broken link; `untracedIds()` reports anything no criterion checks, so mapping gaps are visible rather than silent |
 | ✅ Built | **Criteria mapped into an existing evaluation framework.** `DeepEvalGrantFitEvaluator` scores the same three criterion ids as the bespoke evaluator: the two exact-match criteria as DeepEval custom metrics, and evidence grounding as a `GEval` metric judged by Claude instead of a keyword-substring proxy ([Appendix A](#appendix-a-implementation-notes)) |
+| ✅ Built | **Observability wrapping, additive like the evaluator mapping above.** `TracedFitReasoner`/`TracedGrantFitEvaluator`/`traced_filter_wrapper` attach [Langfuse](https://langfuse.com) generations, tool-typed deterministic-gate traces, and per-criterion boolean scores to any reasoner/evaluator without changing either — plus a correlation id and the EUC's own id on every trace. Built against Langfuse's Agent Skill and its required audit loop; verified offline and against a real Langfuse project, with the fetched-back trace inspected directly ([Appendix A](#appendix-a-implementation-notes)) |
 | ⏳ Next | **Expand the dataset** from 6 to 10–15 scenarios, covering all six business expectations in [Section 6.1](#61-establish-a-stable-reference) |
 | ⏳ Next | **Record the effort indicators** in [Section 6.4](#64-record-what-the-change-cost) during controlled-change runs |
 | ⏳ Pending | First live evaluation pass and controlled-change run against a real model — all wiring is verified offline; only the network call itself remains unexercised in the current environment |
@@ -786,6 +787,50 @@ two deterministic metrics only, no API key) with `pytest`.
 Choosing the best evaluation framework is outside the scope of this capstone; this
 is one mapping, not a recommendation that DeepEval is the right choice for every
 team.
+
+### Observability
+
+Neither the pipeline nor either evaluator is on its own an *observability* tool —
+nothing here records what a specific run actually did unless something is watching.
+[Langfuse](https://langfuse.com) is that layer, wired in as three additive
+wrappers — the same pattern as the DeepEval mapping above, so nothing in
+`GrantFitApplication`, `PipelineBuilder`, or either evaluator changes:
+
+- `TracedFitReasoner` wraps any `FitReasoner` and opens a Langfuse **generation**
+  around the call — prompt, raw response, model name, and real token usage read
+  back from Claude's own response.
+- A `filter_wrapper` hook on `GrantFitApplication` (its one deliberate, optional,
+  backward-compatible constructor addition) lets `traced_filter_wrapper` trace
+  each *deterministic* gate too, as a **tool** observation — so a run that halts
+  on eligibility or geography shows exactly that in the trace tree, rather than
+  going dark.
+- `TracedGrantFitEvaluator` wraps any evaluator sharing `GrantFitEvaluator`'s
+  shape — bespoke or DeepEval — and attaches the same three criterion ids to
+  that run's trace as boolean scores.
+
+Every trace also carries a fresh correlation id (one per request, in trace
+metadata) and the EUC's own id (stable across every run of this EUC, so it's a
+trace tag) — set together via Langfuse's `propagate_attributes()` so both land
+on the root span and every observation nested under it.
+
+This was built by installing Langfuse's own
+[Agent Skill](https://github.com/langfuse/skills), which requires fetching the
+current best-practices documentation rather than instrumenting from memory, and
+running its mandatory audit loop: trace a real run, fetch it back, check it
+against the published guidance, fix what doesn't hold up, repeat. Two rounds
+surfaced real gaps — token usage wasn't being captured, the deterministic gates
+were invisible, a span name embedded a dynamic case id, tool names weren't
+verb-first, and there was no `environment` attribute to keep evaluation-run
+traces distinguishable from anything else sending traces to the same
+project — all fixed and reconfirmed against a live trace, not assumed correct.
+
+**What's verified, stated plainly:** offline (a fake client double,
+`test_langfuse_tracing.py`) and live end-to-end against Claude and a real
+Langfuse project — a trace was created, fetched back via the Langfuse API, and
+its full shape (span → tool/generation children, token usage, tags, metadata,
+scores) inspected directly, not assumed from the SDK call succeeding. Run it
+with `python -m euc.grantfitassessment.eval.langfuse_evaluation_runner`, with
+`LANGFUSE_PUBLIC_KEY`/`LANGFUSE_SECRET_KEY` set.
 
 ### Pipe-and-filter mapping
 
