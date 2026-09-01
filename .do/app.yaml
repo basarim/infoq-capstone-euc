@@ -1,0 +1,20 @@
+# DigitalOcean App Platform spec for the static site (landing page + demo).
+# No env vars, no secrets: both pages are fully self-contained HTML with no
+# server, no build step, and no live network calls out (see site/README.md
+# and site/demo/README.md for what each page does and does not call).
+#
+# Deploy with either:
+#   doctl apps create --spec .do/app.yaml
+#   doctl apps update <app-id> --spec .do/app.yaml   # after the first deploy
+# or paste this file's contents into the App Platform web console
+# (Create Resource From Source Code -> Edit Your App Spec).
+name: euc-capstone
+static_sites:
+  - name: site
+    github:
+      repo: basarim/infoq-capstone-euc
+      branch: appmod/java-upgrade-20260831185259
+      deploy_on_push: true
+    source_dir: site
+    index_document: index.html
+    error_document: index.html

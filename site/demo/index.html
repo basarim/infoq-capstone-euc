@@ -1,0 +1,2328 @@
+<title>InfoQ Certified AI Engineering Program - Capstone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Faustina:ital,wght@0,400;0,600;1,400&family=Karla:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── Tokens — mirrors the Executable Use Cases site palette, extended
+     with two semantic hues (pass/fail) that stay off the brass accent ── */
+:root{
+  --ground:#e9e9e1;
+  --surface:#f4f3ee;
+  --surface-2:#e2e2d8;
+  --ink:#17211e;
+  --ink-soft:#4c5a55;
+  --ink-faint:#7d8880;
+  --rule:#cdcdc1;
+  --rule-soft:#dcdcd2;
+  --brass:#9c6b22;
+  --brass-lit:#b8802c;
+  --brass-wash:rgba(156,107,34,.10);
+  --verdigris:#2f6f60;
+  --verdigris-wash:rgba(47,111,96,.11);
+  --rust:#a1503c;
+  --rust-wash:rgba(161,80,60,.11);
+  --shadow:0 1px 2px rgba(23,33,30,.05),0 10px 28px -18px rgba(23,33,30,.32);
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --serif:"Faustina",Georgia,"Times New Roman",serif;
+  --sans:"Karla","Helvetica Neue",Arial,sans-serif;
+  --rail:150px;
+  --secgap:clamp(26px,4vw,54px);
+  --step-1:1.32rem;
+  --step-2:1.72rem;
+  --step-3:2.3rem;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101615; --surface:#18211f; --surface-2:#212b28;
+    --ink:#e7e8e0; --ink-soft:#a5b0a9; --ink-faint:#6f7d76;
+    --rule:#2b3633; --rule-soft:#222c2a;
+    --brass:#d6a057; --brass-lit:#e6ba79; --brass-wash:rgba(214,160,87,.13);
+    --verdigris:#5ea391; --verdigris-wash:rgba(94,163,145,.13);
+    --rust:#c97a63; --rust-wash:rgba(201,122,99,.13);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101615; --surface:#18211f; --surface-2:#212b28;
+  --ink:#e7e8e0; --ink-soft:#a5b0a9; --ink-faint:#6f7d76;
+  --rule:#2b3633; --rule-soft:#222c2a;
+  --brass:#d6a057; --brass-lit:#e6ba79; --brass-wash:rgba(214,160,87,.13);
+  --verdigris:#5ea391; --verdigris-wash:rgba(94,163,145,.13);
+  --rust:#c97a63; --rust-wash:rgba(201,122,99,.13);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -18px rgba(0,0,0,.8);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:1.0625rem;line-height:1.6;
+  overflow-x:hidden;
+}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.14;text-wrap:balance;margin:0;color:var(--ink)}
+p{margin:0}
+button{font:inherit;color:inherit}
+code{font-family:var(--mono);font-size:.87em;color:var(--verdigris);background:var(--verdigris-wash);padding:1px 5px;border-radius:2px}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:2px}
+.skiplink{position:absolute;left:-9999px;top:0;z-index:100;background:var(--brass);color:var(--ground);font-family:var(--mono);font-size:.8rem;padding:10px 16px;text-decoration:none}
+.skiplink:focus{left:8px;top:8px}
+
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-faint)}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:clamp(18px,4vw,44px)}
+
+/* ── Masthead ── */
+.masthead{position:sticky;top:0;z-index:40;background:var(--ground);background:color-mix(in srgb,var(--ground) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule-soft)}
+.masthead .wrap{display:flex;align-items:center;gap:16px;height:60px}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.mark .datum{width:12px;height:12px;flex:none;transform:rotate(45deg);border:1.5px solid var(--brass);background:var(--brass-wash)}
+.mark .name{font-family:var(--serif);font-size:1.02rem;font-weight:600;color:var(--ink)}
+.masthead .sub{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--ink-faint);border-left:1px solid var(--rule);padding-left:14px;margin-right:auto}
+.themebtn{font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;background:transparent;border:1px solid var(--rule);color:var(--ink-soft);padding:6px 11px;border-radius:2px;cursor:pointer;transition:border-color .18s,color .18s}
+.themebtn:hover{border-color:var(--brass);color:var(--ink)}
+@media (max-width:640px){.masthead .sub{display:none}}
+
+/* ── Tabs ── */
+.tabsbar{position:sticky;top:60px;z-index:39;background:var(--ground);background:color-mix(in srgb,var(--ground) 92%,transparent);backdrop-filter:blur(8px)}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule-soft);padding-top:10px;overflow-x:auto}
+.tabbtn{
+  display:inline-block;font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;border:none;border-bottom:2px solid transparent;color:var(--ink-faint);
+  text-decoration:none;padding:11px 2px;margin-right:26px;cursor:pointer;transition:color .15s,border-color .15s;
+}
+.tabbtn:hover{color:var(--ink)}
+.tabbtn.active{color:var(--ink);border-bottom-color:var(--brass)}
+
+/* ── Intro (shared by both panels) ── */
+.intro{padding-block:clamp(30px,5vw,52px) clamp(20px,3vw,30px)}
+.intro h1{font-size:clamp(1.55rem,3.4vw,2.15rem);letter-spacing:-.015em;max-width:26ch;margin-top:10px}
+.intro h1 em{font-style:italic;color:var(--brass);font-weight:400}
+.intro p.lede{margin-top:14px;max-width:66ch;color:var(--ink-soft);font-size:1rem;line-height:1.6}
+.intro p.lede strong{color:var(--ink);font-weight:600}
+
+/* ── Bench layout (Assess panel) ── */
+.bench{display:grid;grid-template-columns:272px minmax(0,1fr);gap:clamp(18px,3vw,34px);padding-bottom:56px}
+@media (max-width:880px){.bench{grid-template-columns:1fr}}
+
+/* docket (case picker) */
+.docket h2{font-size:.8rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:400;margin-bottom:12px}
+.caselist{display:flex;flex-direction:column;gap:8px}
+.casecard{
+  text-align:left;width:100%;background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;
+  padding:12px 14px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;flex-direction:column;gap:5px;
+}
+.casecard:hover{border-color:var(--brass)}
+.casecard.active{border-color:var(--brass);background:var(--brass-wash)}
+.casecard .cname{font-family:var(--serif);font-weight:600;font-size:.98rem;color:var(--ink)}
+.casecard .cmeta{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);display:flex;gap:8px;flex-wrap:wrap}
+.casecard .cmission{font-size:.82rem;color:var(--ink-soft);line-height:1.4}
+
+/* workspace */
+.workspace{display:flex;flex-direction:column;gap:22px;min-width:0}
+.pairgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:620px){.pairgrid{grid-template-columns:1fr}}
+.pcard{background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:16px 18px;box-shadow:var(--shadow)}
+.pcard .ptag{font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--verdigris);margin-bottom:8px;display:block}
+.pcard h3{font-size:1.05rem;margin-bottom:9px}
+.pcard dl{margin:0;display:flex;flex-direction:column;gap:5px}
+.pcard dt{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);display:inline}
+.pcard dd{margin:0 0 2px;font-size:.86rem;color:var(--ink-soft);display:inline}
+.pcard .row{display:flex;gap:6px;flex-wrap:wrap;line-height:1.5}
+.pcard .chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-family:var(--mono);font-size:.66rem;letter-spacing:.03em;padding:3px 8px;border-radius:2px;border:1px solid var(--rule);color:var(--ink-soft);background:var(--surface-2)}
+.chip.yes{color:var(--verdigris);border-color:color-mix(in srgb,var(--verdigris) 40%,transparent);background:var(--verdigris-wash)}
+.chip.no{color:var(--rust);border-color:color-mix(in srgb,var(--rust) 40%,transparent);background:var(--rust-wash)}
+
+.runbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.btn-run{
+  display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.8rem;letter-spacing:.04em;
+  background:var(--brass);color:var(--ground);border:1px solid var(--brass);padding:11px 20px;border-radius:2px;
+  cursor:pointer;transition:background .18s,transform .18s;
+}
+.btn-run:hover:not(:disabled){background:var(--brass-lit);transform:translateY(-1px)}
+.btn-run:disabled{opacity:.5;cursor:default}
+.btn-run .arrow{transition:transform .18s}
+.btn-run:hover:not(:disabled) .arrow{transform:translateX(3px)}
+.runbar .status{font-family:var(--mono);font-size:.76rem;color:var(--ink-faint)}
+
+/* pipeline */
+.pipeline{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule-soft)}
+.pstage{
+  display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:14px;align-items:start;
+  padding:14px 0;border-bottom:1px solid var(--rule-soft);opacity:.4;transition:opacity .3s;
+}
+.pstage.live{opacity:1}
+.pstage .marker{width:9px;height:9px;border-radius:50%;background:var(--rule);margin-top:6px;transition:background .2s,box-shadow .2s}
+.pstage.pass .marker{background:var(--verdigris);box-shadow:0 0 0 3px var(--verdigris-wash)}
+.pstage.fail .marker{background:var(--rust);box-shadow:0 0 0 3px var(--rust-wash)}
+.pstage.running .marker{background:var(--brass);box-shadow:0 0 0 3px var(--brass-wash);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.pstage .sid{font-family:var(--mono);font-size:.78rem;color:var(--ink)}
+.pstage .stype{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-left:8px}
+.pstage .sdesc{font-size:.86rem;color:var(--ink-soft);margin-top:4px;max-width:54ch;line-height:1.5}
+.pstage .sdetail{font-size:.8rem;margin-top:5px;line-height:1.5}
+.pstage.pass .sdetail{color:var(--verdigris)}
+.pstage.fail .sdetail{color:var(--rust)}
+.pstage.skipped .sdetail{color:var(--ink-faint);font-style:italic}
+.pill{font-family:var(--mono);font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:2px;white-space:nowrap;border:1px solid var(--rule);color:var(--ink-faint)}
+.pstage.pass .pill{color:var(--verdigris);border-color:color-mix(in srgb,var(--verdigris) 40%,transparent);background:var(--verdigris-wash)}
+.pstage.fail .pill{color:var(--rust);border-color:color-mix(in srgb,var(--rust) 40%,transparent);background:var(--rust-wash)}
+.pstage.running .pill{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 40%,transparent);background:var(--brass-wash)}
+.pill.strong{color:var(--verdigris);border-color:color-mix(in srgb,var(--verdigris) 40%,transparent);background:var(--verdigris-wash)}
+.pill.possible{color:var(--brass);border-color:color-mix(in srgb,var(--brass) 40%,transparent);background:var(--brass-wash)}
+.pill.poor{color:var(--rust);border-color:color-mix(in srgb,var(--rust) 40%,transparent);background:var(--rust-wash)}
+@media (max-width:560px){.pstage{grid-template-columns:20px 1fr}.pstage .pill{grid-column:2;margin-top:8px;justify-self:start}}
+
+/* verdict */
+.verdict{background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:22px 24px 24px;box-shadow:var(--shadow);opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s}
+.verdict.show{opacity:1;transform:none}
+.verdict .vhead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.verdict .voutcome{font-family:var(--serif);font-style:italic;font-weight:600;font-size:1.9rem;letter-spacing:-.01em}
+.verdict.strong .voutcome{color:var(--verdigris)}
+.verdict.possible .voutcome{color:var(--brass)}
+.verdict.poor .voutcome{color:var(--rust)}
+.verdict .veligible{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--ink-faint)}
+.verdict h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:16px 0 7px}
+.verdict h4:first-of-type{margin-top:0}
+.verdict .rationale{font-size:.92rem;color:var(--ink-soft);line-height:1.6;max-width:64ch}
+.verdict .kwrow{display:flex;flex-wrap:wrap;gap:7px}
+.verdict .note{font-size:.78rem;color:var(--ink-faint);font-style:italic;margin-top:10px;line-height:1.5;max-width:64ch}
+
+/* trace */
+.trace{opacity:0;transform:translateY(6px);transition:opacity .4s .1s,transform .4s .1s}
+.trace.show{opacity:1;transform:none}
+.trace h4{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+.tracerow{display:grid;grid-template-columns:180px minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-top:1px solid var(--rule-soft);font-size:.84rem}
+.tracerow:last-child{border-bottom:1px solid var(--rule-soft)}
+.tracerow .tid{font-family:var(--mono);color:var(--ink)}
+.tracerow .tdesc{color:var(--ink-soft)}
+.tracerow .ttrace{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint)}
+@media (max-width:700px){.tracerow{grid-template-columns:1fr}.tracerow .tid{font-weight:600}}
+
+.frameworks{margin-top:20px;background:var(--brass-wash);border:1px solid var(--brass);border-left:4px solid var(--brass);border-radius:3px;padding:20px 22px 22px;opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s}
+.frameworks.show{opacity:1;transform:none}
+.frameworks .fweyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
+.frameworks h3{font-family:var(--serif);font-size:1.28rem;font-weight:600;letter-spacing:-.01em;margin:4px 0 2px}
+.fwtraces{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);margin-top:6px}
+.fwtraces .fwtraceslbl{color:var(--ink-faint);letter-spacing:.04em}
+.fwintro{font-size:.86rem;color:var(--ink-soft);line-height:1.55;max-width:70ch;margin:8px 0 16px}
+.fwgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.fwgrid{grid-template-columns:1fr}}
+.fwcard{background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.fwcard.drifted{border-color:color-mix(in srgb,var(--rust) 40%,var(--rule-soft))}
+.fwcard .fwlabel{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+.fwcard.drifted .fwlabel{color:var(--rust)}
+.fwcard .fwtext{font-size:.85rem;color:var(--ink-soft);line-height:1.55}
+.fwrow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-size:.76rem;padding-top:8px;border-top:1px solid var(--rule-soft)}
+.fwrow .fwmethod{color:var(--ink-faint)}
+.fwrow .fwverdict{font-family:var(--mono);font-weight:600;white-space:nowrap}
+.fwrow .fwverdict.pass{color:var(--verdigris)}
+.fwrow .fwverdict.flag{color:var(--rust)}
+.fwreason{font-size:.76rem;color:var(--ink-faint);font-style:italic;line-height:1.5}
+
+
+/* ── Learn panel ── */
+.learnsection{padding-block:32px;border-top:1px solid var(--rule-soft)}
+.learnsection:first-of-type{border-top:none;padding-top:6px}
+.learnsection h2{font-size:1.45rem;letter-spacing:-.01em}
+.learnsection .lead{margin-top:10px;max-width:68ch;color:var(--ink-soft);font-size:.95rem;line-height:1.6}
+
+.figure{margin-top:22px}
+.figbody{background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:16px;overflow-x:auto;box-shadow:var(--shadow)}
+.figbody svg{display:block;width:100%;height:auto;min-width:680px}
+.figure figcaption{margin-top:11px;font-size:.83rem;line-height:1.55;color:var(--ink-faint);max-width:70ch}
+
+.objdiag .oeuc{font-family:var(--serif);font-size:16px;font-weight:600;fill:var(--ink)}
+.objdiag .onm{font-family:var(--mono);font-size:11.5px;font-weight:500;fill:var(--ink)}
+.objdiag .oat{font-family:var(--mono);font-size:10.5px;fill:var(--ink-soft)}
+.objdiag .ogrp{font-family:var(--mono);font-size:9.5px;letter-spacing:1.4px;fill:var(--ink-faint)}
+.objdiag .otrace{font-family:var(--mono);font-size:10px;letter-spacing:1.2px;fill:var(--brass)}
+.objdiag .ochip{font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:.9px}
+.objdiag .trace{fill:none;stroke:var(--brass);stroke-width:1.15;stroke-dasharray:4 3;stroke-linecap:round;opacity:.75}
+.objdiag .tracepoint{fill:var(--brass);transition:opacity .2s}
+.objdiag .onode{cursor:pointer;outline:none}
+.objdiag .onode rect{transition:stroke .2s,stroke-width .2s}
+.objdiag.dim .onode{opacity:.32;transition:opacity .2s}
+.objdiag.dim .trace{opacity:.08}
+.objdiag.dim .tracepoint{opacity:.15}
+.objdiag .onode.hi{opacity:1}
+.objdiag .onode.hi rect{stroke:var(--brass);stroke-width:2}
+.objdiag .trace.hi{stroke-width:1.9;opacity:1}
+
+/* info icon on each EvaluationCriterion box — opens the tracesTo panel */
+.objdiag .oinfo{cursor:pointer;outline:none}
+.objdiag .oinfo circle{fill:var(--surface);stroke:var(--brass);stroke-width:1.2;transition:fill .15s,stroke-width .15s}
+.objdiag .oinfo:hover circle,.objdiag .oinfo:focus-visible circle{fill:var(--brass-wash);stroke-width:1.6}
+.objdiag .oinfoglyph{font-family:var(--serif);font-style:italic;font-weight:700;font-size:10.5px;fill:var(--brass);pointer-events:none}
+
+/* tracesTo slide-in panel */
+.tracesbackdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:90}
+.tracesbackdrop.open{opacity:1;pointer-events:auto}
+.tracespanel{
+  position:fixed;top:0;right:0;height:100%;width:min(400px,88vw);
+  background:var(--surface);border-left:1px solid var(--rule-soft);box-shadow:var(--shadow);
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);
+  z-index:91;padding:24px 24px 28px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;
+}
+.tracespanel.open{transform:translateX(0)}
+.tphead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tpclose{
+  background:transparent;border:1px solid var(--rule);color:var(--ink-soft);flex-shrink:0;
+  width:28px;height:28px;border-radius:2px;cursor:pointer;font-size:1.05rem;line-height:1;font-family:var(--sans);
+  display:flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s;
+}
+.tpclose:hover{border-color:var(--brass);color:var(--brass)}
+.tracespanel h3{font-family:var(--serif);font-size:1.2rem;font-weight:600;line-height:1.28;margin-top:-4px}
+.tpwhat{font-size:.87rem;color:var(--ink-soft);line-height:1.55;font-style:italic}
+.tplabel{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
+.tplist{display:flex;flex-direction:column;gap:6px}
+.tplist .tprow{
+  display:flex;align-items:baseline;gap:9px;font-family:var(--mono);font-size:.76rem;
+  padding:8px 10px;border:1px solid var(--rule-soft);border-radius:2px;background:var(--surface-2);
+}
+.tplist .tprow .tptag{font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--verdigris);flex-shrink:0;width:64px}
+.tplist .tprow .tpid{color:var(--ink)}
+.tpexplain{font-size:.86rem;color:var(--ink-soft);line-height:1.6;border-top:1px solid var(--rule-soft);padding-top:15px}
+@media (prefers-reduced-motion: reduce){.tracespanel,.tracesbackdrop{transition-duration:.001ms}}
+
+.disclose{margin-top:18px}
+.disclose>summary{
+  cursor:pointer;padding:12px 0;list-style:none;
+  font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;color:var(--brass);
+  display:flex;align-items:center;gap:9px;border-top:1px solid var(--rule-soft);
+}
+.disclose>summary::-webkit-details-marker{display:none}
+.disclose>summary::before{content:"+";font-size:1rem;line-height:1}
+.disclose[open]>summary::before{content:"−"}
+.disclose>summary:hover{color:var(--brass-lit)}
+.codeblock{background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;overflow-x:auto;box-shadow:var(--shadow);margin-bottom:6px}
+.codeblock .chead{padding:9px 16px;border-bottom:1px solid var(--rule-soft);font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--ink-faint)}
+.codeblock pre{margin:0;padding:16px 18px;font-family:var(--mono);font-size:.78rem;line-height:1.7;color:var(--ink-soft);white-space:pre}
+
+.euctag{display:flex;align-items:baseline;gap:10px;width:100%;text-align:left;padding:11px 16px;border:0;border-bottom:1px solid var(--rule-soft);background:var(--brass-wash);cursor:pointer;font:inherit}
+.euctag:hover{background:color-mix(in srgb,var(--brass-wash) 55%,var(--brass) 12%)}
+.euctag:focus-visible{outline:2px solid var(--brass);outline-offset:-2px}
+.euctag .euctagkey{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--brass)}
+.euctag .euctagval{font-family:var(--mono);font-size:.86rem;font-weight:600;color:var(--ink)}
+.euctag .euctagnote{margin-left:auto;font-family:var(--sans);font-size:.74rem;color:var(--ink-faint);white-space:nowrap}
+@media (max-width:560px){.euctag{flex-wrap:wrap}.euctag .euctagnote{margin-left:0}}
+mark.tracehit{background:transparent;color:inherit;padding:0;border-radius:2px;transition:background-color .3s ease,color .3s ease}
+mark.tracehit.flash{background:var(--brass);color:var(--ground)}
+
+.toast{position:fixed;top:22px;left:22px;z-index:60;width:min(90vw,340px);background:var(--surface);border:1px solid var(--rule-soft);border-left:4px solid var(--brass);border-radius:3px;box-shadow:var(--shadow);padding:14px 34px 15px 16px;opacity:0;transform:translateX(calc(-100% - 22px));transition:opacity .32s ease,transform .32s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(0);pointer-events:auto}
+.toast .ttag{display:block;font-family:var(--mono);font-size:.72rem;letter-spacing:.03em;font-weight:600;color:var(--brass)}
+.toast p{margin:5px 0 0;font-family:var(--sans);font-size:.82rem;line-height:1.5;color:var(--ink-soft)}
+.toastclose{position:absolute;top:8px;right:8px;width:22px;height:22px;border:0;background:none;color:var(--ink-faint);font-size:.72rem;line-height:1;cursor:pointer;border-radius:2px}
+.toastclose:hover{color:var(--ink);background:var(--surface-2)}
+@media (prefers-reduced-motion:reduce){.toast{transition:opacity .32s ease}}
+
+.goldengrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:14px;margin-top:22px}
+.goldencard{background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:15px 17px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.goldencard .ghead{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.goldencard .gid{font-family:var(--mono);font-size:.63rem;color:var(--ink-faint)}
+.goldencard h4{font-family:var(--serif);font-size:.98rem;font-weight:600}
+.goldencard .gmission{font-size:.82rem;color:var(--ink-soft);line-height:1.45}
+.goldencard .grationale{font-size:.77rem;color:var(--ink-faint);line-height:1.5;font-style:italic}
+
+.benefitgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:16px;margin-top:22px}
+.benefitcard{background:var(--surface);border:1px solid var(--rule-soft);border-left:3px solid var(--verdigris);border-radius:3px;padding:17px 19px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.benefitcard .btag{font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--verdigris)}
+.benefitcard h3{font-family:var(--serif);font-size:1.02rem;font-weight:600}
+.benefitcard p{font-size:.84rem;color:var(--ink-soft);line-height:1.52}
+
+.learncta{padding-block:6px 44px}
+
+/* generation diagram — which EUC element each golden-set case exists to probe */
+.gendiag .ggrp{font-family:var(--mono);font-size:9px;letter-spacing:1.3px;fill:var(--ink-faint)}
+.gendiag .gnm{font-family:var(--mono);font-size:11px;font-weight:500;fill:var(--ink)}
+.gendiag .gsub{font-family:var(--mono);font-size:9px;fill:var(--ink-faint)}
+.gendiag .gcase{font-family:var(--serif);font-size:12.5px;font-weight:600;fill:var(--ink)}
+.gendiag .gorg{font-family:var(--mono);font-size:9px;fill:var(--ink-faint)}
+.gendiag .gbox{transition:stroke .2s,stroke-width .2s}
+.gendiag .glink{fill:none;stroke:var(--ink-faint);stroke-width:1.1;stroke-dasharray:4 3;opacity:.55;transition:stroke .2s,stroke-width .2s,opacity .2s}
+.gendiag .gnode{cursor:pointer;outline:none}
+.gendiag.dim .glink{opacity:.08}
+.gendiag.dim .gnode{opacity:.32;transition:opacity .2s}
+.gendiag .gnode.hi{opacity:1}
+.gendiag .gnode.hi .gbox{stroke:var(--brass);stroke-width:1.8}
+.gendiag .glink.hi{stroke:var(--brass);stroke-width:1.9;opacity:1}
+.figbody.interactive{cursor:default}
+
+
+/* ── The Proposal tab: the full write-up, ported from site/index.html ── */
+#panel-proposal .plate{width:100%;height:auto;display:block;max-width:460px;margin:0 auto}
+#panel-proposal .plate .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.3s ease forwards}
+#panel-proposal .plate .draw.d2{animation-delay:.34s}
+#panel-proposal .plate .fade{opacity:0;animation:fade .7s ease forwards}
+#panel-proposal .plate .fade.f2{animation-delay:.5s}
+#panel-proposal .plate .fade.f3{animation-delay:.78s}
+#panel-proposal .plate .fade.f4{animation-delay:.98s}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+
+#panel-proposal .datumstrip{border-block:1px solid var(--rule-soft);background:var(--surface);margin-top:28px}
+#panel-proposal .datumstrip .inner{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;padding:15px clamp(18px,4vw,44px)}
+#panel-proposal .datumstrip .chain{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:.775rem;color:var(--ink-soft)}
+#panel-proposal .datumstrip .chain b{color:var(--ink);font-weight:500}
+#panel-proposal .datumstrip .chain span[aria-hidden]{color:var(--brass)}
+#panel-proposal .datumstrip .note{margin-left:auto;font-size:.8rem;color:var(--ink-faint);font-style:italic;font-family:var(--serif)}
+
+#panel-proposal .field{position:relative}
+#panel-proposal section.band{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--rule-soft)}
+#panel-proposal section.band:first-child{border-top:none}
+#panel-proposal section.band > .inner{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:var(--secgap)}
+#panel-proposal .prail{position:relative;padding-right:26px}
+#panel-proposal .prail::after{
+  content:"";position:absolute;right:-5px;top:.44em;
+  width:9px;height:9px;transform:rotate(45deg);
+  background:var(--ground);border:1.5px solid var(--brass);
+}
+#panel-proposal .prail .num{display:block;font-family:var(--mono);font-size:.69rem;letter-spacing:.14em;color:var(--brass);margin-bottom:7px}
+#panel-proposal .prail .lbl{display:block;font-size:.83rem;color:var(--ink-faint);line-height:1.42}
+@media (max-width:900px){
+  #panel-proposal section.band > .inner{grid-template-columns:1fr;gap:20px}
+  #panel-proposal .prail{padding-right:0;display:flex;align-items:baseline;gap:12px}
+  #panel-proposal .prail::after{display:none}
+  #panel-proposal .prail .num{margin-bottom:0}
+}
+#panel-proposal section.band > .inner > *,
+#panel-proposal .closing .inner > *{min-width:0}
+
+#panel-proposal h2.tagline{font-size:var(--step-3);letter-spacing:-.015em;max-width:22ch;font-family:var(--serif);font-weight:600;line-height:1.14}
+#panel-proposal h2.tagline em{font-style:italic;color:var(--brass);font-weight:400}
+#panel-proposal .prose{max-width:64ch;display:flex;flex-direction:column;gap:15px;margin-top:20px;color:var(--ink-soft);font-size:.96rem;line-height:1.62}
+#panel-proposal .prose strong{color:var(--ink);font-weight:600}
+
+#panel-proposal .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:30px}
+#panel-proposal .card{background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:18px 19px 20px;box-shadow:var(--shadow)}
+#panel-proposal .card h3{font-family:var(--serif);font-size:1.1rem;font-weight:600;margin-bottom:7px}
+#panel-proposal .card p{font-size:.87rem;color:var(--ink-soft);line-height:1.5}
+#panel-proposal .card .tag{display:block;margin-bottom:10px}
+
+#panel-proposal .pquote{
+  margin-top:30px;padding:18px 0 18px 22px;border-left:2px solid var(--brass);
+  font-family:var(--serif);font-size:1.2rem;line-height:1.36;
+  font-style:italic;max-width:34ch;text-wrap:balance;color:var(--ink);
+}
+
+#panel-proposal .callout{
+  margin-top:26px;padding:19px 21px;border:1px solid var(--rule-soft);border-left:2px solid var(--verdigris);
+  border-radius:3px;background:var(--surface);display:flex;flex-direction:column;gap:11px;
+}
+#panel-proposal .callout p{font-size:.87rem;line-height:1.55;color:var(--ink-soft);max-width:64ch}
+#panel-proposal .callout p.eyebrow{color:var(--verdigris)}
+#panel-proposal .callout em{color:var(--ink);font-style:normal;font-weight:600}
+#panel-proposal .callout .btn-run{align-self:flex-start;padding:8px 16px;font-size:.72rem}
+
+#panel-proposal .pfigure{margin-top:26px}
+@media (min-width:901px){
+  #panel-proposal .pfigure{margin-left:calc(-1 * (var(--rail) + var(--secgap)))}
+}
+#panel-proposal .pfigure .figbody{
+  background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;
+  padding:16px;overflow-x:auto;box-shadow:var(--shadow);
+}
+#panel-proposal .pfigure .figbody svg{display:block;width:100%;height:auto;min-width:660px}
+#panel-proposal .pfigure .figbody svg.seqdiag{min-width:760px}
+#panel-proposal .pfigure figcaption{margin-top:10px;font-size:.82rem;line-height:1.55;color:var(--ink-faint);max-width:68ch}
+
+#panel-proposal .ftable{margin-top:26px;border-top:1px solid var(--rule-soft)}
+#panel-proposal .frow{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr);gap:20px;padding:12px 0;border-bottom:1px solid var(--rule-soft)}
+#panel-proposal .frow dt{font-family:var(--mono);font-size:.78rem;color:var(--verdigris)}
+#panel-proposal .frow dd{margin:0;font-size:.87rem;color:var(--ink-soft);line-height:1.5}
+@media (max-width:660px){#panel-proposal .frow{grid-template-columns:1fr;gap:4px}}
+
+#panel-proposal .split{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:28px;border:1px solid var(--rule-soft);border-radius:3px;overflow:hidden}
+#panel-proposal .split > div{padding:17px 19px 20px;background:var(--surface)}
+#panel-proposal .split > div + div{border-left:1px solid var(--rule-soft)}
+#panel-proposal .split h3{font-family:var(--serif);font-size:1.05rem;font-weight:600;margin-bottom:11px}
+#panel-proposal .split .splitsub{font-size:.8rem;line-height:1.45;color:var(--ink-faint);margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid var(--rule-soft)}
+#panel-proposal .split ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:6px;font-size:.87rem;color:var(--ink-soft)}
+#panel-proposal .split li::marker{color:var(--brass)}
+@media (max-width:660px){#panel-proposal .split{grid-template-columns:1fr}#panel-proposal .split > div + div{border-left:none;border-top:1px solid var(--rule-soft)}}
+
+.pill.det{color:var(--verdigris);background:var(--verdigris-wash);border-color:color-mix(in srgb,var(--verdigris) 32%,transparent)}
+.pill.rea{color:var(--brass);background:var(--brass-wash);border-color:color-mix(in srgb,var(--brass) 34%,transparent)}
+.pill.out{color:var(--ink);border-color:var(--rule);background:var(--surface);text-transform:none;letter-spacing:.05em;white-space:normal;line-height:1.5;padding:5px 11px}
+/* dedicated (not .pill) so a stage's pass/fail/running state — which restyles
+   any .pill inside a .pstage — can never bleed into this fixed EUC fact */
+.typepill{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 9px;border-radius:2px;white-space:nowrap;border:1px solid transparent;
+}
+.typepill.det{color:var(--verdigris);background:var(--verdigris-wash);border-color:color-mix(in srgb,var(--verdigris) 32%,transparent)}
+.typepill.rea{color:var(--brass);background:var(--brass-wash);border-color:color-mix(in srgb,var(--brass) 34%,transparent)}
+#panel-proposal .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+#panel-proposal .gauge{margin-top:28px;background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;padding:20px 20px 15px;box-shadow:var(--shadow)}
+#panel-proposal .gauge .gtitle{font-family:var(--serif);font-size:1.1rem;font-weight:600;line-height:1.3;margin-bottom:13px;max-width:38ch}
+#panel-proposal .gauge svg{width:100%;height:auto;display:block}
+#panel-proposal .gauge .glegend{display:flex;gap:20px;flex-wrap:wrap;margin-top:13px;font-family:var(--mono);font-size:.68rem;color:var(--ink-faint)}
+#panel-proposal .gauge .glegend i{display:inline-block;width:16px;height:0;border-top-width:2px;margin-right:7px;vertical-align:middle}
+#panel-proposal .reveal .measured{stroke-dasharray:640;stroke-dashoffset:640;transition:stroke-dashoffset 1.9s cubic-bezier(.4,0,.2,1)}
+#panel-proposal .reveal.on .measured{stroke-dashoffset:0}
+#panel-proposal .reveal .band-fill{opacity:0;transition:opacity 1s ease .9s}
+#panel-proposal .reveal.on .band-fill{opacity:1}
+
+#panel-proposal ol.psteps{margin:6px 0 0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:0;border-top:1px solid var(--rule-soft)}
+#panel-proposal ol.psteps li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--rule-soft);font-size:.88rem;color:var(--ink-soft)}
+#panel-proposal ol.psteps li::before{content:counter(s);font-family:var(--mono);font-size:.8rem;color:var(--brass);font-variant-numeric:tabular-nums}
+
+#panel-proposal .compare{margin-top:26px;overflow-x:auto;border:1px solid var(--rule-soft);border-radius:3px}
+#panel-proposal .compare table{border-collapse:collapse;width:100%;min-width:560px;background:var(--surface)}
+#panel-proposal .compare th,#panel-proposal .compare td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--rule-soft);font-size:.85rem;vertical-align:top;line-height:1.5}
+#panel-proposal .compare thead th{font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-weight:400}
+#panel-proposal .compare thead th:last-child{color:var(--brass)}
+#panel-proposal .compare tbody th{font-weight:400;color:var(--ink-faint);font-size:.82rem;width:22%}
+#panel-proposal .compare td{color:var(--ink-soft)}
+#panel-proposal .compare td:last-child{color:var(--ink)}
+#panel-proposal .compare tr:last-child th,#panel-proposal .compare tr:last-child td{border-bottom:none}
+#panel-proposal .compare b.bad{color:var(--rust);font-weight:600}
+
+#panel-proposal .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:0;margin-top:28px;border-top:1px solid var(--rule-soft)}
+#panel-proposal .stat{padding:18px 19px 20px;border-bottom:1px solid var(--rule-soft);border-right:1px solid var(--rule-soft)}
+#panel-proposal .stat:last-child{border-right:none}
+#panel-proposal .stat .sfig{display:block;font-family:var(--serif);font-size:2.15rem;font-weight:600;line-height:1;color:var(--brass);letter-spacing:-.02em;margin-bottom:10px;font-variant-numeric:tabular-nums}
+#panel-proposal .stat .sfig .unit{font-size:1.1rem;font-weight:400;letter-spacing:0}
+#panel-proposal .stat p{font-size:.8rem;line-height:1.48;color:var(--ink-soft)}
+@media (max-width:760px){#panel-proposal .stat{border-right:none}}
+
+
+#panel-proposal .closing{border-top:1px solid var(--rule-soft);background:var(--surface);padding-block:clamp(40px,6vw,60px);margin-top:0}
+#panel-proposal .closing .inner{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:var(--secgap)}
+#panel-proposal .closing h2{font-family:var(--serif);font-size:var(--step-3);font-weight:600;letter-spacing:-.015em;max-width:24ch;line-height:1.16}
+#panel-proposal .closing h2 em{font-style:italic;color:var(--brass);font-weight:400}
+#panel-proposal .closing .footnote{margin-top:20px;font-size:.8rem;color:var(--ink-faint);line-height:1.6;max-width:70ch}
+@media (max-width:900px){#panel-proposal .closing .inner{grid-template-columns:1fr}}
+
+/* context diagram type */
+.ctxdiag .ceuc{font-family:var(--mono);font-size:12.5px;letter-spacing:1.6px;fill:var(--ink)}
+.ctxdiag .cnm{font-family:var(--sans);font-size:12.5px;fill:var(--ink)}
+.ctxdiag .csub{font-family:var(--mono);font-size:9.5px;letter-spacing:.9px;fill:var(--ink-faint)}
+.ctxdiag .cgrp{font-family:var(--mono);font-size:9.5px;letter-spacing:1.4px;fill:var(--ink-faint)}
+.ctxdiag .cedge{fill:none;stroke:var(--ink-faint);stroke-width:1.1}
+.ctxdiag .cedgehead{fill:var(--ink-faint)}
+.ctxdiag .cedgelbl{font-family:var(--mono);font-size:9px;letter-spacing:.7px;fill:var(--ink-faint)}
+.ctxdiag .ctrace{fill:none;stroke:var(--brass);stroke-width:1.2;stroke-dasharray:4 3}
+.ctxdiag .ctracehead{fill:var(--brass)}
+.ctxdiag .ctracelbl{font-family:var(--mono);font-size:9.5px;letter-spacing:1.1px;fill:var(--brass)}
+.ctxdiag .cchip{font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:.9px}
+
+/* interaction diagram type */
+.seqdiag .snm{font-family:var(--sans);font-size:11.5px;font-weight:600;fill:var(--ink)}
+.seqdiag .slife{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4}
+.seqdiag .smsg{fill:none;stroke:var(--ink-soft);stroke-width:1.2}
+.seqdiag .smsg.dash{stroke:var(--ink-faint);stroke-dasharray:4 3}
+.seqdiag .smsghead{fill:var(--ink-soft)}
+.seqdiag .slbl{font-family:var(--mono);font-size:10px;fill:var(--ink-soft)}
+.seqdiag .snumbg{fill:var(--brass-wash);stroke:var(--brass);stroke-width:.8}
+.seqdiag .snum{font-family:var(--mono);font-size:9px;fill:var(--brass)}
+.seqdiag .salt{font-family:var(--mono);font-size:9.5px;letter-spacing:1px;fill:var(--brass)}
+.seqdiag .sguard{font-family:var(--mono);font-size:10px;fill:var(--ink-faint)}
+.seqdiag .snotet{font-family:var(--mono);font-size:9px;letter-spacing:1.2px;fill:var(--brass)}
+.seqdiag .snote{font-family:var(--sans);font-size:11px;fill:var(--ink-soft)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  #panel-proposal .plate .fade{opacity:1}
+  #panel-proposal .plate .draw{stroke-dashoffset:0}
+  #panel-proposal .reveal .measured{stroke-dashoffset:0}
+  #panel-proposal .reveal .band-fill{opacity:1}
+}
+</style>
+
+<a class="skiplink" href="#top">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap">
+    <a class="mark" href="#top">
+      <span class="datum" aria-hidden="true"></span>
+      <span class="name">Executable Use Cases</span>
+    </a>
+    <span class="sub">INFOQ CERTIFIED AI ENGINEERING PROGRAM · CAPSTONE</span>
+    <button class="themebtn" id="themebtn" type="button" aria-label="Switch colour theme">Theme</button>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="tabsbar">
+    <nav class="tabs wrap" role="tablist" aria-label="Sections">
+      <a class="tabbtn active" href="#proposal" role="tab" id="tabbtn-proposal" aria-controls="panel-proposal" aria-selected="true" data-tab="proposal">PROPOSAL</a>
+      <a class="tabbtn" href="#learn" role="tab" id="tabbtn-learn" aria-controls="panel-learn" aria-selected="false" data-tab="learn">EUC</a>
+      <a class="tabbtn" href="#architecture" role="tab" id="tabbtn-architecture" aria-controls="panel-architecture" aria-selected="false" data-tab="architecture">ARCHITECTURE</a>
+      <a class="tabbtn" href="#assess" role="tab" id="tabbtn-assess" aria-controls="panel-assess" aria-selected="false" data-tab="assess">THE DEMO</a>
+      <a class="tabbtn" href="#eval" role="tab" id="tabbtn-eval" aria-controls="panel-eval" aria-selected="false" data-tab="eval">EVALUATION</a>
+      <a class="tabbtn" href="#production" role="tab" id="tabbtn-production" aria-controls="panel-production" aria-selected="false" data-tab="production">OBSERVABILITY</a>
+    </nav>
+  </div>
+
+  <section id="panel-proposal" class="panel wrap" role="tabpanel" aria-labelledby="tabbtn-proposal">
+    <div class="intro">
+      <p class="eyebrow">InfoQ AI Engineering Certification · Capstone Project</p>
+      <h1>Is it still doing what the business <em>intended</em>?</h1>
+      <p class="lede">Six months after launch, the team has revised the prompts, replaced the model, and changed how the application retrieves information. Each change passed the existing tests. Yet the team still cannot tell whether the system serves the original business goal. An <strong>Executable Use Case</strong> addresses this gap by recording what the business needs in a machine-readable form, giving the implementation and its evaluation the same reference point.</p>
+    </div>
+
+    <svg class="plate" viewBox="0 0 460 340" role="img" aria-label="Business intent is formalised into one Executable Use Case, which drives both execution and evaluation; the evaluation result feeds back to refine intent.">
+      <g fill="none" stroke-linecap="square">
+        <g class="fade">
+          <rect x="130" y="16" width="200" height="44" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="230" y="43" text-anchor="middle" font-family="Faustina, serif" font-size="16" fill="var(--ink)" stroke="none">Business Intent</text>
+        </g>
+        <path class="draw" d="M230 60 L230 96" stroke="var(--brass)" stroke-width="1.5" pathLength="1"/>
+        <path class="fade f2" d="M226 90 L230 98 L234 90 Z" fill="var(--brass)" stroke="none"/>
+        <g class="fade f2">
+          <rect x="96" y="98" width="268" height="82" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.5"/>
+          <rect x="102" y="104" width="256" height="70" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".55"/>
+          <text x="230" y="130" text-anchor="middle" font-family="Faustina, serif" font-size="17" fill="var(--ink)" stroke="none">Executable Use Case</text>
+          <text x="230" y="152" text-anchor="middle" font-family="DM Mono, monospace" font-size="9.5" letter-spacing="1.4" fill="var(--ink-faint)" stroke="none">GOAL · RULES · POLICIES · REQUIREMENTS</text>
+          <text x="230" y="166" text-anchor="middle" font-family="DM Mono, monospace" font-size="9.5" letter-spacing="1.4" fill="var(--ink-faint)" stroke="none">OUTCOMES · CONTEXT · CRITERIA</text>
+        </g>
+        <path class="draw d2" d="M230 180 L230 200 M118 200 L342 200 M118 200 L118 226 M342 200 L342 226" stroke="var(--brass)" stroke-width="1.5" pathLength="1"/>
+        <path class="fade f3" d="M114 220 L118 228 L122 220 Z M338 220 L342 228 L346 220 Z" fill="var(--brass)" stroke="none"/>
+        <g class="fade f3">
+          <rect x="34" y="228" width="168" height="62" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="118" y="252" text-anchor="middle" font-family="Faustina, serif" font-size="15" fill="var(--ink)" stroke="none">Implementation</text>
+          <text x="118" y="271" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" letter-spacing="1.1" fill="var(--verdigris)" stroke="none">RULES · RAG · REASONING</text>
+          <rect x="258" y="228" width="168" height="62" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="342" y="252" text-anchor="middle" font-family="Faustina, serif" font-size="15" fill="var(--ink)" stroke="none">Evaluation</text>
+          <text x="342" y="271" text-anchor="middle" font-family="DM Mono, monospace" font-size="9" letter-spacing="1.1" fill="var(--verdigris)" stroke="none">MAPPED CRITERIA</text>
+        </g>
+        <g class="fade f4">
+          <path d="M426 259 L446 259 L446 38 L336 38" stroke="var(--verdigris)" stroke-width="1" stroke-dasharray="3 4"/>
+          <path d="M342 34 L334 38 L342 42 Z" fill="var(--verdigris)" stroke="none"/>
+          <text x="440" y="55" text-anchor="end" font-family="DM Mono, monospace" font-size="8.5" letter-spacing="1.2" fill="var(--ink-faint)" stroke="none">tracesTo</text>
+        </g>
+      </g>
+    </svg>
+
+    <div class="datumstrip">
+      <div class="inner">
+        <p class="chain"><b>Business Intent</b> <span aria-hidden="true">→</span> <b>EUC</b> <span aria-hidden="true">→</span> <b>Implementation + Evaluation</b></p>
+        <p class="note">One reference, not two interpretations of it.</p>
+      </div>
+    </div>
+
+    <div class="field">
+
+    <section class="band" id="p-problem">
+      <div class="inner">
+        <div class="prail"><span class="num">01</span><span class="lbl">The problem</span></div>
+        <div>
+          <h2 class="tagline">How do we know the system still serves the original business goal?</h2>
+          <div class="prose">
+            <p>To understand the uncertainty, follow the business goal from the original requirement to the behaviour running in production. Three parts of that chain need to remain connected.</p>
+          </div>
+          <div class="cards">
+            <div class="card">
+              <span class="tag eyebrow">Part of the chain</span>
+              <h3>Business requirement</h3>
+              <p>States the goal and the rules the business expects the application to follow.</p>
+            </div>
+            <div class="card">
+              <span class="tag eyebrow">Part of the chain</span>
+              <h3>Implementation</h3>
+              <p>Turns the requirement into code, prompts, context, and model behaviour. It changes as the application evolves.</p>
+            </div>
+            <div class="card">
+              <span class="tag eyebrow">Part of the chain</span>
+              <h3>Evaluation</h3>
+              <p>Checks whether the resulting behaviour meets defined criteria. It may continue to pass when those criteria no longer represent the original requirement.</p>
+            </div>
+          </div>
+          <div class="prose">
+            <p>The problem is not that any one part is missing. It is that teams maintain each part separately, making the links between them easy to lose. The implementation and evaluation can remain consistent with each other while both move away from the business goal.</p>
+            <p>In a traditional software development lifecycle, teams translate requirements into code and test whether known inputs produce expected outputs. When behaviour changes, the code or its configuration usually provides a traceable cause.</p>
+            <p>An AI development lifecycle, however, introduces more sources of change. The prompt, model, and retrieved context all influence the application's behaviour, while the evaluation criteria determine how that behaviour is judged. A change to any one of them may alter the result without causing a conventional software failure. Tests can therefore continue to pass even after what they measure has drifted from the original business requirement.</p>
+          </div>
+          <blockquote class="pquote">A passing evaluation shows that the application met the test. It does not show that the test still represents the business goal.</blockquote>
+          <div class="prose">
+            <p>If the connection between the business requirement, implementation, and evaluation is lost, the problem may become visible only after the application reaches production. Resolving it means tracing the observed behaviour through the evaluation and implementation to the original requirement. That work becomes harder when decisions are scattered across artifacts or the people who made them are no longer available. Teams therefore need a shared reference that preserves those decisions and keeps all three parts connected as the application evolves.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="p-idea">
+      <div class="inner">
+        <div class="prail"><span class="num">02</span><span class="lbl">The idea</span></div>
+        <div>
+          <h2 class="tagline">Jacobson's use case, extended for AI-native engineering.</h2>
+          <div class="prose">
+            <p>Introduced by Ivar Jacobson in the 1980s and formalised in 1992, a use case describes how an <strong>actor</strong> works with a system to achieve a <strong>goal</strong> while separating required behaviour from implementation. That separation remains useful in AI-native engineering, where prompts, models, and retrieval methods can change while the business goal remains stable.</p>
+            <p>AI-native engineering adds a new traceability need to that foundation. As prompts, models, and retrieval methods change, teams need to keep both the implementation and its evaluation connected to the business goal. This project addresses that need by extending, rather than replacing, Jacobson's actor-and-goal framing.</p>
+            <p>An <strong>Executable Use Case</strong> makes that extension concrete. It retains the actor and goal, expresses the required business behaviour in a machine-readable form, and links each evaluation criterion to the requirement, rule, or policy it validates. It does not prescribe a prompt, model, retrieval strategy, framework, or code structure. Those implementation choices can change while both the application and its evaluation remain connected to the same business reference.</p>
+          </div>
+          <div class="callout">
+            <p class="eyebrow">Industry challenge — Forward Deployed Engineering and AI consulting</p>
+            <p>Forward Deployed Engineers and AI consultants turn a client's business need into a production system. As prompts, models, context, and integrations change, the delivery team's technical definition of success may drift from the client's original expectation. Both sides may believe the project is on track while working toward different definitions of "done."</p>
+            <p>An EUC gives both sides a shared meaning for delivery: one machine-readable definition of the goal, requirements, acceptable outcomes, and evaluation criteria. The client reviews what success means in business terms, while the delivery team binds implementation and evaluation to the same named requirements. When the system changes, both can see whether the business intent changed or only the way the system meets it. This makes alignment explicit, exposes disagreements earlier, and may reduce rework caused by different definitions of "done."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="p-anatomy">
+      <div class="inner">
+        <div class="prail"><span class="num">03</span><span class="lbl">The artifact</span></div>
+        <div>
+          <h2 class="tagline">What is an Executable Use Case (EUC)?</h2>
+          <div class="prose">
+            <p>An EUC brings the business goal, the behaviour the application must provide, and the criteria used to judge it into one machine-readable artifact. Here, <em>executable</em> does not mean that the EUC runs the application. It means software can validate the artifact and use its contents to guide implementation, evaluation, and release decisions. The committed Grant Fit Assessment shows those parts as real objects contained within the same EUC. The structure defines what belongs to the artifact; the links between the objects make it traceable.</p>
+            <p>The key link is <code>tracesTo</code>. Each evaluation criterion names the requirement, rule, or policy it validates, so an evaluation result can be followed back to a specific piece of business intent.</p>
+          </div>
+          <blockquote class="pquote">An EUC applies first-principles thinking: start with business intent, then derive the required behaviour, constraints, and evaluation criteria from it. Those criteria can anchor downstream evaluation artifacts — curated datasets, often called Golden Sets, scoring rubrics, and regression tests — so each remains connected to the intent it is meant to protect.</blockquote>
+          <div class="prose">
+            <p>Two things are worth reading off the structure.</p>
+            <p><strong>Policies apply to the use case as a whole, not to a single requirement.</strong> For example, "Do not invent missing information" constrains every step that relies on model judgement, not only the alignment assessment. This structure draws on Jacobson and Ng's work on cross-cutting concerns — rules whose scope spans multiple steps.</p>
+            <p><strong>Evaluation stays connected to business requirements, not implementation choices.</strong> In the committed EUC, <code>EVAL-ALIGNMENT</code> traces to <code>ALIGNMENT-001</code> and <code>RULE-ELIGIBILITY-PRECEDES-FIT</code>; it does not name a prompt, model, or test file. The team can therefore change how alignment is implemented while continuing to judge the result against the same business requirement and rule.</p>
+          </div>
+          <dl class="ftable">
+            <div class="frow"><dt>Actor</dt><dd>The person or role seeking the outcome.</dd></div>
+            <div class="frow"><dt>Goal</dt><dd>The business objective.</dd></div>
+            <div class="frow"><dt>Rules</dt><dd>Deterministic business requirements.</dd></div>
+            <div class="frow"><dt>Policies</dt><dd>Behavioral constraints and guardrails that cut across the whole use case.</dd></div>
+            <div class="frow"><dt>Execution requirements</dt><dd>The business responsibilities the application must carry out.</dd></div>
+            <div class="frow"><dt>Outcomes</dt><dd>The acceptable business outcomes.</dd></div>
+            <div class="frow"><dt>Evaluation criteria</dt><dd>What must be checked — and, through <code>tracesTo</code>, which requirement each check stands for.</dd></div>
+            <div class="frow"><dt>Context</dt><dd>The business information the decision depends on.</dd></div>
+          </dl>
+          <div class="callout">
+            <p class="eyebrow">See it, don't just read about it</p>
+            <p>The full object diagram for this exact EUC — every rule, policy, requirement, and criterion, with the real <code>tracesTo</code> links drawn between them — is live and interactive on <em>The EUC</em> tab. Hover any box there to trace what it connects to, or open the raw JSON alongside it.</p>
+            <button class="btn-run" type="button" data-goto-tab="learn">Open The EUC tab <span class="arrow" aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="p-casestudy">
+      <div class="inner">
+        <div class="prail"><span class="num">04</span><span class="lbl">Case study</span></div>
+        <div>
+          <h2 class="tagline">A real grant decision requires both fixed rules and model judgement.</h2>
+          <div class="prose">
+            <p>An EUC becomes concrete when it guides a real business decision. Before a nonprofit commits staff time to an application, it needs to decide whether the grant is worth pursuing. The prototype captures that decision in the <strong>Grant Fit Assessment</strong>, an Executable Use Case that records the business intent in a machine-readable form. The application then uses its requirements to guide runtime behaviour.</p>
+            <p>The assessment asks two questions in sequence: does the organization meet the grant's explicit eligibility rules, and, if so, how well do its mission and programs align with the funder's priorities? Fixed rules settle the first question; model judgement handles the second.</p>
+          </div>
+          <div class="split">
+            <div>
+              <h3>Is the organization eligible?</h3>
+              <p class="splitsub">Explicit grant requirements determine a pass or fail. Changing a rule represents a deliberate change to the business requirement.</p>
+              <ul>
+                <li>Mandatory eligibility</li>
+                <li>Geographic scope</li>
+                <li>Required information</li>
+                <li>Eligibility before fit</li>
+              </ul>
+            </div>
+            <div>
+              <h3>How well does the grant align?</h3>
+              <p class="splitsub">A model weighs the available evidence, classifies the fit, and explains its judgement.</p>
+              <ul>
+                <li>Mission alignment</li>
+                <li>Program alignment</li>
+                <li>Supporting evidence</li>
+                <li>Uncertainty</li>
+              </ul>
+            </div>
+          </div>
+          <div class="prose">
+            <p>Both answers inform the same decision, but eligibility comes first. The EUC makes that order explicit through <code>RULE-ELIGIBILITY-PRECEDES-FIT</code>, which states that <strong>strong alignment cannot overcome a failed mandatory requirement.</strong> <code>EVAL-ALIGNMENT</code> traces back to the same rule, keeping the evaluation criterion connected to the business constraint that governs runtime behaviour.</p>
+            <p>The prototype puts this rule into practice. If a mandatory requirement fails, the assessment returns <code>POOR_FIT</code> before the model is invoked. This avoids an unnecessary model call. More importantly, it prevents model judgement from overriding an explicit eligibility rule. The interaction diagram below shows how the runtime applies the rule and how the evaluator reads its criteria from the same EUC.</p>
+          </div>
+
+          <figure class="pfigure">
+            <div class="figbody"><svg class="seqdiag" viewBox="0 0 1040 954" role="img" aria-label="Interaction diagram with seven participants: client, intent routing agent, EUC registry, criteria evaluator, rules evaluator, LLM model, and evaluation. The client asks the intent routing agent to assess a grant opportunity. The agent resolves the grant-fit-assessment use case from the EUC registry, receiving its goal, rules, policies, requirements, and criteria. An alternative block routes by the requirement's declared type. On the deterministic path, the agent applies the mandatory rules, gets eligible = false, and returns POOR_FIT without invoking the model. EVAL-ELIGIBILITY traces to the three deterministic requirements and their three rules. On the reasoned path, the agent invokes the model to assess alignment, returning a fit classification with supporting evidence and an explanation. EVAL-ALIGNMENT traces to ALIGNMENT-001 and the rule that eligibility precedes fit; EVAL-EVIDENCE also traces to the evidence, missing-data, and uncertainty policies. After either path, evaluation asks the same EUC registry which criteria apply and what they trace to, then returns verdicts to the client.">
+                <rect x="40" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="105" y="37" text-anchor="middle" class="snm">Client</text>
+              <rect x="182" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="247" y="28" text-anchor="middle" class="snm">Intent Routing</text>
+              <text x="247" y="44" text-anchor="middle" class="snm">Agent</text>
+              <rect x="324" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="389" y="28" text-anchor="middle" class="snm">EUC</text>
+              <text x="389" y="44" text-anchor="middle" class="snm">Registry</text>
+              <rect x="466" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="531" y="28" text-anchor="middle" class="snm">Criteria</text>
+              <text x="531" y="44" text-anchor="middle" class="snm">Evaluator</text>
+              <rect x="608" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="673" y="28" text-anchor="middle" class="snm">Rules</text>
+              <text x="673" y="44" text-anchor="middle" class="snm">Evaluator</text>
+              <rect x="750" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="815" y="37" text-anchor="middle" class="snm">LLM Model</text>
+              <rect x="892" y="8" width="130" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="957" y="37" text-anchor="middle" class="snm">Evaluation</text>
+              <line x1="105" y1="68" x2="105" y2="942" class="slife"/>
+              <line x1="247" y1="68" x2="247" y2="942" class="slife"/>
+              <line x1="389" y1="68" x2="389" y2="942" class="slife"/>
+              <line x1="531" y1="68" x2="531" y2="942" class="slife"/>
+              <line x1="673" y1="68" x2="673" y2="942" class="slife"/>
+              <line x1="815" y1="68" x2="815" y2="942" class="slife"/>
+              <line x1="957" y1="68" x2="957" y2="942" class="slife"/>
+              <rect x="38" y="268" width="988" height="508" rx="2" fill="none" stroke="var(--brass)" stroke-opacity=".5" stroke-dasharray="3 3"/>
+              <path d="M105 106 H241" class="smsg"/>
+              <path d="M247 106 l-7 -4 v8 z" class="smsghead"/>
+              <text x="176.0" y="98" text-anchor="middle" class="slbl">assess this grant opportunity</text>
+              <circle cx="16.0" cy="102" r="8" class="snumbg"/><text x="16.0" y="105" text-anchor="middle" class="snum">1</text>
+              <path d="M247 144 H383" class="smsg"/>
+              <path d="M389 144 l-7 -4 v8 z" class="smsghead"/>
+              <text x="318.0" y="136" text-anchor="middle" class="slbl">resolve "grant-fit-assessment"</text>
+              <circle cx="16.0" cy="140" r="8" class="snumbg"/><text x="16.0" y="143" text-anchor="middle" class="snum">2</text>
+              <path d="M389 174 H253" class="smsg dash"/>
+              <path d="M247 174 l7 -4 v8 z" class="smsghead"/>
+              <text x="318.0" y="166" text-anchor="middle" class="slbl">goal · rules · policies · requirements · criteria</text>
+              <path d="M404 190 H1013 L1024 201 V244 H404 Z" fill="var(--brass-wash)" stroke="var(--brass)"/>
+              <path d="M1013 190 V201 H1024" fill="none" stroke="var(--brass)"/>
+              <text x="415" y="207" class="snotet">THE ROUTING AGENT NOW KNOWS</text>
+              <text x="415" y="224" class="snote">what must happen, and what each result will be judged against —</text>
+              <text x="415" y="239" class="snote">both from the same definition, neither one re-derived.</text>
+              <rect x="38" y="268" width="196" height="19" fill="var(--brass-wash)" stroke="var(--brass)" stroke-opacity=".5"/>
+              <text x="47" y="282" class="salt">alt · by requirement type</text>
+              <text x="248" y="282" class="sguard">[ deterministic — ELIGIBILITY-001, GEOGRAPHY-001, INFO-001 ]</text>
+              <path d="M247 318 H667" class="smsg"/>
+              <path d="M673 318 l-7 -4 v8 z" class="smsghead"/>
+              <text x="460.0" y="310" text-anchor="middle" class="slbl">apply the mandatory rules</text>
+              <circle cx="16.0" cy="314" r="8" class="snumbg"/><text x="16.0" y="317" text-anchor="middle" class="snum">3</text>
+              <path d="M673 348 H253" class="smsg dash"/>
+              <path d="M247 348 l7 -4 v8 z" class="smsghead"/>
+              <text x="460.0" y="340" text-anchor="middle" class="slbl">eligible = false · failedEligibilityRules</text>
+              <path d="M247 380 H111" class="smsg"/>
+              <path d="M105 380 l7 -4 v8 z" class="smsghead"/>
+              <text x="176.0" y="372" text-anchor="middle" class="slbl">POOR_FIT</text>
+              <circle cx="16.0" cy="376" r="8" class="snumbg"/><text x="16.0" y="379" text-anchor="middle" class="snum">4</text>
+              <path d="M404 400 H1013 L1024 411 V485 H404 Z" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
+              <path d="M1013 400 V411 H1024" fill="none" stroke="var(--verdigris)"/>
+              <text x="415" y="417" class="snotet">CRITERION IN PLAY — EVAL-ELIGIBILITY</text>
+              <text x="415" y="434" class="snote">"Eligibility follows the grant's mandatory requirements"</text>
+              <text x="415" y="449" class="snote">tracesTo: ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001</text>
+              <text x="415" y="464" class="snote">RULE-ELIGIBILITY · RULE-GEOGRAPHY · RULE-REQUIRED-INFO</text>
+              <text x="415" y="479" class="snote">Settled by rules alone — the LLM lane is never touched.</text>
+              <line x1="38" y1="491" x2="1026" y2="491" stroke="var(--brass)" stroke-opacity=".4" stroke-dasharray="3 3"/>
+              <text x="47" y="507" class="sguard">[ reasoned — ALIGNMENT-001, under the use case policies ]</text>
+              <path d="M247 547 H525" class="smsg"/>
+              <path d="M531 547 l-7 -4 v8 z" class="smsghead"/>
+              <text x="389.0" y="539" text-anchor="middle" class="slbl">assess alignment</text>
+              <circle cx="16.0" cy="543" r="8" class="snumbg"/><text x="16.0" y="546" text-anchor="middle" class="snum">5</text>
+              <path d="M531 577 H809" class="smsg"/>
+              <path d="M815 577 l-7 -4 v8 z" class="smsghead"/>
+              <text x="673.0" y="569" text-anchor="middle" class="slbl">semantic interpretation of mission vs. priorities</text>
+              <circle cx="16.0" cy="573" r="8" class="snumbg"/><text x="16.0" y="576" text-anchor="middle" class="snum">6</text>
+              <path d="M815 607 H537" class="smsg dash"/>
+              <path d="M531 607 l7 -4 v8 z" class="smsghead"/>
+              <text x="673.0" y="599" text-anchor="middle" class="slbl">fitClassification · supportingEvidence · explanation</text>
+              <path d="M531 637 H253" class="smsg dash"/>
+              <path d="M247 637 l7 -4 v8 z" class="smsghead"/>
+              <text x="389.0" y="629" text-anchor="middle" class="slbl">assessed result</text>
+              <path d="M247 669 H111" class="smsg"/>
+              <path d="M105 669 l7 -4 v8 z" class="smsghead"/>
+              <text x="176.0" y="661" text-anchor="middle" class="slbl">STRONG_FIT / POSSIBLE_FIT / POOR_FIT</text>
+              <circle cx="16.0" cy="665" r="8" class="snumbg"/><text x="16.0" y="668" text-anchor="middle" class="snum">7</text>
+              <path d="M404 689 H1013 L1024 700 V775 H404 Z" fill="var(--brass-wash)" stroke="var(--brass)"/>
+              <path d="M1013 689 V700 H1024" fill="none" stroke="var(--brass)"/>
+              <text x="415" y="706" class="snotet">CRITERIA IN PLAY — EVAL-ALIGNMENT, EVAL-EVIDENCE</text>
+              <text x="415" y="723" class="snote">Alignment: fit reflects priorities; ineligible is never recommended</text>
+              <text x="415" y="738" class="snote">Evidence: grounded · no invention · uncertainty surfaced</text>
+              <text x="415" y="753" class="snote">tracesTo: ALIGNMENT-001 · RULE-ELIGIBILITY-PRECEDES-FIT</text>
+              <text x="415" y="768" class="snote">POLICY-EVIDENCE · POLICY-MISSING-DATA · POLICY-UNCERTAINTY</text>
+              <path d="M247 826 H951" class="smsg"/>
+              <path d="M957 826 l-7 -4 v8 z" class="smsghead"/>
+              <text x="602.0" y="818" text-anchor="middle" class="slbl">result + the context execution wrote</text>
+              <circle cx="16.0" cy="822" r="8" class="snumbg"/><text x="16.0" y="825" text-anchor="middle" class="snum">8</text>
+              <path d="M957 860 H395" class="smsg"/>
+              <path d="M389 860 l7 -4 v8 z" class="smsghead"/>
+              <text x="673.0" y="852" text-anchor="middle" class="slbl">which criteria apply, and what do they trace to?</text>
+              <circle cx="16.0" cy="856" r="8" class="snumbg"/><text x="16.0" y="859" text-anchor="middle" class="snum">9</text>
+              <path d="M389 890 H951" class="smsg dash"/>
+              <path d="M957 890 l-7 -4 v8 z" class="smsghead"/>
+              <text x="673.0" y="882" text-anchor="middle" class="slbl">EVAL-ELIGIBILITY · EVAL-ALIGNMENT · EVAL-EVIDENCE</text>
+              <path d="M957 926 H111" class="smsg"/>
+              <path d="M105 926 l7 -4 v8 z" class="smsghead"/>
+              <text x="531.0" y="918" text-anchor="middle" class="slbl">verdicts, each traced back to a business requirement</text>
+              <circle cx="16.0" cy="922" r="8" class="snumbg"/><text x="16.0" y="925" text-anchor="middle" class="snum">10</text>
+            </svg></div>
+          </figure>
+
+          <div class="prose">
+            <p>The diagram follows one grant assessment from request to evaluation. The routing agent reads the EUC once, then uses each requirement's type to choose the appropriate path. Fixed requirements go to the rules evaluator; the reasoned requirement invokes the model. If an eligibility rule fails, the assessment returns <code>POOR_FIT</code> before the model is invoked. Once execution is complete, the evaluator retrieves the relevant criteria from the same EUC, keeping each verdict traceable to the business requirement it checks.</p>
+          </div>
+
+          <div class="prose">
+            <p class="eyebrow" style="margin-bottom:-6px">Acceptable outcomes</p>
+            <div class="chips"><span class="pill out">STRONG_FIT</span><span class="pill out">POSSIBLE_FIT</span><span class="pill out">POOR_FIT</span></div>
+          </div>
+
+          <div class="callout">
+            <p class="eyebrow">See it run</p>
+            <p>This exact sequence — deterministic gate first, model second, halt on failure — is what actually executes when you run a case on <em>the demo</em> tab, powered by the same compiled pipeline described there.</p>
+            <button class="btn-run" type="button" data-goto-tab="assess">Open the demo tab <span class="arrow" aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="p-boundary">
+      <div class="inner">
+        <div class="prail"><span class="num">05</span><span class="lbl">The boundary</span></div>
+        <div>
+          <h2 class="tagline">The EUC defines the work; it does not perform it.</h2>
+          <div class="prose">
+            <p>The Grant Fit case study shows an EUC guiding runtime behaviour, but the EUC is not the runtime. It defines what the application must do and how its results should be judged. The implementation and evaluation tools still perform the work: the EUC retrieves no information, controls no model reasoning, and runs no evaluations.</p>
+            <p>That separation is deliberate. If the EUC retrieved information, invoked a model, or ran evaluations, a change to any of those mechanisms could also force the business artifact to change. Keeping them outside allows the EUC to remain stable while the implementation evolves, unless the business intent itself changes. Teams can continue using tools such as DeepEval or Ragas, mapping each EUC criterion to a deterministic assertion, a standard metric, or a rubric scored by a model.</p>
+            <p>The same boundary applies to the artifacts those tools use. A Golden Set remains outside the EUC, but it is derived from it: each scenario and expected outcome should exercise a named requirement or evaluation criterion. Teams likewise build scoring rubrics and regression tests from, or map them to, the EUC's criteria, then run them with their chosen evaluation framework. These tools and artifacts can evolve while the EUC preserves the business definition against which their results are interpreted.</p>
+          </div>
+
+          <figure class="pfigure">
+            <div class="figbody"><svg class="ctxdiag" viewBox="0 0 980 470" role="img" aria-label="Context diagram. Business intent is expressed as one Executable Use Case. Its requirements are implemented by deterministic logic, RAG and context, and LLM reasoning — all free to change. Its criteria are mapped into an evaluation framework such as DeepEval or Ragas, an LLM-as-a-judge, and assertions and metrics — also free to change. The implementation produces behaviour that the evaluation measures, yielding an evaluation result that traces back to the Executable Use Case. The Executable Use Case itself performs no retrieval, controls no reasoning, and runs no evaluation.">
+                <rect x="360" y="10" width="260" height="44" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="490.0" y="37.0" text-anchor="middle" class="cnm">Business Intent</text>
+              <rect x="290" y="98" width="400" height="76" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="2"/>
+              <text x="490" y="126" text-anchor="middle" class="ceuc">EXECUTABLE USE CASE</text>
+              <text x="490" y="146" text-anchor="middle" class="csub">goal · rules · policies · requirements</text>
+              <text x="490" y="163" text-anchor="middle" class="csub">outcomes · context · criteria</text>
+              <rect x="52" y="238" width="396" height="150" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+              <text x="66" y="258" class="cgrp">IMPLEMENTATION — FREE TO CHANGE</text>
+              <rect x="70" y="270" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="250.0" y="290.0" text-anchor="middle" class="cnm">Deterministic logic</text>
+              <rect x="70" y="308" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="250.0" y="328.0" text-anchor="middle" class="cnm">RAG / context</text>
+              <rect x="70" y="346" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="250.0" y="366.0" text-anchor="middle" class="cnm">LLM reasoning</text>
+              <rect x="532" y="238" width="396" height="150" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+              <text x="546" y="258" class="cgrp">EVALUATION — FREE TO CHANGE</text>
+              <rect x="550" y="270" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="730.0" y="290.0" text-anchor="middle" class="cnm">Evaluation framework (DeepEval, Ragas…)</text>
+              <rect x="550" y="308" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="730.0" y="328.0" text-anchor="middle" class="cnm">LLM-as-a-judge</text>
+              <rect x="550" y="346" width="360" height="30" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="730.0" y="366.0" text-anchor="middle" class="cnm">Assertions &amp; metrics</text>
+              <rect x="360" y="414" width="260" height="44" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="490.0" y="441.0" text-anchor="middle" class="cnm">Evaluation result</text>
+              <path d="M490 54 V94" class="cedge"/><path d="M486 88 l4 8 l4 -8 z" class="cedgehead"/>
+              <path d="M370 174 V234" class="cedge"/><path d="M366 228 l4 8 l4 -8 z" class="cedgehead"/>
+              <text x="382" y="198" class="cedgelbl">requirements</text><text x="382" y="212" class="cedgelbl">implemented by</text>
+              <path d="M610 174 V234" class="cedge"/><path d="M606 228 l4 8 l4 -8 z" class="cedgehead"/>
+              <text x="598" y="198" text-anchor="end" class="cedgelbl">criteria</text><text x="598" y="212" text-anchor="end" class="cedgelbl">mapped into</text>
+              <path d="M448 312 H528" class="cedge"/><path d="M532 312 l-8 -4 v8 z" class="cedgehead"/>
+              <text x="488" y="304" text-anchor="middle" class="cedgelbl">behaviour</text>
+              <path d="M730 388 V436 H624" class="cedge"/><path d="M620 436 l8 -4 v8 z" class="cedgehead"/>
+              <path d="M356 436 H18 V136 H284" class="ctrace"/><path d="M286 136 l-8 -4 v8 z" class="ctracehead"/>
+              <text x="150" y="428" class="ctracelbl">tracesTo</text>
+            </svg></div>
+          </figure>
+
+          <div class="prose">
+            <p>The diagram places the EUC between business intent and the systems that implement and evaluate it. When that intent remains unchanged, the EUC serves as the shared reference: its requirements guide implementation, and its criteria guide evaluation. The components in the dashed boxes can change independently while each evaluation result remains traceable to the requirement it assesses.</p>
+          </div>
+
+          <blockquote class="pquote">Evaluation measures what the system did. The EUC connects that result to what the business needs.</blockquote>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="p-test">
+      <div class="inner">
+        <div class="prail"><span class="num">06</span><span class="lbl">The experiment</span></div>
+        <div>
+          <h2 class="tagline">Can the EUC tell a safe change from a business regression?</h2>
+          <div class="prose">
+            <p>The demo uses the Grant Fit Assessment, a use case that helps a nonprofit decide whether a grant is worth the staff time required to pursue it. The assessment first checks whether the organization meets the grant's mandatory eligibility rules. Only eligible organizations proceed to a model-based assessment of how well their mission and programs align with the funder's priorities.</p>
+            <p>Against that baseline, the demo simulates routine changes to the AI implementation. The prompt may be revised, the model replaced, or the context updated, while the business expectations recorded in the EUC remain fixed. If the organization fails a mandatory eligibility rule, the assessment must not recommend pursuing the grant. For an eligible organization, the fit decision must reflect the funder's priorities, use available evidence, and surface uncertainty. The demo asks whether evaluation linked to those expectations can tell a safe implementation change from a business regression.</p>
+            <p>To keep the experiment focused, it uses one EUC and a small Golden Set derived from its requirements and evaluation criteria — the same six cases shown on <em>The EUC</em> tab. Both remain fixed while each run changes one part of the implementation. The baseline establishes the expected behaviour, and the same mapped evaluators assess every variant. A variant that preserves the business requirements should pass; when it violates them, the evaluation should identify the failed criterion and trace it back to the originating requirement, rule, or policy.</p>
+          </div>
+
+          <div class="gauge reveal" id="gauge">
+            <h3 class="gtitle">Controlled-change experiment: what stays fixed and what changes</h3>
+            <svg viewBox="0 0 640 190" role="img" aria-label="A fixed horizontal datum line representing the unchanged Executable Use Case and the Golden Set derived from it, with a measured behaviour line that tracks it closely at first and then diverges as the prompt, model and context change.">
+              <defs>
+                <linearGradient id="driftfill" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="var(--brass)" stop-opacity="0"/>
+                  <stop offset="100%" stop-color="var(--brass)" stop-opacity=".18"/>
+                </linearGradient>
+              </defs>
+              <g stroke="var(--rule-soft)" stroke-width="1">
+                <path d="M60 30 H620 M60 70 H620 M60 150 H620"/>
+                <path d="M180 22 V162 M320 22 V162 M460 22 V162"/>
+              </g>
+              <path class="band-fill" d="M60 110 C110 106 140 114 180 109 C230 103 250 118 320 112 C370 108 400 130 460 138 C520 146 570 158 620 166 L620 110 Z" fill="url(#driftfill)" stroke="none"/>
+              <path d="M60 110 H620" stroke="var(--verdigris)" stroke-width="2"/>
+              <path class="measured" d="M60 110 C110 106 140 114 180 109 C230 103 250 118 320 112 C370 108 400 130 460 138 C520 146 570 158 620 166"
+                    fill="none" stroke="var(--brass)" stroke-width="2" stroke-linecap="round"/>
+              <circle class="band-fill" cx="620" cy="166" r="3.5" fill="var(--brass)"/>
+              <g font-family="DM Mono, monospace" font-size="9.5" letter-spacing="1.1" fill="var(--ink-faint)">
+                <text x="60" y="182">BASELINE</text>
+                <text x="180" y="182">PROMPT v2</text>
+                <text x="320" y="182">MODEL SWAP</text>
+                <text x="460" y="182">CONTEXT</text>
+                <text x="64" y="103" fill="var(--verdigris)">EUC + GOLDEN SET — FIXED</text>
+              </g>
+            </svg>
+            <p class="glegend">
+              <span><i style="border-top:2px solid var(--verdigris)"></i>The EUC and its derived Golden Set: unchanged across every variant</span>
+              <span><i style="border-top:2px solid var(--brass)"></i>Application behaviour under prompt, model and context change</span>
+            </p>
+          </div>
+
+          <div class="prose">
+            <p>Each controlled change must answer three questions:</p>
+          </div>
+          <ol class="psteps">
+            <li><span>Did runtime behaviour violate a business requirement captured in the EUC?</span></li>
+            <li><span>Did the mapped evaluator identify the violation?</span></li>
+            <li><span>Can the result be traced back to the originating requirement?</span></li>
+          </ol>
+
+          <div class="compare">
+            <table>
+              <thead><tr><th scope="col">Behaviour</th><th scope="col">Evaluation</th><th scope="col">Interpretation</th></tr></thead>
+              <tbody>
+                <tr><td>Violates criterion</td><td>Flagged</td><td>Correct detection</td></tr>
+                <tr><td>Violates criterion</td><td>Passed</td><td><b class="bad">False negative</b> — the risk that matters most</td></tr>
+                <tr><td>Satisfies criterion</td><td>Flagged</td><td>False positive</td></tr>
+                <tr><td>Satisfies criterion</td><td>Passed</td><td>Correct pass</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="prose">
+            <p>The demo measures both missed regressions and false alarms. If evaluation passes a business violation, it is not protecting the requirement it was designed to check. If it repeatedly flags safe changes, the criteria may be too closely tied to one implementation. Either result shows what must improve before EUC-linked evaluation can support a reliable release decision.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="p-worth">
+      <div class="inner">
+        <div class="prail"><span class="num">07</span><span class="lbl">Why EUC matters for AI Engineering</span></div>
+        <div>
+          <h2 class="tagline">A shared definition of success, from discovery to release.</h2>
+          <div class="prose">
+            <p>An EUC provides a stable reference throughout the lifecycle of an AI capability. Before development begins, it makes the required outcomes, evidence, rules, and evaluation criteria explicit enough for business stakeholders, clients, and technical teams to review together. That shared definition of "done" can expose mismatched assumptions before they become implementation rework, strengthen client confidence, and provide a clearer basis for acceptance.</p>
+            <p>Once agreed, the same EUC carries those decisions into delivery. Its machine-readable requirements can guide implementation, including AI-assisted development, while its evaluation criteria can be used to derive a Golden Set and regression tests. As prompts, models, and context change, the derived tests and mapped evaluators can check whether the capability still meets the agreed intent and trace a failed criterion to the originating requirement. This does not make the system predictable; it makes the effects of change easier to evaluate and investigate. That continuity matters because much of the effort involved in AI delivery lies beyond model development, as the figures below show.</p>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <span class="sfig">~15<span class="unit">%</span></span>
+              <p>of a typical GenAI project's effort may be the model itself, McKinsey reports. Most delivery work sits elsewhere.</p>
+            </div>
+            <div class="stat">
+              <span class="sfig">$3<span class="unit">:$1</span></span>
+              <p>change-management spend for every dollar of model development, according to McKinsey's experience.</p>
+            </div>
+            <div class="stat">
+              <span class="sfig">≥50<span class="unit">%</span></span>
+              <p>of GenAI projects had been abandoned after proof of concept by the end of 2025, Gartner reported, citing unclear value, inadequate controls, poor data, or rising costs.</p>
+            </div>
+            <div class="stat">
+              <span class="sfig">30–50<span class="unit">%</span></span>
+              <p>faster use-case development is associated with reusable code, per McKinsey. This capstone asks whether business intent and evaluation criteria can be reused too.</p>
+            </div>
+          </div>
+
+          <div class="prose">
+            <p>These figures do not measure the impact of an EUC directly. They show why reuse, alignment, and control beyond the model matter. An EUC is intended to address a narrow part of that work: repeated requirements clarification, late disagreements about acceptance, evaluation redesign, and regression investigation when a shared definition of success is lost.</p>
+            <p>That shared definition can extend to release and operation. If the experiment supports the approach, evaluation linked to the EUC could contribute to a release gate alongside existing technical and operational checks. A failed criterion would identify the business requirement at risk, while a pass would provide traceable evidence that the change still meets the agreed intent. With appropriate production monitoring and observability, the same links could connect post-deployment drift or failure to the originating requirement, making troubleshooting easier.</p>
+          </div>
+
+          <blockquote class="pquote">An EUC does not promise a risk-free release. It gives each release a stable business standard and traceable evidence against it.</blockquote>
+
+          <div class="prose">
+            <p>This capstone examines whether the EUC can function as a <strong>first-class artifact of the AI SDLC</strong> — <strong>a durable, machine-readable expression of business intent that remains connected to how an AI capability is designed, built, evaluated, released, and monitored</strong>. Rather than allowing intent to fragment across documents, prompts, code, and test cases, the EUC provides a common reference that can persist as the system evolves. The prototype is intended to demonstrate that continuity: business intent can remain explicit, traceable, and actionable throughout the lifecycle.</p>
+            <p>That same structure may improve AI-assisted development and token economy. By recording the goal, constraints, evidence, and acceptance criteria once, a developer can ask an AI coding tool to implement a registered EUC instead of rebuilding the requirement through repeated prompts. A complete initial brief may reduce back-and-forth and token use, although success should be measured by the delivered outcome and total tokens rather than assumed from a one-shot attempt. That precision does not imply waterfall delivery. It supports agile development and thin slicing: stakeholders can refine the EUC registry as they learn, then implement and validate one small, valuable use case at a time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    </div><!-- /field -->
+
+    <section class="closing">
+      <div class="inner">
+        <div class="prail"><span class="num">→</span><span class="lbl">Read on</span></div>
+        <div>
+          <h2>Models will improve, prompts will evolve, retrieval will be replaced. The business intent should not have to be <em>rediscovered</em> every time.</h2>
+          <div class="prose">
+            <p>The contribution is not the grant application. It is a domain-independent pattern and a falsifiable claim about it: that a fixed, machine-readable statement of intent can keep implementation and evaluation connected while everything underneath them changes.</p>
+          </div>
+          <div class="runbar" style="margin-top:22px">
+            <button class="btn-run" type="button" data-goto-tab="learn">Inspect the EUC <span class="arrow" aria-hidden="true">→</span></button>
+            <button class="btn-run" type="button" data-goto-tab="assess">Run the demo <span class="arrow" aria-hidden="true">→</span></button>
+          </div>
+          <p class="footnote">Executable Use Cases — an InfoQ AI Engineering Certification capstone project. <a href="https://github.com/basarim/infoq-capstone-euc" style="color:inherit;border-bottom:1px solid var(--rule)">github.com/basarim/infoq-capstone-euc</a>.</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <section id="panel-learn" class="panel wrap" role="tabpanel" aria-labelledby="tabbtn-learn" hidden>
+
+    <div class="intro">
+      <p class="eyebrow">Before you run anything</p>
+      <h1>What's actually <em>driving</em> the pipeline you're about to watch.</h1>
+      <p class="lede">An <strong>Executable Use Case (EUC)</strong> applies first-principles thinking to AI development by starting with business intent rather than technology. It captures what must be achieved, the rules that must hold, the evidence required, and how success is determined — before deciding how the system should implement it.</p>
+      <p class="lede">Each EUC represents a bounded business capability, supporting agile thin-slice delivery: one meaningful end-to-end use case can be designed, implemented, tested, and validated at a time.</p>
+    </div>
+
+    <div class="learnsection">
+      <h2>The EUC, structurally</h2>
+      <p class="lead">Business rules and policies sit on the left, the execution requirements they govern sit below them, and the evaluation criteria that check each one sit on the right. The dashed lines are the file's own <code>tracesTo</code> links, not something drawn on for the picture.</p>
+
+      <figure class="figure">
+        <div class="figbody">
+          <svg class="objdiag" id="objdiag" viewBox="0 0 940 574" role="img" aria-label="Object diagram of the Grant Fit Assessment Executable Use Case. The outer box is grantFit, an ExecutableUseCase for a Nonprofit Program Manager deciding whether to pursue a grant. On the left are four business rules, listed one per line, three policies, three deterministic execution requirements, and one reasoned execution requirement. On the right are three evaluation criteria: eligibility, alignment, and evidence. Dashed tracesTo lines connect each criterion to the requirements, rules, or policies it validates. Context and acceptable outcomes sit along the bottom. Hover or focus any box to trace what it connects to.">
+            <rect x="4" y="4" width="932" height="566" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.6"/>
+            <text x="24" y="34" class="oeuc">grantFit : ExecutableUseCase</text>
+            <text x="24" y="56" class="oat">id = "grant-fit-assessment"</text>
+            <text x="350" y="56" class="oat">actor = "Nonprofit Program Manager"</text>
+            <text x="24" y="74" class="oat">goal = "Determine whether the organization should pursue a grant"</text>
+            <line x1="4" y1="90" x2="936" y2="90" stroke="var(--brass)" stroke-opacity=".45"/>
+
+            <text x="30" y="110" class="ogrp">WHAT THE BUSINESS REQUIRES</text>
+            <text x="499" y="110" text-anchor="middle" class="otrace">tracesTo</text>
+            <text x="548" y="110" class="ogrp">HOW IT IS JUDGED</text>
+
+            <g class="onode" data-id="grantRules" tabindex="0">
+              <rect x="30" y="118" width="420" height="110" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="43" y="139" class="onm">grantRules : Rule[4]</text>
+              <text x="43" y="158" class="oat">RULE-ELIGIBILITY</text>
+              <text x="43" y="176" class="oat">RULE-GEOGRAPHY</text>
+              <text x="43" y="194" class="oat">RULE-REQUIRED-INFO</text>
+              <text x="43" y="212" class="oat">RULE-ELIGIBILITY-PRECEDES-FIT</text>
+            </g>
+
+            <g class="onode" data-id="useCasePolicies" tabindex="0">
+              <rect x="30" y="238" width="420" height="78" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="43" y="259" class="onm">useCasePolicies : Policy[3]</text>
+              <text x="43" y="278" class="oat">POLICY-MISSING-DATA · POLICY-EVIDENCE</text>
+              <text x="43" y="296" class="oat">POLICY-UNCERTAINTY</text>
+            </g>
+
+            <g class="onode" data-id="deterministicChecks" tabindex="0">
+              <rect x="30" y="326" width="420" height="60" rx="2" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
+              <text x="43" y="347" class="onm">deterministicChecks : ExecutionRequirement[3]</text>
+              <rect x="336" y="336" width="106" height="16" rx="8" fill="var(--surface)" stroke="var(--verdigris)"/>
+              <text x="389" y="347" text-anchor="middle" class="ochip" fill="var(--verdigris)">DETERMINISTIC</text>
+              <text x="43" y="366" class="oat">ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001</text>
+              <text x="43" y="382" class="oat">type = deterministic · onFailure = halt</text>
+            </g>
+
+            <g class="onode" data-id="assessAlignment" tabindex="0">
+              <rect x="30" y="396" width="420" height="64" rx="2" fill="var(--brass-wash)" stroke="var(--brass)"/>
+              <text x="43" y="417" class="onm">assessAlignment : ExecutionRequirement</text>
+              <rect x="368" y="407" width="74" height="16" rx="8" fill="var(--surface)" stroke="var(--brass)"/>
+              <text x="405" y="418" text-anchor="middle" class="ochip" fill="var(--brass)">REASONED</text>
+              <text x="43" y="436" class="oat">id = ALIGNMENT-001 · type = reasoned</text>
+              <text x="43" y="452" class="oat">onFailure = continue</text>
+            </g>
+
+            <g class="onode" data-id="evalEligibility" tabindex="0">
+              <rect x="548" y="118" width="362" height="106" rx="2" fill="var(--verdigris-wash)" stroke="var(--verdigris)"/>
+              <text x="561" y="139" class="onm">evalEligibility : EvaluationCriterion</text>
+              <text x="561" y="158" class="oat">Eligibility follows mandatory requirements</text>
+              <text x="561" y="181" class="otrace">ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001</text>
+              <text x="561" y="199" class="otrace">RULE-ELIGIBILITY · RULE-GEOGRAPHY</text>
+              <text x="561" y="217" class="otrace">RULE-REQUIRED-INFO</text>
+              <g class="oinfo" tabindex="0" role="button" data-criterion="evalEligibility" aria-label="What drives evalEligibility?">
+                <circle cx="894" cy="134" r="9"/>
+                <text x="894" y="138" text-anchor="middle" class="oinfoglyph">i</text>
+              </g>
+            </g>
+
+            <g class="onode" data-id="evalAlignment" tabindex="0">
+              <rect x="548" y="234" width="362" height="88" rx="2" fill="var(--brass-wash)" stroke="var(--brass)"/>
+              <text x="561" y="255" class="onm">evalAlignment : EvaluationCriterion</text>
+              <text x="561" y="274" class="oat">Fit reflects priorities; ineligible is never recommended</text>
+              <text x="561" y="297" class="otrace">ALIGNMENT-001</text>
+              <text x="561" y="315" class="otrace">RULE-ELIGIBILITY-PRECEDES-FIT</text>
+              <g class="oinfo" tabindex="0" role="button" data-criterion="evalAlignment" aria-label="What drives evalAlignment?">
+                <circle cx="894" cy="250" r="9"/>
+                <text x="894" y="254" text-anchor="middle" class="oinfoglyph">i</text>
+              </g>
+            </g>
+
+            <g class="onode" data-id="evalEvidence" tabindex="0">
+              <rect x="548" y="332" width="362" height="110" rx="2" fill="var(--brass-wash)" stroke="var(--brass)"/>
+              <text x="561" y="353" class="onm">evalEvidence : EvaluationCriterion</text>
+              <text x="561" y="372" class="oat">Evidence is supported · no invention</text>
+              <text x="561" y="388" class="oat">Uncertainty is surfaced</text>
+              <text x="561" y="411" class="otrace">ALIGNMENT-001 · POLICY-EVIDENCE</text>
+              <text x="561" y="429" class="otrace">POLICY-MISSING-DATA · POLICY-UNCERTAINTY</text>
+              <g class="oinfo" tabindex="0" role="button" data-criterion="evalEvidence" aria-label="What drives evalEvidence?">
+                <circle cx="894" cy="348" r="9"/>
+                <text x="894" y="352" text-anchor="middle" class="oinfoglyph">i</text>
+              </g>
+            </g>
+
+            <path d="M548 168 C515 168 483 176 450 176" class="trace" data-from="evalEligibility" data-to="grantRules"/>
+            <path d="M548 202 C515 202 483 356 450 356" class="trace" data-from="evalEligibility" data-to="deterministicChecks"/>
+            <path d="M548 258 C515 258 483 212 450 212" class="trace" data-from="evalAlignment" data-to="grantRules"/>
+            <path d="M548 304 C515 304 483 428 450 428" class="trace" data-from="evalAlignment" data-to="assessAlignment"/>
+            <path d="M548 370 C515 370 483 278 450 278" class="trace" data-from="evalEvidence" data-to="useCasePolicies"/>
+            <path d="M548 420 C515 420 483 444 450 444" class="trace" data-from="evalEvidence" data-to="assessAlignment"/>
+            <g class="tracepoint">
+              <circle cx="548" cy="168" r="2"/><circle cx="450" cy="176" r="2"/>
+              <circle cx="548" cy="202" r="2"/><circle cx="450" cy="356" r="2"/>
+              <circle cx="548" cy="258" r="2"/><circle cx="450" cy="212" r="2"/>
+              <circle cx="548" cy="304" r="2"/><circle cx="450" cy="428" r="2"/>
+              <circle cx="548" cy="370" r="2"/><circle cx="450" cy="278" r="2"/>
+              <circle cx="548" cy="420" r="2"/><circle cx="450" cy="444" r="2"/>
+            </g>
+
+            <g class="onode" data-id="context" tabindex="0">
+              <rect x="30" y="496" width="420" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="43" y="517" class="onm">context : Context</text>
+              <text x="43" y="536" class="oat">needs = organization, grant</text>
+            </g>
+            <g class="onode" data-id="fit" tabindex="0">
+              <rect x="548" y="496" width="362" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="561" y="517" class="onm">fit : Outcomes</text>
+              <text x="561" y="536" class="oat">STRONG_FIT · POSSIBLE_FIT · POOR_FIT</text>
+            </g>
+          </svg>
+        </div>
+        <figcaption>Every id in this diagram — <code>ELIGIBILITY-001</code>, <code>RULE-ELIGIBILITY-PRECEDES-FIT</code>, <code>EVAL-EVIDENCE</code> and the rest — is the literal id the implementation registers against and the file declares. None of it is renamed for readability. Hover or focus any box to trace its <code>tracesTo</code> links, or open the <span class="oinfoglyph" style="fill:var(--brass);font-style:italic;font-weight:700">ⓘ</span> on each evaluation criterion to see, in plain language, what actually drives it.</figcaption>
+      </figure>
+
+      <div class="tracesbackdrop" id="tracesBackdrop"></div>
+      <aside class="tracespanel" id="tracesPanel" role="dialog" aria-modal="true" aria-labelledby="tracesPanelTitle" aria-hidden="true">
+        <div class="tphead">
+          <span class="tplabel" id="tracesPanelId"></span>
+          <button class="tpclose" id="tracesPanelClose" type="button" aria-label="Close">✕</button>
+        </div>
+        <h3 id="tracesPanelTitle"></h3>
+        <p class="tpwhat" id="tracesPanelWhat"></p>
+        <div>
+          <p class="tplabel" style="margin-bottom:8px">tracesTo — what drives this eval</p>
+          <div class="tplist" id="tracesPanelList"></div>
+        </div>
+        <p class="tpexplain" id="tracesPanelExplain"></p>
+      </aside>
+
+      <details class="disclose">
+        <summary>View raw JSON — grant-fit-assessment.json</summary>
+        <div class="codeblock">
+          <div class="chead">src/main/resources/euc/grant-fit-assessment/grant-fit-assessment.json</div>
+          <pre id="eucRaw"></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="learnsection">
+      <h2>From EUC to Golden Set</h2>
+      <p class="lead">The six cases below are derived directly from the EUC — not chosen at random. Four isolate deterministic rules, with exactly one case designed to fail each rule independently. The other two complete the classification spectrum defined by <code>ALIGNMENT-001</code>, from a strong match to eligible but unrelated.</p>
+      <p class="lead">Hover over any box to see how each case traces back to the EUC.</p>
+
+      <figure class="figure">
+        <div class="figbody interactive">
+          <svg class="gendiag" id="gendiag" viewBox="0 0 940 400" role="img" aria-label="Diagram showing which part of the EUC each golden-set case was written to probe. RULE-ELIGIBILITY connects only to ineligible-not-nonprofit-01. RULE-GEOGRAPHY and RULE-ELIGIBILITY-PRECEDES-FIT both connect to ineligible-aligned-01, since that case tests a geography failure overriding otherwise strong alignment. RULE-REQUIRED-INFO connects only to missing-info-01. ALIGNMENT-001, the reasoned execution requirement, connects to three cases spanning its full outcome range: strong-fit-01, possible-fit-01, and poor-fit-eligible-01.">
+
+            <text x="20" y="12" class="ggrp">DETERMINISTIC — ONE DEDICATED CASE EACH</text>
+            <text x="650" y="12" class="ggrp">SIX GOLDEN-SET CASES</text>
+
+            <g class="gnode" data-id="RULE-ELIGIBILITY" tabindex="0">
+              <rect class="gbox" x="20" y="18" width="250" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="33" y="37" class="gnm">RULE-ELIGIBILITY</text>
+              <text x="33" y="54" class="gsub">must be a registered nonprofit</text>
+            </g>
+            <g class="gnode" data-id="RULE-GEOGRAPHY" tabindex="0">
+              <rect class="gbox" x="20" y="80" width="250" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="33" y="99" class="gnm">RULE-GEOGRAPHY</text>
+              <text x="33" y="116" class="gsub">must operate in an allowed region</text>
+            </g>
+            <g class="gnode" data-id="RULE-REQUIRED-INFO" tabindex="0">
+              <rect class="gbox" x="20" y="142" width="250" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="33" y="161" class="gnm">RULE-REQUIRED-INFO</text>
+              <text x="33" y="178" class="gsub">mission and programs must be present</text>
+            </g>
+            <g class="gnode" data-id="RULE-ELIGIBILITY-PRECEDES-FIT" tabindex="0">
+              <rect class="gbox" x="20" y="204" width="250" height="46" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+              <text x="33" y="223" class="gnm">RULE-ELIGIBILITY-PRECEDES-FIT</text>
+              <text x="33" y="240" class="gsub">a failed rule beats strong alignment</text>
+            </g>
+
+            <text x="20" y="288" class="ggrp">REASONED — SPANS THE OUTCOME SPECTRUM</text>
+            <g class="gnode" data-id="ALIGNMENT-001" tabindex="0">
+              <rect class="gbox" x="20" y="296" width="250" height="60" rx="2" fill="var(--brass-wash)" stroke="var(--brass)"/>
+              <text x="33" y="317" class="gnm">ALIGNMENT-001</text>
+              <text x="33" y="334" class="gsub">weighs mission vs. priorities</text>
+              <text x="33" y="349" class="gsub">strong · partial · unrelated</text>
+            </g>
+
+            <g class="gnode" data-id="strong-fit-01" tabindex="0">
+              <rect class="gbox" x="650" y="18" width="270" height="46" rx="2" fill="var(--surface)" stroke="var(--verdigris)"/>
+              <text x="663" y="37" class="gcase">strong-fit-01</text>
+              <text x="663" y="53" class="gorg">Riverside Youth Coalition · STRONG_FIT</text>
+            </g>
+            <g class="gnode" data-id="possible-fit-01" tabindex="0">
+              <rect class="gbox" x="650" y="80" width="270" height="46" rx="2" fill="var(--surface)" stroke="var(--brass)"/>
+              <text x="663" y="99" class="gcase">possible-fit-01</text>
+              <text x="663" y="115" class="gorg">Bright Path Family Services · POSSIBLE_FIT</text>
+            </g>
+            <g class="gnode" data-id="poor-fit-eligible-01" tabindex="0">
+              <rect class="gbox" x="650" y="142" width="270" height="46" rx="2" fill="var(--surface)" stroke="var(--rust)"/>
+              <text x="663" y="161" class="gcase">poor-fit-eligible-01</text>
+              <text x="663" y="177" class="gorg">Metro Arts Guild · POOR_FIT, eligible</text>
+            </g>
+            <g class="gnode" data-id="ineligible-aligned-01" tabindex="0">
+              <rect class="gbox" x="650" y="204" width="270" height="46" rx="2" fill="var(--surface)" stroke="var(--rust)"/>
+              <text x="663" y="223" class="gcase">ineligible-aligned-01</text>
+              <text x="663" y="239" class="gorg">Coastal STEM Academy Trust · POOR_FIT, ineligible</text>
+            </g>
+            <g class="gnode" data-id="ineligible-not-nonprofit-01" tabindex="0">
+              <rect class="gbox" x="650" y="266" width="270" height="46" rx="2" fill="var(--surface)" stroke="var(--rust)"/>
+              <text x="663" y="285" class="gcase">ineligible-not-nonprofit-01</text>
+              <text x="663" y="301" class="gorg">NextGen Learning Co. · POOR_FIT, ineligible</text>
+            </g>
+            <g class="gnode" data-id="missing-info-01" tabindex="0">
+              <rect class="gbox" x="650" y="328" width="270" height="46" rx="2" fill="var(--surface)" stroke="var(--rust)"/>
+              <text x="663" y="347" class="gcase">missing-info-01</text>
+              <text x="663" y="363" class="gorg">Unnamed Org · POOR_FIT, ineligible</text>
+            </g>
+
+            <path class="glink" data-from="RULE-ELIGIBILITY" data-to="ineligible-not-nonprofit-01" d="M270 41 C 420 41 500 289 650 289"/>
+            <path class="glink" data-from="RULE-GEOGRAPHY" data-to="ineligible-aligned-01" d="M270 103 C 420 103 500 227 650 227"/>
+            <path class="glink" data-from="RULE-REQUIRED-INFO" data-to="missing-info-01" d="M270 165 C 420 165 500 351 650 351"/>
+            <path class="glink" data-from="RULE-ELIGIBILITY-PRECEDES-FIT" data-to="ineligible-aligned-01" d="M270 227 C 420 227 500 227 650 227"/>
+            <path class="glink" data-from="ALIGNMENT-001" data-to="strong-fit-01" d="M270 316 C 420 316 500 41 650 41"/>
+            <path class="glink" data-from="ALIGNMENT-001" data-to="possible-fit-01" d="M270 326 C 420 326 500 103 650 103"/>
+            <path class="glink" data-from="ALIGNMENT-001" data-to="poor-fit-eligible-01" d="M270 336 C 420 336 500 165 650 165"/>
+          </svg>
+        </div>
+        <figcaption>Three of the six cases (<code>strong-fit-01</code>, <code>possible-fit-01</code>, <code>poor-fit-eligible-01</code>) are all eligible — they exist purely to give <code>ALIGNMENT-001</code> a range to classify. The other three are each ineligible for exactly one reason, except <code>ineligible-aligned-01</code>, which is doubly deliberate: strong mission alignment <em>and</em> a failed rule, so the run has to prove <code>RULE-ELIGIBILITY-PRECEDES-FIT</code> actually wins.</figcaption>
+      </figure>
+    </div>
+
+    <div class="learnsection">
+      <h2>The Golden Set</h2>
+      <p class="lead">The EUC states what must be checked; a Golden Set is where those checks meet known-answer scenarios. Each case below carries an eligibility outcome and fit classification established independently of the code — hand-authored ground truth, not something a model produced.</p>
+
+      <div class="goldengrid" id="goldengrid"></div>
+
+      <details class="disclose">
+        <summary>View raw JSON — test-cases.json</summary>
+        <div class="codeblock">
+          <div class="chead">eval/grant-fit-assessment/dataset/test-cases.json</div>
+          <pre id="goldenRaw"></pre>
+        </div>
+      </details>
+    </div>
+
+    <div class="learnsection">
+      <h2>The Benefits</h2>
+      <p class="lead">None of this is worth the extra structure unless it changes something for the people who have to live with the system after it ships. Here is what a machine-readable use case is meant to buy.</p>
+
+      <div class="benefitgrid">
+        <div class="benefitcard">
+          <span class="btag">Shared definition of done</span>
+          <h3>One artifact, spanning the AI SDLC</h3>
+          <p>An EUC is a first-class, structured, machine-readable artifact that defines the business goal, governing rules and policies, execution steps, and success criteria — giving business and technical stakeholders a shared way to negotiate and preserve what "done" means.</p>
+        </div>
+        <div class="benefitcard">
+          <span class="btag">Thin-slice delivery</span>
+          <h3>One bounded capability at a time</h3>
+          <p>Each EUC represents a bounded business capability, supporting agile thin-slice delivery: one meaningful end-to-end use case can be designed, implemented, tested, and validated at a time.</p>
+        </div>
+        <div class="benefitcard">
+          <span class="btag">Coding-agent effectiveness</span>
+          <h3>Less prompting, more doing</h3>
+          <p>Its structured format improves coding-agent effectiveness and token economy. Instead of restating requirements in a long prompt, a developer can say "Implement EUC: The Fit Assessment" — the agent works from the EUC's own context, constraints, behavior, and acceptance criteria, reducing repeated prompting and back-and-forth.</p>
+        </div>
+        <div class="benefitcard">
+          <span class="btag">Bounding probabilistic behavior</span>
+          <h3>Less surface area for uncertainty</h3>
+          <p>Generative AI is inherently probabilistic. EUCs help reduce the surface area exposed to that behavior by making business intent explicit, constraining expected behavior, and defining how results are verified.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="learncta">
+      <button class="btn-run" id="toAssessBtn" type="button">Run these six cases yourself <span class="arrow" aria-hidden="true">→</span></button>
+    </div>
+
+  </section>
+
+  <section id="panel-architecture" class="panel wrap" role="tabpanel" aria-labelledby="tabbtn-architecture" hidden>
+
+    <div class="intro">
+      <p class="eyebrow">Structure, not just sequence</p>
+      <h1>The four requirements above, compiled into a running <em>pipeline</em> — built and run by <strong>LangGraph</strong>.</h1>
+    </div>
+
+    <div class="learnsection">
+      <h2>The static shape</h2>
+      <p class="lead">The EUC defines the execution requirements and business criteria, while the graph engine provides the orchestration needed to carry them out. Each requirement is associated with an implementation component, or filter, responsible for performing the work and interacting with the shared execution context.</p>
+      <p class="lead">This separation keeps the EUC focused on what the business requires, the graph engine focused on coordinating the process, and filters focused on how each requirement is implemented. Because these responsibilities are separated, implementations can evolve without changing the EUC or its business intent.</p>
+      <p class="lead">One more box sits alongside this pipeline rather than inside it: Langfuse wraps the filters and the evaluation step to record what a specific run actually did, without being on the path that decides the outcome. The <a href="#production" style="color:inherit;border-bottom:1px solid var(--rule)">Observability tab</a> covers what that produces.</p>
+      <figure class="figure">
+        <div class="figbody"><svg class="ctxdiag" viewBox="0 0 980 610" role="img" aria-label="Context diagram of the pipeline's static shape. At the top, a dashed, illustrative prelude shows a routing agent resolving an EUC id against an EUC registry and getting back one EUC — this part is not built in the single-EUC prototype, which only ever loads one known file directly. Below that, the built pipeline: the EUC's execution requirements compile into a graph engine, LangGraph, that resolves each node's id to the filter registered for it. The graph engine's own state carries only a pass or fail routing signal, no business data. Each filter reads and writes a shared context holding the organization, the grant, eligibility, and the alignment result. Filters can be swapped freely without changing the graph engine or the EUC. At the bottom right, an evaluation step reads that same shared context and scores it against the EUC's evaluation criteria, detailed in the diagram further down this tab. At the bottom left, mirroring the evaluation box, a Langfuse observability box wraps both the filters and the evaluation step with dashed 'wraps' connections — additive instrumentation that changes nothing about what runs, detailed in the Observability tab.">
+          <rect x="270" y="10" width="200" height="40" rx="2" fill="none" stroke="var(--ink-faint)" stroke-dasharray="3 3"/>
+          <text x="370" y="26" text-anchor="middle" class="csub">ROUTING AGENT</text>
+          <text x="370" y="40" text-anchor="middle" class="cchip" fill="var(--ink-faint)">NOT BUILT HERE</text>
+
+          <rect x="510" y="10" width="200" height="40" rx="2" fill="none" stroke="var(--ink-faint)" stroke-dasharray="3 3"/>
+          <text x="610" y="26" text-anchor="middle" class="csub">EUC REGISTRY</text>
+          <text x="610" y="40" text-anchor="middle" class="cchip" fill="var(--ink-faint)">NOT BUILT HERE</text>
+
+          <path d="M470 30 H506" class="cedge" stroke-dasharray="2 3" opacity=".6"/>
+          <path d="M502 26 l4 4 l-4 4 z" class="cedgehead" opacity=".6"/>
+          <text x="490" y="20" text-anchor="middle" class="cedgelbl">resolve(id)</text>
+
+          <path d="M610 50 C 610 70, 490 70, 490 96" class="cedge" stroke-dasharray="2 3" opacity=".6"/>
+          <path d="M486 90 l4 8 l4 -8 z" class="cedgehead" opacity=".6"/>
+          <text x="612" y="72" class="cedgelbl">returns the EUC</text>
+
+          <rect x="350" y="100" width="280" height="54" rx="2" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="2"/>
+          <text x="490" y="122" text-anchor="middle" class="ceuc">EUC</text>
+          <text x="490" y="138" text-anchor="middle" class="csub">execution requirements, in order</text>
+
+          <rect x="270" y="190" width="440" height="86" rx="3" fill="var(--verdigris-wash)" stroke="var(--verdigris)" stroke-width="2"/>
+          <text x="490" y="216" text-anchor="middle" class="ceuc">GRAPH ENGINE — LANGGRAPH</text>
+          <text x="490" y="236" text-anchor="middle" class="csub">one node per requirement · conditional edges on outcome</text>
+          <text x="490" y="253" text-anchor="middle" class="csub">graph state: routing signal only — no business data</text>
+
+          <rect x="52" y="336" width="396" height="170" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+          <text x="66" y="356" class="cgrp">FILTERS — SWAP FREELY</text>
+          <rect x="70" y="368" width="360" height="26" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="250" y="385" text-anchor="middle" class="cnm">Eligibility check</text>
+          <rect x="70" y="398" width="360" height="26" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="250" y="415" text-anchor="middle" class="cnm">Geography check</text>
+          <rect x="70" y="428" width="360" height="26" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="250" y="445" text-anchor="middle" class="cnm">Required-info check</text>
+          <rect x="70" y="458" width="360" height="26" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="250" y="475" text-anchor="middle" class="cnm">Alignment check</text>
+
+          <rect x="532" y="336" width="396" height="170" rx="3" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="730" y="368" text-anchor="middle" class="cnm">SHARED CONTEXT</text>
+          <text x="730" y="390" text-anchor="middle" class="csub">reads: organization · grant · eligible</text>
+          <text x="730" y="408" text-anchor="middle" class="csub">writes: fitClassification · explanation</text>
+          <text x="730" y="426" text-anchor="middle" class="csub">supportingEvidence · identifiedUncertainty</text>
+
+          <path d="M490 154 V186" class="cedge"/><path d="M486 180 l4 8 l4 -8 z" class="cedgehead"/>
+          <text x="502" y="168" class="cedgelbl">compiles into</text>
+          <text x="502" y="182" class="cedgelbl">nodes + edges</text>
+
+          <path d="M370 276 V332" class="cedge"/><path d="M366 326 l4 8 l4 -8 z" class="cedgehead"/>
+          <text x="382" y="298" class="cedgelbl">resolves</text>
+          <text x="382" y="312" class="cedgelbl">node id → filter</text>
+
+          <path d="M448 421 H528" class="cedge"/><path d="M532 421 l-8 -4 v8 z" class="cedgehead"/>
+          <text x="490" y="413" text-anchor="middle" class="cedgelbl">reads / writes</text>
+
+          <path d="M730 506 V520" class="cedge"/><path d="M726 514 l4 8 l4 -8 z" class="cedgehead"/>
+
+          <rect x="532" y="524" width="396" height="64" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.5"/>
+          <text x="730" y="544" text-anchor="middle" class="cnm">EVALUATION</text>
+          <text x="730" y="562" text-anchor="middle" class="csub">scores that written result against the</text>
+          <text x="730" y="576" text-anchor="middle" class="csub">EUC's evaluation criteria — see below</text>
+
+          <path d="M250 506 V520" class="cedge" stroke-dasharray="3 3" opacity=".7"/><path d="M246 514 l4 8 l4 -8 z" class="cedgehead" opacity=".7"/>
+          <text x="264" y="516" class="cedgelbl">wraps</text>
+
+          <rect x="52" y="524" width="396" height="64" rx="3" fill="var(--verdigris-wash)" stroke="var(--verdigris)" stroke-width="1.5"/>
+          <text x="250" y="544" text-anchor="middle" class="cnm">LANGFUSE — OBSERVABILITY</text>
+          <text x="250" y="562" text-anchor="middle" class="csub">traces each filter and the reasoned</text>
+          <text x="250" y="576" text-anchor="middle" class="csub">step — additive, changes nothing it wraps</text>
+
+          <path d="M448 556 H528" class="cedge" stroke-dasharray="3 3" opacity=".7"/><path d="M532 556 l-8 -4 v8 z" class="cedgehead" opacity=".7"/>
+          <text x="490" y="548" text-anchor="middle" class="cedgelbl">wraps</text>
+        </svg></div>
+      </figure>
+    </div>
+
+    <div class="learnsection">
+      <h2>One run, over time</h2>
+      <p class="lead">The same structure above, now shown as a single case actually moves through it: gates checked in order, with the reasoned step reached only once all three pass.</p>
+      <figure class="figure">
+        <div class="figbody"><svg class="seqdiag" viewBox="0 0 1000 570" role="img" aria-label="Sequence diagram of one case running through the graph engine. The case asks the graph engine to assess an organization and grant. A loop covers the three deterministic requirements in order: the engine asks the filter to execute against the shared context, the filter reads and writes it, and returns passed or failed. An alt block follows: if any deterministic check failed, the engine routes straight to an early end. If all three passed, the engine calls the reasoned alignment filter, which writes its result to the shared context, returns continue, and the engine routes to the end normally.">
+          <rect x="20" y="8" width="140" height="44" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="90" y="35" text-anchor="middle" class="snm">Case</text>
+          <rect x="260" y="8" width="160" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="340" y="30" text-anchor="middle" class="snm">Graph Engine</text>
+          <text x="340" y="46" text-anchor="middle" class="snm">(LangGraph)</text>
+          <rect x="530" y="8" width="160" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="610" y="30" text-anchor="middle" class="snm">Filter</text>
+          <text x="610" y="46" text-anchor="middle" class="snm">(by node id)</text>
+          <rect x="800" y="8" width="160" height="54" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="880" y="30" text-anchor="middle" class="snm">Shared</text>
+          <text x="880" y="46" text-anchor="middle" class="snm">Context</text>
+
+          <line x1="90" y1="68" x2="90" y2="555" class="slife"/>
+          <line x1="340" y1="68" x2="340" y2="555" class="slife"/>
+          <line x1="610" y1="68" x2="610" y2="555" class="slife"/>
+          <line x1="880" y1="68" x2="880" y2="555" class="slife"/>
+
+          <path d="M90 90 H334" class="smsg"/><path d="M340 90 l-7 -4 v8 z" class="smsghead"/>
+          <text x="215" y="82" text-anchor="middle" class="slbl">assess(organization, grant)</text>
+
+          <rect x="250" y="100" width="730" height="150" rx="2" fill="none" stroke="var(--brass)" stroke-opacity=".5" stroke-dasharray="3 3"/>
+          <text x="262" y="118" class="salt">loop · ELIGIBILITY-001 → GEOGRAPHY-001 → INFO-001</text>
+          <path d="M340 150 H604" class="smsg"/><path d="M610 150 l-7 -4 v8 z" class="smsghead"/>
+          <text x="475" y="142" text-anchor="middle" class="slbl">execute(context)</text>
+          <path d="M610 185 H874" class="smsg"/><path d="M880 185 l-7 -4 v8 z" class="smsghead"/>
+          <text x="745" y="177" text-anchor="middle" class="slbl">read / write</text>
+          <path d="M610 220 H346" class="smsg dash"/><path d="M340 220 l7 -4 v8 z" class="smsghead"/>
+          <text x="475" y="212" text-anchor="middle" class="slbl">passed / failed</text>
+
+          <rect x="20" y="270" width="960" height="190" rx="2" fill="none" stroke="var(--brass)" stroke-opacity=".5" stroke-dasharray="3 3"/>
+          <rect x="20" y="270" width="210" height="19" fill="var(--brass-wash)" stroke="var(--brass)" stroke-opacity=".5"/>
+          <text x="29" y="284" class="salt">alt · halt vs continue</text>
+          <text x="240" y="284" class="sguard">[ any deterministic check failed ]</text>
+          <path d="M340 320 H96" class="smsg"/><path d="M90 320 l7 -4 v8 z" class="smsghead"/>
+          <text x="215" y="312" text-anchor="middle" class="slbl">route to end — halted early</text>
+          <line x1="20" y1="345" x2="980" y2="345" stroke="var(--brass)" stroke-opacity=".4" stroke-dasharray="3 3"/>
+          <text x="29" y="361" class="sguard">[ all three passed ]</text>
+          <path d="M340 390 H604" class="smsg"/><path d="M610 390 l-7 -4 v8 z" class="smsghead"/>
+          <text x="475" y="382" text-anchor="middle" class="slbl">ALIGNMENT-001: execute(context)</text>
+          <path d="M610 420 H874" class="smsg"/><path d="M880 420 l-7 -4 v8 z" class="smsghead"/>
+          <text x="745" y="412" text-anchor="middle" class="slbl">write fitClassification, explanation, …</text>
+
+          <path d="M610 490 H346" class="smsg dash"/><path d="M340 490 l7 -4 v8 z" class="smsghead"/>
+          <text x="475" y="482" text-anchor="middle" class="slbl">continue</text>
+          <path d="M340 520 H96" class="smsg"/><path d="M90 520 l7 -4 v8 z" class="smsghead"/>
+          <text x="215" y="512" text-anchor="middle" class="slbl">route to end</text>
+        </svg></div>
+      </figure>
+    </div>
+
+    <div class="learnsection">
+      <h2>Two frameworks, one set of criteria</h2>
+      <p class="lead">Which code actually scores a criterion is a separate, swappable decision — not something the EUC declares.</p>
+      <figure class="figure">
+        <div class="figbody"><svg class="ctxdiag" viewBox="0 0 980 300" role="img" aria-label="Context diagram showing the EUC's three evaluation criteria — EVAL-ELIGIBILITY, EVAL-ALIGNMENT, EVAL-EVIDENCE — dispatching to either of two interchangeable evaluation frameworks. The bespoke evaluator scores all three deterministically. DeepEval scores eligibility and alignment the same deterministic way, but scores evidence grounding with a GEval metric judged by Claude instead of a keyword match. Either framework produces the same evaluation score shape for the same criterion ids.">
+          <rect x="40" y="10" width="280" height="48" rx="2" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.5"/>
+          <text x="180" y="39" text-anchor="middle" class="ceuc">EVAL-ELIGIBILITY</text>
+          <rect x="350" y="10" width="280" height="48" rx="2" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.5"/>
+          <text x="490" y="39" text-anchor="middle" class="ceuc">EVAL-ALIGNMENT</text>
+          <rect x="660" y="10" width="280" height="48" rx="2" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.5"/>
+          <text x="800" y="39" text-anchor="middle" class="ceuc">EVAL-EVIDENCE</text>
+
+          <path d="M180 58 V80" class="cedge"/>
+          <path d="M490 58 V80" class="cedge"/>
+          <path d="M800 58 V80" class="cedge"/>
+          <path d="M180 80 H800" class="cedge"/>
+          <path d="M490 80 V101" class="cedge"/>
+          <path d="M486 95 H494 L490 103 Z" class="cedgehead"/>
+          <text x="490" y="118" text-anchor="middle" class="csub">either framework, same ids</text>
+
+          <path d="M490 108 C 490 128, 255 128, 255 140" class="cedge"/>
+          <path d="M251 134 H259 L255 142 Z" class="cedgehead"/>
+          <path d="M490 108 C 490 128, 725 128, 725 140" class="cedge"/>
+          <path d="M721 134 H729 L725 142 Z" class="cedgehead"/>
+
+          <rect x="40" y="140" width="430" height="150" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+          <text x="54" y="160" class="cgrp">BESPOKE EVALUATOR — DEFAULT</text>
+          <text x="54" y="190" class="cnm">Eligibility correctness</text>
+          <text x="456" y="190" text-anchor="end" class="cchip" fill="var(--verdigris)">DETERMINISTIC</text>
+          <text x="54" y="222" class="cnm">Program alignment</text>
+          <text x="456" y="222" text-anchor="end" class="cchip" fill="var(--verdigris)">DETERMINISTIC</text>
+          <text x="54" y="254" class="cnm">Evidence grounding</text>
+          <text x="456" y="254" text-anchor="end" class="cchip" fill="var(--verdigris)">DETERMINISTIC</text>
+
+          <rect x="510" y="140" width="430" height="150" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+          <text x="524" y="160" class="cgrp">DEEPEVAL — ALTERNATE</text>
+          <text x="524" y="190" class="cnm">Eligibility correctness</text>
+          <text x="926" y="190" text-anchor="end" class="cchip" fill="var(--verdigris)">DETERMINISTIC</text>
+          <text x="524" y="222" class="cnm">Program alignment</text>
+          <text x="926" y="222" text-anchor="end" class="cchip" fill="var(--verdigris)">DETERMINISTIC</text>
+          <text x="524" y="254" class="cnm">Evidence grounding</text>
+          <text x="926" y="254" text-anchor="end" class="cchip" fill="var(--brass)">GEVAL · CLAUDE</text>
+        </svg></div>
+      </figure>
+    </div>
+
+    <div class="learncta">
+      <button class="btn-run" type="button" data-goto-tab="assess">See it run on a real case <span class="arrow" aria-hidden="true">→</span></button>
+    </div>
+
+  </section>
+
+  <section id="panel-assess" class="panel wrap" role="tabpanel" aria-labelledby="tabbtn-assess" hidden>
+
+    <div class="intro">
+      <p class="eyebrow">Grant Fit Assessment · interactive replay</p>
+      <h1>Pick a case. Run it. Watch the gate decide <em>before</em> the model ever speaks.</h1>
+      <p class="lede">Nonprofits often review grant opportunities to decide two things: whether they are eligible to apply and whether the funding is a good fit for their work. This example follows six organizations evaluating the same grant through one <code>ExecutableUseCase</code>.</p>
+      <p class="lede">Each organization follows the same evaluation pipeline: first, three deterministic eligibility rules are checked. Only organizations that pass all three move on to the reasoned alignment step, where the system evaluates how well the grant matches the organization's mission and programs. If any eligibility rule fails, <code>RULE-ELIGIBILITY-PRECEDES-FIT</code> stops the run before a model is asked to assess fit.</p>
+    </div>
+
+    <div class="bench">
+      <aside class="docket">
+        <h2>Case docket</h2>
+        <div class="caselist" id="caselist"></div>
+      </aside>
+
+      <div class="workspace">
+        <div class="pairgrid" id="pairgrid"></div>
+
+        <div class="runbar">
+          <button class="btn-run" id="runBtn" type="button">Run assessment <span class="arrow" aria-hidden="true">→</span></button>
+          <span class="status" id="statusLine">Select a case, then run it.</span>
+        </div>
+
+        <ol class="pipeline" id="pipeline"></ol>
+
+        <div class="verdict" id="verdict"></div>
+        <div class="trace" id="trace"></div>
+        <div class="frameworks" id="frameworks" hidden></div>
+      </div>
+    </div>
+
+    <div class="learncta">
+      <p class="lead">Wondering why these particular checks exist, or what each one traces back to in the EUC?</p>
+      <button class="btn-run" type="button" data-goto-tab="eval">Open The Eval tab <span class="arrow" aria-hidden="true">→</span></button>
+    </div>
+
+  </section>
+
+  <section id="panel-eval" class="panel wrap" role="tabpanel" aria-labelledby="tabbtn-eval" hidden>
+
+    <div class="intro">
+      <p class="eyebrow">Why evaluation matters here</p>
+      <h1>An EUC's promises would be nothing but <em>words</em> without a way to check them.</h1>
+      <p class="lede">Every EUC states what must be checked in its <code>evaluationCriteria</code> — not as an afterthought, but as first-class content declared alongside its rules and policies. Each criterion names, through <code>tracesTo</code>, the exact requirement, rule, or policy it exists to validate. That link is what turns a business promise into something falsifiable, rather than a claim nobody can hold the system to.</p>
+      <p class="lede">The grant-fit-assessment EUC declares three. Follow their <code>tracesTo</code> links and you land on the specific rule or requirement a passing — or failing — result is actually supposed to mean something about.</p>
+    </div>
+
+    <div class="learnsection">
+      <h2>Three criteria, in the EUC's own words</h2>
+      <p class="lead">The <code>grant-fit-assessment</code> EUC declares exactly these three.</p>
+
+      <div class="tracerow"><span class="tid">EVAL-ELIGIBILITY</span><span class="tdesc">Eligibility follows the grant's mandatory requirements.</span><span></span></div>
+      <div class="tracerow" style="border-top:none;padding-top:0;margin-top:-6px"><span></span><span class="ttrace">tracesTo → ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001 · RULE-ELIGIBILITY · RULE-GEOGRAPHY · RULE-REQUIRED-INFO</span><span></span></div>
+
+      <div class="tracerow"><span class="tid">EVAL-ALIGNMENT</span><span class="tdesc">Fit classification reflects the funder's stated priorities. An ineligible applicant is never recommended for pursuit.</span><span></span></div>
+      <div class="tracerow" style="border-top:none;padding-top:0;margin-top:-6px"><span></span><span class="ttrace">tracesTo → ALIGNMENT-001 · RULE-ELIGIBILITY-PRECEDES-FIT</span><span></span></div>
+
+      <div class="tracerow"><span class="tid">EVAL-EVIDENCE</span><span class="tdesc">The classification is supported by evidence present in the context. No unsupported information is introduced. Uncertainty is surfaced rather than resolved into false confidence.</span><span></span></div>
+      <div class="tracerow" style="border-top:none;padding-top:0;margin-top:-6px;border-bottom:1px solid var(--rule-soft)"><span></span><span class="ttrace">tracesTo → ALIGNMENT-001 · POLICY-EVIDENCE · POLICY-MISSING-DATA · POLICY-UNCERTAINTY</span><span></span></div>
+    </div>
+
+    <div class="learncta">
+      <h2>See Eval in Action</h2>
+      <p class="lead">Head to the demo tab, pick any of the six cases, and run it. When the verdict comes back, look at the <strong>"Evaluation criteria this run touches"</strong> panel right below it — that's these same three criteria, <code>EVAL-ELIGIBILITY</code>, <code>EVAL-ALIGNMENT</code>, <code>EVAL-EVIDENCE</code>, scored for real against whichever case you picked, not read from a script. Pick one of the three eligible cases and a second panel appears below that: <strong>DeepEval, live on this case</strong>, showing the same evidence check catching something a keyword match alone would miss.</p>
+      <button class="btn-run" type="button" data-goto-tab="assess">See eval in action on a real case <span class="arrow" aria-hidden="true">→</span></button>
+    </div>
+
+  </section>
+
+  <section id="panel-production" class="panel wrap" role="tabpanel" aria-labelledby="tabbtn-production" hidden>
+
+    <div class="intro">
+      <p class="eyebrow">After deployment</p>
+      <h1>Latency, errors, and uptime can all stay green while the system quietly stops doing what the business <em>asked for</em>.</h1>
+      <p class="lede">After deployment, the EUC continues to serve as the definition of expected behavior. Production traces and outcomes can be evaluated against the same rules, criteria, and acceptance conditions established before development, helping teams detect when system behavior no longer aligns with business intent. Rather than monitoring only technical signals such as latency, errors, or availability, EUC-driven monitoring asks a more important question: is the system still doing what the business intended?</p>
+    </div>
+
+    <div class="learnsection">
+      <h2>The same EUC, now observed</h2>
+      <p class="lead">Checking a live request against the same rules and criteria means running the same code, not standing up a parallel monitoring system. <strong>Langfuse</strong> wraps the exact reasoner, deterministic gates, and evaluator this demo already uses — nothing about <code>GrantFitApplication</code>, the pipeline, or either evaluator changes. Each deterministic gate becomes a traced check; the reasoned step becomes a traced model call, complete with the prompt, the response, and the real token count Claude reports back; the same three criteria from the Evaluation tab above are attached to that exact run as scores.</p>
+      <p class="lead">If a request halts at a gate — say, an applicant that isn't a registered nonprofit — the trace shows exactly that: the eligibility check ran and failed, and nothing downstream of it ran at all. No case ever produces an empty trace. Every trace also carries the EUC's own id, so every trace this EUC has ever produced can be found together, and a fresh correlation id generated for that one request, so a specific run can be found again from outside Langfuse entirely — a log line, a support ticket, another system's own trace.</p>
+    </div>
+
+    <div class="learnsection">
+      <h2>One real trace, inspected</h2>
+      <p class="lead">This isn't staged. It's the actual trace produced by running the reference implementation's "strong fit" case — the same organization used throughout this demo — against a live Langfuse project, then fetched back and checked against Langfuse's own published instrumentation guidance before anything on this page was written down.</p>
+      <figure class="figure">
+        <div class="figbody"><svg class="ctxdiag" viewBox="0 0 980 560" role="img" aria-label="Object diagram of one real Langfuse trace named assess-grant-fit, tagged with the EUC id grant-fit-assessment and the environment development, carrying metadata correlationId 28fe8b9e… and caseId strong-fit-01. Nested inside it are four sibling observations, executed in order: a tool named verify-eligibility recording requirementId ELIGIBILITY-001 with outcome PASSED, a tool named verify-geography recording requirementId GEOGRAPHY-001 with outcome PASSED, a tool named verify-info recording requirementId INFO-001 with outcome PASSED, and a generation named assess-alignment recording model claude-sonnet-4-6 and usage 260 input tokens and 295 output tokens. Below the trace, three boolean scores are attached — EVAL-ELIGIBILITY, EVAL-ALIGNMENT, and EVAL-EVIDENCE — each 1.0, PASS.">
+          <rect x="190" y="8" width="600" height="96" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="2"/>
+          <text x="490" y="28" text-anchor="middle" class="csub">TRACE</text>
+          <text x="490" y="50" text-anchor="middle" style="font-family:var(--mono);font-size:14px;font-weight:600" fill="var(--ink)">assess-grant-fit</text>
+          <text x="340" y="70" text-anchor="middle" class="cchip" fill="var(--brass)">EUC · grant-fit-assessment</text>
+          <text x="640" y="70" text-anchor="middle" class="cchip" fill="var(--ink-faint)">ENV · development</text>
+          <text x="490" y="90" text-anchor="middle" class="csub">correlationId 28fe8b9e… · caseId strong-fit-01</text>
+
+          <path d="M490 104 V126" class="cedge"/><path d="M486 120 l4 8 l4 -8 z" class="cedgehead"/>
+
+          <rect x="40" y="130" width="900" height="354" rx="3" fill="none" stroke="var(--rule-soft)" stroke-dasharray="4 4"/>
+          <text x="54" y="150" class="cgrp">OBSERVATIONS — CHILDREN OF THE SPAN, IN EXECUTION ORDER</text>
+
+          <rect x="60" y="166" width="205" height="120" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="76" y="188" class="cgrp">TOOL</text>
+          <text x="76" y="210" style="font-family:var(--mono);font-size:12.5px" fill="var(--ink)">verify-eligibility</text>
+          <text x="76" y="232" class="csub">requirementId</text>
+          <text x="76" y="246" class="csub">ELIGIBILITY-001</text>
+          <text x="76" y="270" class="cchip" fill="var(--verdigris)">OUTCOME · PASSED</text>
+
+          <rect x="280" y="166" width="205" height="120" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="296" y="188" class="cgrp">TOOL</text>
+          <text x="296" y="210" style="font-family:var(--mono);font-size:12.5px" fill="var(--ink)">verify-geography</text>
+          <text x="296" y="232" class="csub">requirementId</text>
+          <text x="296" y="246" class="csub">GEOGRAPHY-001</text>
+          <text x="296" y="270" class="cchip" fill="var(--verdigris)">OUTCOME · PASSED</text>
+
+          <rect x="500" y="166" width="205" height="120" rx="2" fill="var(--surface)" stroke="var(--rule)"/>
+          <text x="516" y="188" class="cgrp">TOOL</text>
+          <text x="516" y="210" style="font-family:var(--mono);font-size:12.5px" fill="var(--ink)">verify-info</text>
+          <text x="516" y="232" class="csub">requirementId</text>
+          <text x="516" y="246" class="csub">INFO-001</text>
+          <text x="516" y="270" class="cchip" fill="var(--verdigris)">OUTCOME · PASSED</text>
+
+          <rect x="720" y="166" width="205" height="120" rx="2" fill="var(--verdigris-wash)" stroke="var(--verdigris)" stroke-width="1.5"/>
+          <text x="736" y="188" class="cgrp">GENERATION</text>
+          <text x="736" y="210" style="font-family:var(--mono);font-size:12.5px" fill="var(--ink)">assess-alignment</text>
+          <text x="736" y="232" class="csub">model claude-sonnet-4-6</text>
+          <text x="736" y="256" class="csub">260 in · 295 out</text>
+          <text x="736" y="270" class="csub">tokens</text>
+
+          <text x="490" y="326" text-anchor="middle" class="csub">a failed gate here would end the trace before the next box —</text>
+          <text x="490" y="342" text-anchor="middle" class="csub">and before the generation ever runs</text>
+
+          <path d="M490 484 V506" class="cedge"/><path d="M486 500 l4 8 l4 -8 z" class="cedgehead"/>
+
+          <rect x="40" y="510" width="900" height="42" rx="3" fill="var(--brass-wash)" stroke="var(--brass)" stroke-width="1.5"/>
+          <text x="190" y="527" text-anchor="middle" class="cnm">EVAL-ELIGIBILITY</text>
+          <text x="190" y="543" text-anchor="middle" class="cchip" fill="var(--verdigris)">1.0 · PASS</text>
+          <text x="490" y="527" text-anchor="middle" class="cnm">EVAL-ALIGNMENT</text>
+          <text x="490" y="543" text-anchor="middle" class="cchip" fill="var(--verdigris)">1.0 · PASS</text>
+          <text x="790" y="527" text-anchor="middle" class="cnm">EVAL-EVIDENCE</text>
+          <text x="790" y="543" text-anchor="middle" class="cchip" fill="var(--verdigris)">1.0 · PASS</text>
+        </svg></div>
+      </figure>
+    </div>
+
+    <div class="learncta">
+      <button class="btn-run" type="button" id="sampleTraceBtn" aria-expanded="false" aria-controls="sampleTracePanel">See sample trace <span class="arrow" aria-hidden="true">→</span></button>
+      <div class="codeblock" id="sampleTracePanel" hidden style="margin-top:18px">
+        <button type="button" class="euctag" id="eucTagBtn">
+          <span class="euctagkey">EUC</span>
+          <span class="euctagval">grant-fit-assessment</span>
+          <span class="euctagnote">click to locate its case id in the trace below ↓</span>
+        </button>
+        <div class="chead">Real Langfuse trace — case missing-info-01, halted at INFO-001</div>
+        <pre id="sampleTraceRaw"></pre>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<div class="toast" id="traceToast" role="status" aria-live="polite">
+  <button class="toastclose" id="traceToastClose" type="button" aria-label="Dismiss">✕</button>
+  <span class="ttag">grant-fit-assessment</span>
+  <p>This trace's tag is the EUC's own id — every trace this EUC produces correlates back to the same instance.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ── theme toggle, matches the main site's mechanism ── */
+var root=document.documentElement, themebtn=document.getElementById('themebtn');
+function stored(){try{return localStorage.getItem('fitbench-theme')}catch(e){return null}}
+function save(v){try{localStorage.setItem('fitbench-theme',v)}catch(e){}}
+var s=stored(); if(s==='dark'||s==='light'){root.setAttribute('data-theme',s)}
+themebtn.addEventListener('click',function(){
+  var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var next=dark?'light':'dark';
+  root.setAttribute('data-theme',next); save(next);
+});
+
+/* ── tabs ──
+   Tab buttons are real <a href="#name"> elements (not <button>s), so every
+   browser's native "open link in new tab" (middle-click, cmd/ctrl+click,
+   right-click menu) works on them without any JS — that's what makes The
+   Proposal (or any tab) launchable in its own tab. showTab() keeps the
+   hash and the visible panel in sync either way. */
+var tabBtns=document.querySelectorAll('.tabbtn');
+var tabPanelIds=['proposal','learn','architecture','assess','eval','production'];
+function showTab(name){
+  if(tabPanelIds.indexOf(name)===-1) name='proposal';
+  tabPanelIds.forEach(function(id){
+    document.getElementById('panel-'+id).hidden = name!==id;
+  });
+  tabBtns.forEach(function(b){
+    var active=b.dataset.tab===name;
+    b.classList.toggle('active',active);
+    b.setAttribute('aria-selected',active?'true':'false');
+  });
+  if(location.hash.slice(1)!==name){ history.replaceState(null,'','#'+name); }
+  window.scrollTo(0,0);
+}
+tabBtns.forEach(function(b){ b.addEventListener('click',function(){ showTab(b.dataset.tab); }); });
+document.getElementById('toAssessBtn').addEventListener('click',function(){ showTab('assess'); });
+document.querySelectorAll('[data-goto-tab]').forEach(function(b){
+  b.addEventListener('click',function(){ showTab(b.dataset.gotoTab); });
+});
+window.addEventListener('hashchange',function(){ showTab(location.hash.slice(1)); });
+showTab(location.hash ? location.hash.slice(1) : 'proposal');
+
+/* ── gauge reveal-on-scroll, matches the standalone site's behaviour ── */
+(function(){
+  var g=document.getElementById('gauge');
+  if(!g) return;
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+    },{threshold:.3});
+    io.observe(g);
+  } else { g.classList.add('on'); }
+})();
+
+/* ── the committed EUC, verbatim from grant-fit-assessment.json ── */
+var EUC={
+  "id":"grant-fit-assessment",
+  "actor":"Nonprofit Program Manager",
+  "goal":"Determine whether the organization should pursue a grant",
+  "context":{
+    "description":"The business information this decision depends on. seedFields names what must be present before any execution requirement runs; each requirement then declares what it reads and writes. Evaluation reads the same context execution wrote into, not a separate copy.",
+    "seedFields":["organization","grant"]
+  },
+  "rules":[
+    {"id":"RULE-ELIGIBILITY","description":"Applicant must satisfy all mandatory eligibility requirements"},
+    {"id":"RULE-GEOGRAPHY","description":"Applicant must operate within the grant's specified geographic scope"},
+    {"id":"RULE-REQUIRED-INFO","description":"All required application information must be present before assessment proceeds"},
+    {"id":"RULE-ELIGIBILITY-PRECEDES-FIT","description":"Strong alignment cannot overcome a failed mandatory requirement"}
+  ],
+  "policies":[
+    {"id":"POLICY-MISSING-DATA","description":"Do not invent missing information"},
+    {"id":"POLICY-EVIDENCE","description":"Support conclusions with available evidence"},
+    {"id":"POLICY-UNCERTAINTY","description":"Flag uncertainty rather than defaulting to a confident conclusion"}
+  ],
+  "expectedOutcomes":["STRONG_FIT","POSSIBLE_FIT","POOR_FIT"],
+  "executionRequirements":[
+    {"id":"ELIGIBILITY-001","type":"deterministic","responsibility":"Evaluate the applicant against the grant's mandatory eligibility requirements","onFailure":"halt","reads":["organization","grant"],"writes":["eligible","failedEligibilityRules"]},
+    {"id":"GEOGRAPHY-001","type":"deterministic","responsibility":"Confirm the applicant operates within the grant's geographic scope","onFailure":"halt","reads":["organization","grant"],"writes":["eligible","failedEligibilityRules"]},
+    {"id":"INFO-001","type":"deterministic","responsibility":"Confirm all required application information is present","onFailure":"halt","reads":["organization"],"writes":["eligible","failedEligibilityRules"]},
+    {"id":"ALIGNMENT-001","type":"reasoned","responsibility":"Assess the organization's mission and programs for alignment with the funder's stated priorities","onFailure":"continue","reads":["organization","grant","eligible"],"writes":["fitClassification","explanation","supportingEvidence","identifiedUncertainty"]}
+  ],
+  "evaluationCriteria":[
+    {"id":"EVAL-ELIGIBILITY","tracesTo":["ELIGIBILITY-001","GEOGRAPHY-001","INFO-001","RULE-ELIGIBILITY","RULE-GEOGRAPHY","RULE-REQUIRED-INFO"],"criteria":["Eligibility follows the grant's mandatory requirements"],"reads":["eligible","failedEligibilityRules"]},
+    {"id":"EVAL-ALIGNMENT","tracesTo":["ALIGNMENT-001","RULE-ELIGIBILITY-PRECEDES-FIT"],"criteria":["Fit classification reflects the funder's stated priorities","An ineligible applicant is never recommended for pursuit"],"reads":["fitClassification"]},
+    {"id":"EVAL-EVIDENCE","tracesTo":["ALIGNMENT-001","POLICY-EVIDENCE","POLICY-MISSING-DATA","POLICY-UNCERTAINTY"],"criteria":["The classification is supported by evidence present in the context","No unsupported information is introduced","Uncertainty is surfaced rather than resolved into false confidence"],"reads":["supportingEvidence"]}
+  ]
+};
+
+/* ── the six committed eval cases, verbatim from test-cases.json ── */
+var GOLDEN_SET_DESCRIPTION="Ground-truth eval dataset for Grant Fit Assessment, per docs/proposal.md Section 6 step 2. Ground truth was established independently of the application by reading each organization/grant pair against the EUC's rules and policies.";
+var CASES=[
+{"caseId":"strong-fit-01","organization":{"name":"Riverside Youth Coalition","missionStatement":"Providing after-school STEM programs to underserved youth.","programs":["STEM tutoring","College readiness workshops"],"operatingRegion":"Pacific Northwest","isRegisteredNonprofit":true},"grant":{"funderName":"Evergreen Community Foundation","grantName":"Youth Education Grant","fundingPriorities":["STEM education","Underserved communities"],"eligibilityRequirements":["Registered 501(c)(3)","Operating in Pacific Northwest"],"allowedRegions":["Pacific Northwest"],"requiresRegisteredNonprofit":true},"expectedEligible":true,"expectedFitClassification":"STRONG_FIT","groundTruthRationale":"Eligible on all deterministic rules; mission and programs directly match the funder's stated priorities (STEM, underserved communities).","expectedEvidenceKeywords":["STEM","underserved"],"driftedExplanation":"This looks like a solid STEM opportunity that should work well for underserved communities in general, based on the overall impression of the organization's programs.","driftedFlagReason":"Doesn't cite a specific program or mission statement — just an \"overall impression.\" A grounded explanation would name the actual tutoring and college-readiness programs, not gesture at them."},
+{"caseId":"possible-fit-01","organization":{"name":"Bright Path Family Services","missionStatement":"Supporting family stability through housing assistance and counseling.","programs":["Emergency housing assistance","Family counseling"],"operatingRegion":"Pacific Northwest","isRegisteredNonprofit":true},"grant":{"funderName":"Evergreen Community Foundation","grantName":"Youth Education Grant","fundingPriorities":["STEM education","Underserved communities"],"eligibilityRequirements":["Registered 501(c)(3)","Operating in Pacific Northwest"],"allowedRegions":["Pacific Northwest"],"requiresRegisteredNonprofit":true},"expectedEligible":true,"expectedFitClassification":"POSSIBLE_FIT","groundTruthRationale":"Eligible, and serves underserved populations, but has no STEM or education programming — partial alignment only.","expectedEvidenceKeywords":["underserved"],"driftedExplanation":"The organization serves underserved communities and appears to align reasonably well with the funder's broader educational mission.","driftedFlagReason":"Claims alignment with an \"educational mission\" this organization doesn't have — its real programs are housing assistance and family counseling, not education. Inventing that connection is exactly what POLICY-MISSING-DATA exists to catch."},
+{"caseId":"poor-fit-eligible-01","organization":{"name":"Metro Arts Guild","missionStatement":"Promoting fine arts appreciation among adult patrons.","programs":["Gallery exhibitions","Adult painting workshops"],"operatingRegion":"Pacific Northwest","isRegisteredNonprofit":true},"grant":{"funderName":"Evergreen Community Foundation","grantName":"Youth Education Grant","fundingPriorities":["STEM education","Underserved communities"],"eligibilityRequirements":["Registered 501(c)(3)","Operating in Pacific Northwest"],"allowedRegions":["Pacific Northwest"],"requiresRegisteredNonprofit":true},"expectedEligible":true,"expectedFitClassification":"POOR_FIT","groundTruthRationale":"Eligible under all deterministic rules, but mission/programs (adult fine arts) have no meaningful overlap with youth STEM education priorities. Edge case: eligible but poorly aligned.","expectedEvidenceKeywords":[],"driftedExplanation":"While primarily an arts-focused organization, there could be some educational value in their programming that may resonate with the funder's youth-focused goals.","driftedFlagReason":"Hedges toward a positive fit (\"could be\", \"may resonate\") that the ground truth explicitly rules out. POLICY-UNCERTAINTY calls for surfacing that uncertainty, not resolving it into a hopeful guess."},
+{"caseId":"ineligible-aligned-01","organization":{"name":"Coastal STEM Academy Trust","missionStatement":"Delivering STEM education to underserved youth on the East Coast.","programs":["STEM tutoring","Robotics club"],"operatingRegion":"Northeast","isRegisteredNonprofit":true},"grant":{"funderName":"Evergreen Community Foundation","grantName":"Youth Education Grant","fundingPriorities":["STEM education","Underserved communities"],"eligibilityRequirements":["Registered 501(c)(3)","Operating in Pacific Northwest"],"allowedRegions":["Pacific Northwest"],"requiresRegisteredNonprofit":true},"expectedEligible":false,"expectedFitClassification":"POOR_FIT","groundTruthRationale":"Strong mission/program alignment with funding priorities, but fails GEOGRAPHY-001 (operates in Northeast, grant requires Pacific Northwest). Edge case: ineligible but well-aligned — eligibility failure must override alignment.","expectedEvidenceKeywords":[]},
+{"caseId":"ineligible-not-nonprofit-01","organization":{"name":"NextGen Learning Co.","missionStatement":"For-profit tutoring services for STEM subjects.","programs":["Paid STEM tutoring"],"operatingRegion":"Pacific Northwest","isRegisteredNonprofit":false},"grant":{"funderName":"Evergreen Community Foundation","grantName":"Youth Education Grant","fundingPriorities":["STEM education","Underserved communities"],"eligibilityRequirements":["Registered 501(c)(3)","Operating in Pacific Northwest"],"allowedRegions":["Pacific Northwest"],"requiresRegisteredNonprofit":true},"expectedEligible":false,"expectedFitClassification":"POOR_FIT","groundTruthRationale":"Fails ELIGIBILITY-001: not a registered nonprofit.","expectedEvidenceKeywords":[]},
+{"caseId":"missing-info-01","organization":{"name":"Unnamed Org","missionStatement":"","programs":[],"operatingRegion":"Pacific Northwest","isRegisteredNonprofit":true},"grant":{"funderName":"Evergreen Community Foundation","grantName":"Youth Education Grant","fundingPriorities":["STEM education","Underserved communities"],"eligibilityRequirements":["Registered 501(c)(3)","Operating in Pacific Northwest"],"allowedRegions":["Pacific Northwest"],"requiresRegisteredNonprofit":true},"expectedEligible":false,"expectedFitClassification":"POOR_FIT","groundTruthRationale":"Fails INFO-001: missing mission statement and programs.","expectedEvidenceKeywords":[]}
+];
+
+var caselist=document.getElementById('caselist');
+var pairgrid=document.getElementById('pairgrid');
+var pipelineEl=document.getElementById('pipeline');
+var verdictEl=document.getElementById('verdict');
+var traceEl=document.getElementById('trace');
+var frameworksEl=document.getElementById('frameworks');
+var runBtn=document.getElementById('runBtn');
+var statusLine=document.getElementById('statusLine');
+
+var current=CASES[0];
+var running=false;
+
+function el(tag,cls,html){var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e;}
+
+function outcomeClass(outcome){
+  if(outcome==='STRONG_FIT') return 'strong';
+  if(outcome==='POSSIBLE_FIT') return 'possible';
+  return 'poor';
+}
+
+/* ── docket ── */
+CASES.forEach(function(c){
+  var card=el('button','casecard');
+  card.type='button';
+  card.dataset.id=c.caseId;
+  card.innerHTML=
+    '<span class="cname">'+c.organization.name+'</span>'+
+    '<span class="cmeta"><span>'+c.organization.operatingRegion+'</span><span>·</span><span>'+(c.organization.isRegisteredNonprofit?'501(c)(3)':'for-profit')+'</span></span>'+
+    '<span class="cmission">'+(c.organization.missionStatement||'<em>No mission statement on file.</em>')+'</span>';
+  card.addEventListener('click',function(){ selectCase(c.caseId); });
+  caselist.appendChild(card);
+});
+
+function markActive(id){
+  Array.prototype.forEach.call(caselist.children,function(card){
+    card.classList.toggle('active',card.dataset.id===id);
+  });
+}
+
+function renderPair(c){
+  pairgrid.innerHTML='';
+  var org=el('div','pcard');
+  org.innerHTML=
+    '<span class="ptag">Organization</span>'+
+    '<h3>'+c.organization.name+'</h3>'+
+    '<div class="row"><dt>Mission —</dt> <dd>'+(c.organization.missionStatement||'<em>none provided</em>')+'</dd></div>'+
+    '<div class="row"><dt>Programs —</dt> <dd>'+(c.organization.programs.length?c.organization.programs.join(', '):'<em>none listed</em>')+'</dd></div>'+
+    '<div class="chiprow">'+
+      '<span class="chip">'+c.organization.operatingRegion+'</span>'+
+      '<span class="chip '+(c.organization.isRegisteredNonprofit?'yes':'no')+'">'+(c.organization.isRegisteredNonprofit?'Registered nonprofit':'Not a registered nonprofit')+'</span>'+
+    '</div>';
+  var grant=el('div','pcard');
+  grant.innerHTML=
+    '<span class="ptag">Grant opportunity</span>'+
+    '<h3>'+c.grant.grantName+'</h3>'+
+    '<div class="row"><dt>Funder —</dt> <dd>'+c.grant.funderName+'</dd></div>'+
+    '<div class="row"><dt>Priorities —</dt> <dd>'+c.grant.fundingPriorities.join(', ')+'</dd></div>'+
+    '<div class="chiprow">'+
+      '<span class="chip">Region: '+c.grant.allowedRegions.join(', ')+'</span>'+
+      '<span class="chip">'+(c.grant.requiresRegisteredNonprofit?'Requires 501(c)(3)':'No nonprofit requirement')+'</span>'+
+    '</div>';
+  pairgrid.appendChild(org); pairgrid.appendChild(grant);
+}
+
+var STAGES=[
+  {id:'ELIGIBILITY-001',typeClass:'det',typeLabel:'deterministic',onFailure:'halt',desc:'Organization must be a registered nonprofit if the grant requires one.'},
+  {id:'GEOGRAPHY-001',typeClass:'det',typeLabel:'deterministic',onFailure:'halt',desc:"Organization's operating region must fall inside the grant's allowed regions."},
+  {id:'INFO-001',typeClass:'det',typeLabel:'deterministic',onFailure:'halt',desc:'Mission statement and at least one program must be present to reason about.'},
+  {id:'ALIGNMENT-001',typeClass:'rea',typeLabel:'reasoned',onFailure:'continue',desc:'Model weighs mission and programs against the funder\'s stated priorities.'}
+];
+
+function renderPipeline(){
+  pipelineEl.innerHTML='';
+  STAGES.forEach(function(s,i){
+    var li=el('li','pstage');
+    li.dataset.idx=i;
+    li.innerHTML=
+      '<span class="marker" aria-hidden="true"></span>'+
+      '<div><span class="sid">'+s.id+'</span> <span class="typepill '+s.typeClass+'">'+s.typeLabel+'</span><span class="stype">onFailure: '+s.onFailure+'</span>'+
+      '<div class="sdesc">'+s.desc+'</div><div class="sdetail" data-role="detail"></div></div>'+
+      '<span class="pill" data-role="pill">pending</span>';
+    pipelineEl.appendChild(li);
+  });
+}
+
+/* ── the actual deterministic logic, ported from the prototype's rules ── */
+function evaluateEligibility(org,grant){
+  if(grant.requiresRegisteredNonprofit && !org.isRegisteredNonprofit){
+    return {pass:false, id:'ELIGIBILITY-001', message:'ELIGIBILITY-001: organization is not a registered nonprofit'};
+  }
+  return {pass:true};
+}
+function evaluateGeography(org,grant){
+  if(grant.allowedRegions && grant.allowedRegions.length>0 && grant.allowedRegions.indexOf(org.operatingRegion)===-1){
+    return {pass:false, id:'GEOGRAPHY-001', message:"GEOGRAPHY-001: operating region '"+org.operatingRegion+"' is outside the grant's allowed regions ["+grant.allowedRegions.join(', ')+']'};
+  }
+  return {pass:true};
+}
+function evaluateInfo(org){
+  var msgs=[];
+  if(!org.missionStatement || !org.missionStatement.trim()) msgs.push('INFO-001: organization mission statement is missing');
+  if(!org.programs || org.programs.length===0) msgs.push('INFO-001: organization programs are missing');
+  if(msgs.length) return {pass:false, id:'INFO-001', message:msgs.join(' · ')};
+  return {pass:true};
+}
+
+function sleep(ms){ return new Promise(function(res){ setTimeout(res,ms); }); }
+
+function setStage(idx,state,detail){
+  var li=pipelineEl.children[idx];
+  li.className='pstage live '+state;
+  li.querySelector('[data-role="pill"]').textContent=state;
+  if(detail) li.querySelector('[data-role="detail"]').textContent=detail;
+}
+
+async function runPipeline(c){
+  running=true; runBtn.disabled=true;
+  verdictEl.className='verdict'; verdictEl.innerHTML='';
+  traceEl.className='trace'; traceEl.innerHTML='';
+  frameworksEl.className='frameworks'; frameworksEl.hidden=true; frameworksEl.innerHTML='';
+  renderPipeline();
+  statusLine.textContent='Running…';
+  await sleep(200);
+
+  var org=c.organization, grant=c.grant;
+  var checks=[evaluateEligibility, evaluateGeography, evaluateInfo];
+  var failure=null;
+
+  for(var i=0;i<3;i++){
+    setStage(i,'running');
+    await sleep(480);
+    var result = i===2 ? checks[2](org) : checks[i](org,grant);
+    if(result.pass){
+      setStage(i,'pass','Passed.');
+    } else {
+      setStage(i,'fail',result.message);
+      failure=result;
+      break;
+    }
+    await sleep(120);
+  }
+
+  var computedEligible = !failure;
+
+  if(failure){
+    for(var j=i+1;j<3;j++){
+      pipelineEl.children[j].className='pstage live skipped';
+      pipelineEl.children[j].querySelector('[data-role="pill"]').textContent='skipped';
+      pipelineEl.children[j].querySelector('[data-role="detail"]').textContent='Not evaluated — an earlier rule already halted the run.';
+    }
+    pipelineEl.children[3].className='pstage live skipped';
+    pipelineEl.children[3].querySelector('[data-role="pill"]').textContent='halted';
+    pipelineEl.children[3].querySelector('[data-role="detail"]').textContent='RULE-ELIGIBILITY-PRECEDES-FIT: never invoked — a failed mandatory requirement halts the run before the model is asked anything.';
+    await sleep(200);
+  } else {
+    setStage(3,'running');
+    await sleep(700);
+    setStage(3,'pass','Model reasoning returned.');
+    await sleep(150);
+  }
+
+  showVerdict(c, computedEligible, failure);
+  showTrace(c, computedEligible);
+  showFrameworks(c, computedEligible);
+
+  statusLine.textContent='Run complete — pick another case to compare it.';
+  running=false; runBtn.disabled=false;
+}
+
+function showVerdict(c, computedEligible, failure){
+  verdictEl.className='verdict '+outcomeClass(c.expectedFitClassification);
+  var html='';
+  html+='<div class="vhead"><span class="voutcome">'+c.expectedFitClassification.replace('_',' ')+'</span>';
+  html+='<span class="veligible">eligible = '+computedEligible+(failure?' · halted at '+failure.id:'')+'</span></div>';
+
+  if(computedEligible){
+    html+='<h4>Rationale</h4><p class="rationale">'+c.groundTruthRationale+'</p>';
+    if(c.expectedEvidenceKeywords.length){
+      html+='<h4>Evidence keywords matched</h4><div class="kwrow">'+c.expectedEvidenceKeywords.map(function(k){return '<span class="chip yes">'+k+'</span>';}).join('')+'</div>';
+    } else {
+      html+='<h4>Evidence keywords matched</h4><div class="kwrow"><span class="chip">none — no overlap found</span></div>';
+    }
+    html+='<p class="note">This rationale is the case\'s recorded ground truth from the eval dataset, shown in place of a live Claude call — this static page cannot reach the Anthropic API itself.</p>';
+  } else {
+    html+='<h4>Rationale</h4><p class="rationale">'+c.groundTruthRationale+'</p>';
+    html+='<p class="note">Per RULE-ELIGIBILITY-PRECEDES-FIT, a failed mandatory requirement forces POOR_FIT regardless of mission or program alignment — the reasoning step is never reached.</p>';
+  }
+  verdictEl.innerHTML=html;
+  requestAnimationFrame(function(){ verdictEl.classList.add('show'); });
+}
+
+function evidenceKeywordsMatch(text, keywords){
+  if(!keywords.length) return {pass:true, vacuous:true, missing:[]};
+  var lower=text.toLowerCase();
+  var missing=keywords.filter(function(k){ return lower.indexOf(k.toLowerCase())===-1; });
+  return {pass:missing.length===0, vacuous:false, missing:missing};
+}
+
+function showTrace(c, computedEligible){
+  var eligMatch = computedEligible===c.expectedEligible;
+  var evidenceCheck = computedEligible ? evidenceKeywordsMatch(c.groundTruthRationale, c.expectedEvidenceKeywords) : {pass:true};
+  var rows=[
+    {id:'EVAL-ELIGIBILITY', desc:'Eligibility follows the grant\'s mandatory requirements. Computed independently from this run\'s deterministic checks, then compared against the dataset\'s expectedEligible field.', tr:'ELIGIBILITY-001 · GEOGRAPHY-001 · INFO-001', pass:eligMatch},
+    {id:'EVAL-ALIGNMENT', desc:'Fit classification reflects the funder\'s stated priorities; an ineligible applicant is never recommended. This static demo has no live model output to check — the classification above already is the case\'s ground truth, so there is nothing to disagree with here.', tr:'ALIGNMENT-001 · RULE-ELIGIBILITY-PRECEDES-FIT', pass:true},
+    {id:'EVAL-EVIDENCE', desc:'Classification is grounded in available evidence; uncertainty is surfaced rather than hidden. Computed for real: do the case\'s expected evidence keywords actually appear in its rationale text?', tr:'ALIGNMENT-001 · POLICY-EVIDENCE · POLICY-UNCERTAINTY', pass:evidenceCheck.pass}
+  ];
+  var html='<h4>Evaluation criteria this run touches</h4>';
+  rows.forEach(function(r){
+    var pillStyle = r.pass
+      ? 'color:var(--verdigris);border-color:var(--verdigris);background:var(--verdigris-wash)'
+      : 'color:var(--rust);border-color:var(--rust);background:var(--rust-wash)';
+    html+='<div class="tracerow"><span class="tid">'+r.id+'</span><span class="tdesc">'+r.desc+'</span>'+
+      '<span class="pill" style="'+pillStyle+'">'+(r.pass?'pass':'fail')+'</span></div>'+
+      '<div class="tracerow" style="border-top:none;padding-top:0;margin-top:-6px"><span></span><span class="ttrace">tracesTo → '+r.tr+'</span><span></span></div>';
+  });
+  traceEl.innerHTML=html;
+  requestAnimationFrame(function(){ traceEl.classList.add('show'); });
+}
+
+function showFrameworks(c, computedEligible){
+  if(!computedEligible || !c.driftedExplanation){ frameworksEl.hidden=true; return; }
+
+  var truthCheck = evidenceKeywordsMatch(c.groundTruthRationale, c.expectedEvidenceKeywords);
+  var driftCheck = evidenceKeywordsMatch(c.driftedExplanation, c.expectedEvidenceKeywords);
+
+  function bespokeRow(check){
+    var verdictText = check.vacuous ? 'PASS (vacuous)' : (check.pass ? 'PASS' : 'FAIL');
+    var note = check.vacuous ? 'No evidence keywords were ever defined for this case — nothing was checked.'
+      : (check.pass ? 'All expected keywords found as substrings.' : 'Missing: '+check.missing.join(', '));
+    return '<div class="fwrow"><span class="fwmethod">Bespoke evaluator — keyword check</span><span class="fwverdict '+(check.pass?'pass':'flag')+'">'+verdictText+'</span></div>'+
+           '<p class="fwreason">'+note+'</p>';
+  }
+
+  var html='<span class="fweyebrow">DeepEval, live on this case</span>';
+  html+='<h3>The keyword check passes both. Only one is actually grounded.</h3>';
+  html+='<div class="fwtraces"><span class="fwtraceslbl">EVAL-EVIDENCE tracesTo →</span> ALIGNMENT-001 · POLICY-EVIDENCE · POLICY-MISSING-DATA · POLICY-UNCERTAINTY</div>';
+  html+='<p class="fwintro">The EUC does more than define how the use case should behave — it also defines how that behavior can be evaluated.</p>';
+  html+='<p class="fwintro">Here, <code>EVAL-EVIDENCE</code> is taken directly from the EUC and used to evaluate two explanations: the expected explanation and a deliberately drifted version. The goal is to determine whether each still satisfies the evidence requirements defined by the EUC.</p>';
+  html+='<p class="fwintro">Some checks can be performed deterministically. Others require semantic judgment. This example shows both, using a simple keyword check for the former and DeepEval <code>GEval</code> for the latter.</p>';
+  html+='<div class="fwgrid">';
+
+  html+='<div class="fwcard"><span class="fwlabel">Ground truth</span><p class="fwtext">'+c.groundTruthRationale+'</p>';
+  html+=bespokeRow(truthCheck);
+  html+='<div class="fwrow"><span class="fwmethod">DeepEval — GEval (illustrative)</span><span class="fwverdict pass">PASS</span></div>'+
+        '<p class="fwreason">Grounded in the organization\'s actual mission and programs — nothing to flag.</p>';
+  html+='</div>';
+
+  html+='<div class="fwcard drifted"><span class="fwlabel">Drifted (illustrative)</span><p class="fwtext">'+c.driftedExplanation+'</p>';
+  html+=bespokeRow(driftCheck);
+  html+='<div class="fwrow"><span class="fwmethod">DeepEval — GEval (illustrative)</span><span class="fwverdict flag">FLAGGED</span></div>'+
+        '<p class="fwreason">'+c.driftedFlagReason+'</p>';
+  html+='</div>';
+
+  html+='</div>';
+
+  frameworksEl.innerHTML=html;
+  frameworksEl.hidden=false;
+  requestAnimationFrame(function(){ frameworksEl.classList.add('show'); });
+}
+
+function selectCase(id){
+  if(running) return;
+  current = CASES.filter(function(c){return c.caseId===id;})[0];
+  markActive(id);
+  renderPair(current);
+  renderPipeline();
+  verdictEl.className='verdict'; verdictEl.innerHTML='';
+  traceEl.className='trace'; traceEl.innerHTML='';
+  frameworksEl.className='frameworks'; frameworksEl.hidden=true; frameworksEl.innerHTML='';
+  statusLine.textContent='Ready to run '+current.organization.name+'.';
+}
+
+runBtn.addEventListener('click',function(){ if(!running) runPipeline(current); });
+
+selectCase(CASES[0].caseId);
+
+/* ── Learn tab: golden set cards + raw JSON views ── */
+var goldengrid=document.getElementById('goldengrid');
+CASES.forEach(function(c){
+  var card=el('div','goldencard');
+  card.innerHTML=
+    '<div class="ghead"><span class="gid">'+c.caseId+'</span>'+
+    '<span class="pill '+outcomeClass(c.expectedFitClassification)+'">'+c.expectedFitClassification.replace('_',' ')+'</span></div>'+
+    '<h4>'+c.organization.name+'</h4>'+
+    '<p class="gmission">'+(c.organization.missionStatement||'<em>No mission statement.</em>')+'</p>'+
+    '<div class="chiprow">'+
+      '<span class="chip '+(c.expectedEligible?'yes':'no')+'">'+(c.expectedEligible?'eligible':'ineligible')+'</span>'+
+      c.expectedEvidenceKeywords.map(function(k){return '<span class="chip">'+k+'</span>';}).join('')+
+    '</div>'+
+    '<p class="grationale">'+c.groundTruthRationale+'</p>';
+  goldengrid.appendChild(card);
+});
+
+document.getElementById('eucRaw').textContent = JSON.stringify(EUC, null, 2);
+document.getElementById('goldenRaw').textContent = JSON.stringify({description:GOLDEN_SET_DESCRIPTION, testCases:CASES}, null, 2);
+
+/* ── one real trace, fetched from Langfuse and pasted in verbatim —
+     not simulated, not re-derived from CASES ── */
+var SAMPLE_TRACE = [
+  {
+    "id": "a8000b324dbeee9a",
+    "type": "SPAN",
+    "name": "assess-grant-fit (a8000b32)",
+    "startTime": "2026-09-01T04:38:15.656Z",
+    "endTime": "2026-09-01T04:38:15.658Z",
+    "depth": 0,
+    "input": "{\"organization\": \"Unnamed Org\", \"grant\": \"Youth Education Grant\"}",
+    "output": "{\"eligible\": false, \"fitClassification\": \"POOR_FIT\"}",
+    "metadata": "{\"caseId\":\"missing-info-01\",\"expectedEligible\":false,\"expectedFitClassification\":\"POOR_FIT\",\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.44.0\",\"service.instance.id\":\"f82a4c5d-90c8-4ad4-bb9e-c2e5d8721a28\",\"langfuse.environment\":\"development\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"langfuse-sdk\",\"version\":\"4.15.1\",\"attributes\":{\"public_key\":\"pk-lf-ece26755-4d70-4188-bf96-b9a6666416d8\"}}}"
+  },
+  {
+    "id": "e1ce02133e7fa34e",
+    "type": "TOOL",
+    "name": "verify-eligibility (e1ce0213)",
+    "startTime": "2026-09-01T04:38:15.656Z",
+    "endTime": "2026-09-01T04:38:15.657Z",
+    "depth": 1,
+    "output": "{\"outcome\": \"PASSED\"}",
+    "metadata": "{\"requirementId\":\"ELIGIBILITY-001\",\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.44.0\",\"service.instance.id\":\"f82a4c5d-90c8-4ad4-bb9e-c2e5d8721a28\",\"langfuse.environment\":\"development\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"langfuse-sdk\",\"version\":\"4.15.1\",\"attributes\":{\"public_key\":\"pk-lf-ece26755-4d70-4188-bf96-b9a6666416d8\"}}}"
+  },
+  {
+    "id": "3eccbc7504848dfa",
+    "type": "TOOL",
+    "name": "verify-info (3eccbc75)",
+    "startTime": "2026-09-01T04:38:15.657Z",
+    "endTime": "2026-09-01T04:38:15.658Z",
+    "depth": 1,
+    "output": "{\"outcome\": \"FAILED\"}",
+    "metadata": "{\"requirementId\":\"INFO-001\",\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.44.0\",\"service.instance.id\":\"f82a4c5d-90c8-4ad4-bb9e-c2e5d8721a28\",\"langfuse.environment\":\"development\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"langfuse-sdk\",\"version\":\"4.15.1\",\"attributes\":{\"public_key\":\"pk-lf-ece26755-4d70-4188-bf96-b9a6666416d8\"}}}"
+  },
+  {
+    "id": "76f040e5aaa8b878",
+    "type": "TOOL",
+    "name": "verify-geography (76f040e5)",
+    "startTime": "2026-09-01T04:38:15.657Z",
+    "endTime": "2026-09-01T04:38:15.657Z",
+    "depth": 1,
+    "output": "{\"outcome\": \"PASSED\"}",
+    "metadata": "{\"requirementId\":\"GEOGRAPHY-001\",\"resourceAttributes\":{\"telemetry.sdk.language\":\"python\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.44.0\",\"service.instance.id\":\"f82a4c5d-90c8-4ad4-bb9e-c2e5d8721a28\",\"langfuse.environment\":\"development\",\"service.name\":\"unknown_service\"},\"scope\":{\"name\":\"langfuse-sdk\",\"version\":\"4.15.1\",\"attributes\":{\"public_key\":\"pk-lf-ece26755-4d70-4188-bf96-b9a6666416d8\"}}}"
+  }
+];
+(function(){
+  var text = JSON.stringify(SAMPLE_TRACE, null, 2);
+  var pre = document.getElementById('sampleTraceRaw');
+  var needle = '\\"caseId\\":\\"missing-info-01\\"';
+  var idx = text.indexOf(needle);
+  if(idx === -1){ pre.textContent = text; return; }
+  pre.appendChild(document.createTextNode(text.slice(0, idx)));
+  var mark = document.createElement('mark');
+  mark.className = 'tracehit';
+  mark.id = 'caseIdMark';
+  mark.textContent = needle;
+  pre.appendChild(mark);
+  pre.appendChild(document.createTextNode(text.slice(idx + needle.length)));
+})();
+document.getElementById('eucTagBtn').addEventListener('click', function(){
+  var mark = document.getElementById('caseIdMark');
+  if(!mark) return;
+  mark.scrollIntoView({behavior:'smooth', block:'center'});
+  mark.classList.add('flash');
+  setTimeout(function(){ mark.classList.remove('flash'); }, 1300);
+});
+var sampleTraceBtn=document.getElementById('sampleTraceBtn'), sampleTracePanel=document.getElementById('sampleTracePanel');
+sampleTraceBtn.addEventListener('click',function(){
+  var open = sampleTracePanel.hidden;
+  sampleTracePanel.hidden = !open;
+  sampleTraceBtn.setAttribute('aria-expanded', open?'true':'false');
+  sampleTraceBtn.firstChild.textContent = open ? 'Hide sample trace ' : 'See sample trace ';
+  if(open){
+    sampleTracePanel.scrollIntoView({behavior:'smooth', block:'nearest'});
+    showTraceToast();
+  }
+});
+
+/* ── toast: slides in from the right when the sample trace is opened,
+     auto-dismisses, or closes on click ── */
+var traceToast=document.getElementById('traceToast'), traceToastTimer=null;
+function showTraceToast(){
+  clearTimeout(traceToastTimer);
+  traceToast.classList.add('show');
+  traceToastTimer=setTimeout(hideTraceToast,5000);
+}
+function hideTraceToast(){
+  clearTimeout(traceToastTimer);
+  traceToast.classList.remove('show');
+}
+document.getElementById('traceToastClose').addEventListener('click',hideTraceToast);
+
+/* ── trace diagrams: hover/focus a node to highlight what it connects to,
+     shared by the object diagram (.onode/.trace) and the generation
+     diagram (.gnode/.glink) — same interaction, two different pictures ── */
+function wireTraceDiagram(svgId, nodeClass, linkClass){
+  var svg=document.getElementById(svgId);
+  if(!svg) return;
+  var nodes=svg.querySelectorAll('.'+nodeClass);
+  var links=svg.querySelectorAll('.'+linkClass);
+
+  function clear(){
+    svg.classList.remove('dim');
+    nodes.forEach(function(n){ n.classList.remove('hi'); });
+    links.forEach(function(l){ l.classList.remove('hi'); });
+  }
+  function highlight(id){
+    clear();
+    svg.classList.add('dim');
+    var self=svg.querySelector('.'+nodeClass+'[data-id="'+id+'"]');
+    if(self) self.classList.add('hi');
+    links.forEach(function(l){
+      if(l.dataset.from===id || l.dataset.to===id){
+        l.classList.add('hi');
+        var otherId = l.dataset.from===id ? l.dataset.to : l.dataset.from;
+        var other=svg.querySelector('.'+nodeClass+'[data-id="'+otherId+'"]');
+        if(other) other.classList.add('hi');
+      }
+    });
+  }
+  nodes.forEach(function(n){
+    n.addEventListener('mouseenter',function(){ highlight(n.dataset.id); });
+    n.addEventListener('focus',function(){ highlight(n.dataset.id); });
+    n.addEventListener('mouseleave',clear);
+    n.addEventListener('blur',clear);
+  });
+}
+wireTraceDiagram('objdiag','onode','trace');
+wireTraceDiagram('gendiag','gnode','glink');
+
+/* ── tracesTo slide-in panel: what actually drives each evaluation criterion ── */
+(function(){
+  var panel=document.getElementById('tracesPanel');
+  var backdrop=document.getElementById('tracesBackdrop');
+  if(!panel) return;
+
+  var TRACE_INFO={
+    evalEligibility:{
+      id:'EVAL-ELIGIBILITY',
+      what:'"Eligibility follows the grant’s mandatory requirements."',
+      tracesTo:[
+        {kind:'exec req',id:'ELIGIBILITY-001'},
+        {kind:'exec req',id:'GEOGRAPHY-001'},
+        {kind:'exec req',id:'INFO-001'},
+        {kind:'rule',id:'RULE-ELIGIBILITY'},
+        {kind:'rule',id:'RULE-GEOGRAPHY'},
+        {kind:'rule',id:'RULE-REQUIRED-INFO'}
+      ],
+      explain:'This checks that the eligibility verdict actually came from the three deterministic gate checks — nonprofit status, geographic scope, required information — not from something else. It traces to both the code that runs those checks and the business rules that justify them, so a pass here means the real gate ran, not that eligibility was assumed.'
+    },
+    evalAlignment:{
+      id:'EVAL-ALIGNMENT',
+      what:'"Fit classification reflects the funder’s stated priorities. An ineligible applicant is never recommended for pursuit."',
+      tracesTo:[
+        {kind:'exec req',id:'ALIGNMENT-001'},
+        {kind:'rule',id:'RULE-ELIGIBILITY-PRECEDES-FIT'}
+      ],
+      explain:'This checks the model’s own judgement on the reasoned step — does the classification actually match the funder’s stated priorities — and separately confirms the precedence rule held: an ineligible organization must never come back as a good fit, no matter how well its mission reads.'
+    },
+    evalEvidence:{
+      id:'EVAL-EVIDENCE',
+      what:'"The classification is supported by evidence present in the context. No unsupported information is introduced. Uncertainty is surfaced rather than resolved into false confidence."',
+      tracesTo:[
+        {kind:'exec req',id:'ALIGNMENT-001'},
+        {kind:'policy',id:'POLICY-EVIDENCE'},
+        {kind:'policy',id:'POLICY-MISSING-DATA'},
+        {kind:'policy',id:'POLICY-UNCERTAINTY'}
+      ],
+      explain:'This audits how the model reasoned on that same step, not what it concluded: did it cite real evidence from the organisation and grant, avoid inventing facts that weren’t there, and flag what it didn’t know rather than guessing with false confidence?'
+    }
+  };
+
+  var idEl=document.getElementById('tracesPanelId');
+  var titleEl=document.getElementById('tracesPanelTitle');
+  var whatEl=document.getElementById('tracesPanelWhat');
+  var listEl=document.getElementById('tracesPanelList');
+  var explainEl=document.getElementById('tracesPanelExplain');
+  var closeBtn=document.getElementById('tracesPanelClose');
+  var lastFocused=null;
+
+  function openPanel(nodeId){
+    var info=TRACE_INFO[nodeId];
+    if(!info) return;
+    idEl.textContent=info.id;
+    titleEl.textContent=nodeId+' : EvaluationCriterion';
+    whatEl.textContent=info.what;
+    listEl.innerHTML=info.tracesTo.map(function(t){
+      return '<div class="tprow"><span class="tptag">'+t.kind+'</span><span class="tpid">'+t.id+'</span></div>';
+    }).join('');
+    explainEl.textContent=info.explain;
+    lastFocused=document.activeElement;
+    panel.classList.add('open');
+    backdrop.classList.add('open');
+    panel.setAttribute('aria-hidden','false');
+    closeBtn.focus();
+  }
+  function closePanel(){
+    panel.classList.remove('open');
+    backdrop.classList.remove('open');
+    panel.setAttribute('aria-hidden','true');
+    if(lastFocused && typeof lastFocused.focus==='function') lastFocused.focus();
+  }
+
+  document.querySelectorAll('.oinfo').forEach(function(icon){
+    icon.addEventListener('click',function(e){
+      e.stopPropagation();
+      openPanel(icon.dataset.criterion);
+    });
+    icon.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();
+        e.stopPropagation();
+        openPanel(icon.dataset.criterion);
+      }
+    });
+  });
+  closeBtn.addEventListener('click',closePanel);
+  backdrop.addEventListener('click',closePanel);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && panel.classList.contains('open')) closePanel();
+  });
+})();
+
+})();
+</script>

@@ -140,6 +140,35 @@ Never commit a real key or paste it into a chat session — see `.env.example`
 for the variables this project reads, and set them via your shell (session
 export or shell profile) rather than a tracked file.
 
+## Deploy
+
+`site/` — the landing page and the interactive demo — is the only part of
+this project set up to deploy. It's static HTML with no server and no live
+network calls, so it needs **no secrets, no environment variables, and no
+container**: `.do/app.yaml` is a [DigitalOcean App
+Platform](https://docs.digitalocean.com/products/app-platform/) static-site
+spec pointing at the `site/` directory.
+
+```bash
+doctl apps create --spec .do/app.yaml       # first deploy
+doctl apps update <app-id> --spec .do/app.yaml   # subsequent changes
+```
+
+Or paste `.do/app.yaml`'s contents into the console: **Create Resource From
+Source Code → Edit Your App Spec**. Either way, App Platform serves
+`site/index.html` at `/` and `site/demo/index.html` at `/demo/` — see
+`site/README.md` and `site/demo/README.md` for what each page does, and
+`site/demo/README.md` in particular for exactly how it was checked for
+secrets before publishing.
+
+The Python backend (`euc-*` scripts above) is CLI-only — there's no HTTP API
+wrapping `GrantFitApplication`, so nothing about the backend is set up to
+deploy here. Building and deploying one would be a separate, larger piece of
+work: an API layer, request auth, and — since it calls Claude and optionally
+Langfuse — a place to hold `ANTHROPIC_API_KEY` and `LANGFUSE_SECRET_KEY` as
+platform-managed **encrypted** app-level secrets (`envs: type: SECRET` in the
+App Spec), never as plain strings in the spec or the repo.
+
 ## Repository Structure
 
 Each EUC gets its own folder under `src/euc/`, `resources/euc/`, and `eval/` —
