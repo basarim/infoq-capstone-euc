@@ -107,27 +107,37 @@ code{font-family:var(--mono);font-size:.87em;color:var(--verdigris);background:v
 .docket{position:relative;overflow:hidden;border-radius:3px}
 .docket h2{font-size:.8rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:400;margin-bottom:12px}
 .caselist{display:flex;flex-direction:column;gap:8px}
-.casecard{
+.casecard{position:relative}
+.caseselect{
   text-align:left;width:100%;background:var(--surface);border:1px solid var(--rule-soft);border-radius:3px;
-  padding:12px 14px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;flex-direction:column;gap:5px;
+  padding:12px 40px 12px 14px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;flex-direction:column;gap:5px;
 }
-.casecard:hover{border-color:var(--brass)}
-.casecard.active{border-color:var(--brass);background:var(--brass-wash)}
-.casecard .cname{font-family:var(--serif);font-weight:600;font-size:.98rem;color:var(--ink);border-bottom:1px dotted transparent;transition:border-color .15s}
-.casecard:hover .cname,.casecard:focus-visible .cname{border-color:var(--ink-faint)}
-.casecard .cmeta{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);display:flex;gap:8px;flex-wrap:wrap}
-.casecard .cmission{font-size:.82rem;color:var(--ink-soft);line-height:1.4}
+.caseselect:hover{border-color:var(--brass)}
+.casecard.active .caseselect{border-color:var(--brass);background:var(--brass-wash)}
+.caseselect .cname{font-family:var(--serif);font-weight:600;font-size:.98rem;color:var(--ink)}
+.caseselect .cmeta{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);display:flex;gap:8px;flex-wrap:wrap}
+.caseselect .cmission{font-size:.82rem;color:var(--ink-soft);line-height:1.4}
+
+/* info icon — same circle+italic-serif-"i" language as the EUC tab's
+   object-diagram info glyphs (.oinfo/.oinfoglyph), so it reads as the
+   same affordance everywhere it appears in this demo. */
+.infoicon{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;padding:0;background:var(--surface);border:1.2px solid var(--brass);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-width .15s}
+.infoicon:hover,.infoicon:focus-visible,.infoicon.active{background:var(--brass-wash);border-width:1.6px}
+.infoicon .infoglyph{font-family:var(--serif);font-style:italic;font-weight:700;font-size:12px;color:var(--brass);pointer-events:none;line-height:1}
 
 /* Confined to .docket's own box (position:relative + overflow:hidden above) —
    never a viewport-floating overlay, so it can't drift over the workspace
-   and cover the Run assessment button at any screen size. */
-.orgflyout{position:absolute;inset:0;z-index:5;background:var(--surface);border-left:4px solid var(--brass);padding:16px;opacity:0;transform:translateX(-100%);transition:opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1);pointer-events:none;overflow-y:auto}
-.orgflyout.show{opacity:1;transform:translateX(0)}
+   and cover the Run assessment button at any screen size. Click-toggled
+   from the info icons above, not hover — predictable open/close, works on
+   touch too, so no longer suppressed at narrow widths. */
+.orgflyout{position:absolute;inset:0;z-index:5;background:var(--surface);border-left:4px solid var(--brass);padding:16px 34px 16px 16px;opacity:0;transform:translateX(-100%);transition:opacity .24s ease,transform .3s cubic-bezier(.2,.8,.2,1);pointer-events:none;overflow-y:auto}
+.orgflyout.show{opacity:1;transform:translateX(0);pointer-events:auto}
+.orgflyout .ofclose{position:absolute;top:8px;right:8px;width:22px;height:22px;border:0;background:none;color:var(--ink-faint);font-size:.72rem;line-height:1;cursor:pointer;border-radius:2px}
+.orgflyout .ofclose:hover{color:var(--ink);background:var(--surface-2)}
 .orgflyout .ofname{display:block;font-family:var(--serif);font-weight:600;font-size:1.02rem;color:var(--ink)}
 .orgflyout .oftag{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-top:14px}
 .orgflyout .ofname+.oftag{margin-top:12px}
 .orgflyout p{margin:4px 0 0;font-family:var(--sans);font-size:.82rem;line-height:1.5;color:var(--ink-soft)}
-@media (max-width:880px){.orgflyout{display:none}}
 @media (prefers-reduced-motion:reduce){.orgflyout{transition:opacity .24s ease}}
 
 /* workspace */
@@ -1564,7 +1574,8 @@ mark.tracehit.flash{background:var(--brass);color:var(--ground)}
       <aside class="docket">
         <h2>Case docket</h2>
         <div class="caselist" id="caselist"></div>
-        <div class="orgflyout" id="orgFlyout" role="tooltip">
+        <div class="orgflyout" id="orgFlyout" role="region" aria-label="Case detail">
+          <button class="ofclose" id="orgFlyoutClose" type="button" aria-label="Close">✕</button>
           <span class="ofname"></span>
           <span class="oftag">Key strength</span>
           <p class="ofstrength"></p>
@@ -1843,41 +1854,65 @@ function outcomeClass(outcome){
 
 /* ── docket ── */
 CASES.forEach(function(c){
-  var card=el('button','casecard');
-  card.type='button';
+  var card=el('div','casecard');
   card.dataset.id=c.caseId;
-  card.innerHTML=
+
+  var selectBtn=el('button','caseselect');
+  selectBtn.type='button';
+  selectBtn.innerHTML=
     '<span class="cname">'+c.organization.name+'</span>'+
     '<span class="cmeta"><span>'+c.organization.operatingRegion+'</span><span>·</span><span>'+(c.organization.isRegisteredNonprofit?'501(c)(3)':'for-profit')+'</span></span>'+
     '<span class="cmission">'+(c.organization.missionStatement||'<em>No mission statement on file.</em>')+'</span>';
-  card.addEventListener('click',function(){ selectCase(c.caseId); });
-  var nameEl=card.querySelector('.cname');
-  nameEl.addEventListener('mouseenter',function(){ showOrgFlyout(c); });
-  nameEl.addEventListener('mouseleave',hideOrgFlyout);
-  card.addEventListener('focus',function(){ showOrgFlyout(c); });
-  card.addEventListener('blur',hideOrgFlyout);
+  selectBtn.addEventListener('click',function(){ selectCase(c.caseId); });
+  card.appendChild(selectBtn);
+
+  var infoBtn=el('button','infoicon');
+  infoBtn.type='button';
+  infoBtn.setAttribute('aria-label','About '+c.organization.name+' — key strength and test focus');
+  infoBtn.setAttribute('aria-expanded','false');
+  infoBtn.setAttribute('aria-controls','orgFlyout');
+  infoBtn.innerHTML='<span class="infoglyph" aria-hidden="true">i</span>';
+  infoBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    toggleOrgFlyout(c,infoBtn);
+  });
+  card.appendChild(infoBtn);
+
   caselist.appendChild(card);
 });
 
-/* ── org flyout: hovering (or focusing) a case's name slides a section in
-     from the left, inside the docket itself — never a viewport-floating
-     overlay, so it can't drift over the workspace at any screen size ── */
+/* ── org flyout: clicking a case's info icon slides a section in from the
+     left, inside the docket itself — never a viewport-floating overlay,
+     so it can't drift over the workspace at any screen size. Click, not
+     hover, so it's predictable to open and close, and works on touch. ── */
 var orgFlyout=document.getElementById('orgFlyout');
 var orgFlyoutName=orgFlyout.querySelector('.ofname');
 var orgFlyoutStrength=orgFlyout.querySelector('.ofstrength');
 var orgFlyoutTest=orgFlyout.querySelector('.oftest');
-var orgFlyoutHideTimer=null;
-function showOrgFlyout(c){
-  clearTimeout(orgFlyoutHideTimer);
+var orgFlyoutActiveBtn=null;
+function toggleOrgFlyout(c,btn){
+  if(orgFlyoutActiveBtn===btn){ closeOrgFlyout(); return; }
   orgFlyoutName.textContent=c.organization.name;
   orgFlyoutStrength.textContent=c.keyStrength;
   orgFlyoutTest.textContent=c.testFocus;
   orgFlyout.classList.add('show');
+  if(orgFlyoutActiveBtn){
+    orgFlyoutActiveBtn.classList.remove('active');
+    orgFlyoutActiveBtn.setAttribute('aria-expanded','false');
+  }
+  orgFlyoutActiveBtn=btn;
+  btn.classList.add('active');
+  btn.setAttribute('aria-expanded','true');
 }
-function hideOrgFlyout(){
-  clearTimeout(orgFlyoutHideTimer);
-  orgFlyoutHideTimer=setTimeout(function(){ orgFlyout.classList.remove('show'); },80);
+function closeOrgFlyout(){
+  orgFlyout.classList.remove('show');
+  if(orgFlyoutActiveBtn){
+    orgFlyoutActiveBtn.classList.remove('active');
+    orgFlyoutActiveBtn.setAttribute('aria-expanded','false');
+    orgFlyoutActiveBtn=null;
+  }
 }
+document.getElementById('orgFlyoutClose').addEventListener('click',closeOrgFlyout);
 
 function markActive(id){
   Array.prototype.forEach.call(caselist.children,function(card){
