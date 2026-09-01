@@ -6,7 +6,7 @@ stable link between business intent, AI implementation, and evaluation as an
 AI-native application evolves?
 
 `docs/proposal.md` is the authoritative statement of the idea. `site/index.html`
-is the public landing page and must agree with it. The Java prototype under
+is the public landing page and must agree with it. The Python prototype under
 `src/` implements the Grant Fit Assessment case study.
 
 ## Writing style — applies to every document, page, and diagram

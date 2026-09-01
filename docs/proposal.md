@@ -872,17 +872,6 @@ above; only how they are sequenced and gated moved from a `for` loop to a compil
 graph, verified by dedicated tests (`test_pipeline_builder.py`) plus the existing
 offline halt-contract tests, and a live run against Claude.
 
-An earlier revision of this prototype was written in Java, where the same idea was
-built on **LangGraph4j**, a community Java port of LangGraph — there is no official
-Java SDK for LangGraph. Porting the prototype to Python and moving onto LangGraph
-itself dropped a piece of JVM-specific machinery that revision needed: LangGraph4j's
-default state serializer clones state via Java serialization between nodes, which
-would have forced every object passed through the graph to implement `Serializable`
-and handed each node a deserialized copy rather than the original mutable object —
-so that revision overrode the serializer to do a cheap shallow copy instead, purely
-to preserve reference identity. LangGraph passes state through by reference within a
-single process, so no such workaround is needed here.
-
 ---
 
 ## Appendix B. Related approach: Spec-Driven Development
